@@ -1,0 +1,155 @@
+**********************************************************************
+* Exports the board to HyperLynx Signal-Integrity Transfer Format (.HYP)
+* Version 2.00 9/11/97 -- 4.14 17/08/2005
+*
+* EAGLE Version 5.12.0 Copyright (c) 1988-2011 CadSoft
+*
+* HyperLynx Board exported from:
+* /home/name/hyp2mat/eagle/hairpinfilter/hairpinfilter.brd
+* At 9/29/12 1:09 PM
+*
+* Schematic is loaded.
+*
+
+{VERSION=2.10}  Compatible with Hyperlynx version 2.10.
+{UNITS=ENGLISH WEIGHT}
+
+**********************************************************************
+* Board Dimensions
+*
+{BOARD
+(PERIMETER_SEGMENT X1=0.0000 Y1=0.0000 X2=1.7970 Y2=0.0000) Wires: From Board
+(PERIMETER_SEGMENT X1=1.7970 Y1=0.0000 X2=1.7970 Y2=1.6996) Wires: From Board
+(PERIMETER_SEGMENT X1=1.7970 Y1=1.6996 X2=0.0000 Y2=1.6996) Wires: From Board
+(PERIMETER_SEGMENT X1=0.0000 Y1=1.6996 X2=0.0000 Y2=0.0000) Wires: From Board
+}
+
+**********************************************************************
+* Thickness of Copper and Dielectric Layer Data
+*
+{STACKUP
+(SIGNAL T=0.00070 P=0.00070 L=Top)
+(DIELECTRIC T=0.05970 C=4.80000 L=DL01)
+(SIGNAL T=0.00070 P=0.00070 L=Bottom)
+}
+* Total Board Thickness 0.0625 inch
+
+**********************************************************************
+* Components
+*
+{DEVICES
+(? REF="TP1" NAME="TPTP10SQ" L="Top")  R000 X=0.3900 Y=0.2450 :  Lib: testpad : TP10SQ : Pins 1
+(? REF="TP2" NAME="TPTP10SQ" L="Top")  R000 X=0.5000 Y=0.4500 :  Lib: testpad : TP10SQ : Pins 1
+(? REF="TP3" NAME="TPTP10SQ" L="Top")  R000 X=0.8600 Y=1.3500 :  Lib: testpad : TP10SQ : Pins 1
+(? REF="TP4" NAME="TPTP10SQ" L="Top")  R000 X=1.2200 Y=0.4500 :  Lib: testpad : TP10SQ : Pins 1
+(? REF="TP5" NAME="TPTP10SQ" L="Top")  R000 X=1.5100 Y=0.2500 :  Lib: testpad : TP10SQ : Pins 1
+(? REF="TP6" NAME="TPTP10SQ" L="Bottom")  R000 X=0.2500 Y=0.1500 :  Lib: testpad : TP10SQ : Pins 1
+(? REF="TP7" NAME="TPTP10SQ" L="Bottom")  R000 X=1.6500 Y=0.1500 :  Lib: testpad : TP10SQ : Pins 1
+}
+
+**********************************************************************
+* Pads, Smds, and Via Library
+*
+{PADSTACK=SMD001
+(Top,1,0.039,0.039,0.0) ISASMD Shape was Smd and is now Smd
+}
+
+{PADSTACK=SMD002
+(Bottom,1,0.039,0.039,180.0) ISASMD Shape was Smd and is now Smd
+}
+
+**********************************************************************
+* Nets
+*
+{NET=GND
+(PIN X=0.2500 Y=0.1500 R=TP6.TP P=SMD002) GND, Smd Dx: 0.0394  Dy: 0.0394
+(PIN X=1.6500 Y=0.1500 R=TP7.TP P=SMD002) GND, Smd Dx: 0.0394  Dy: 0.0394
+* (PLG Isolate=0.0000 Spacing=0.0500 Width=0.0000 Orphans=Off Pour=SOLID Thermals=Off Layer=Bottom) Polygon GND Data
+  {POLYGON L="Bottom" T=POUR W=0.0000 ID=1 X=1.7570 Y=1.6596
+    (LINE X=1.7570 Y=0.0400 ) Polygon GND
+    (LINE X=0.0400 Y=0.0400 ) Polygon GND
+    (LINE X=0.0400 Y=1.6596 ) Polygon GND
+    (LINE X=1.7570 Y=1.6596 ) Polygon GND
+  }
+}
+
+{NET=V1
+(PIN X=0.3900 Y=0.2450 R=TP1.TP P=SMD001) V1, Smd Dx: 0.0394  Dy: 0.0394
+* (PLG Isolate=0.0000 Spacing=0.0500 Width=0.0000 Orphans=Off Pour=SOLID Thermals=Off Layer=Top) Polygon V1 Data
+  {POLYGON L="Top" T=POUR W=0.0000 ID=2 X=0.4400 Y=1.4000
+    (LINE X=0.4400 Y=0.2000 ) Polygon V1
+    (LINE X=0.3400 Y=0.2000 ) Polygon V1
+    (LINE X=0.3400 Y=1.4000 ) Polygon V1
+    (LINE X=0.4400 Y=1.4000 ) Polygon V1
+  }
+}
+
+{NET=V2
+(PIN X=0.5000 Y=0.4500 R=TP2.TP P=SMD001) V2, Smd Dx: 0.0394  Dy: 0.0394
+* (PLG Isolate=0.0000 Spacing=0.0500 Width=0.0000 Orphans=Off Pour=SOLID Thermals=Off Layer=Top) Polygon V2 Data
+  {POLYGON L="Top" T=POUR W=0.0000 ID=3 X=0.7300 Y=1.4000
+    (LINE X=0.7300 Y=0.4000 ) Polygon V2
+    (LINE X=0.6300 Y=0.4000 ) Polygon V2
+    (LINE X=0.6300 Y=1.4000 ) Polygon V2
+    (LINE X=0.5500 Y=1.4000 ) Polygon V2
+    (LINE X=0.5500 Y=0.4000 ) Polygon V2
+    (LINE X=0.4500 Y=0.4000 ) Polygon V2
+    (LINE X=0.4500 Y=1.4000 ) Polygon V2
+    (LINE X=0.5500 Y=1.5000 ) Polygon V2
+    (LINE X=0.6300 Y=1.5000 ) Polygon V2
+    (LINE X=0.7300 Y=1.4000 ) Polygon V2
+  }
+}
+
+{NET=V3
+(PIN X=0.8600 Y=1.3500 R=TP3.TP P=SMD001) V3, Smd Dx: 0.0394  Dy: 0.0394
+* (PLG Isolate=0.0000 Spacing=0.0500 Width=0.0000 Orphans=Off Pour=SOLID Thermals=Off Layer=Top) Polygon V3 Data
+  {POLYGON L="Top" T=POUR W=0.0000 ID=4 X=0.8100 Y=0.4000
+    (LINE X=0.8100 Y=1.4000 ) Polygon V3
+    (LINE X=0.9100 Y=1.4000 ) Polygon V3
+    (LINE X=0.9100 Y=0.4000 ) Polygon V3
+    (LINE X=0.9900 Y=0.4000 ) Polygon V3
+    (LINE X=0.9900 Y=1.4000 ) Polygon V3
+    (LINE X=1.0900 Y=1.4000 ) Polygon V3
+    (LINE X=1.0900 Y=0.4000 ) Polygon V3
+    (LINE X=0.9900 Y=0.3000 ) Polygon V3
+    (LINE X=0.9100 Y=0.3000 ) Polygon V3
+    (LINE X=0.8100 Y=0.4000 ) Polygon V3
+  }
+}
+
+{NET=V4
+(PIN X=1.2200 Y=0.4500 R=TP4.TP P=SMD001) V4, Smd Dx: 0.0394  Dy: 0.0394
+* (PLG Isolate=0.0000 Spacing=0.0500 Width=0.0000 Orphans=Off Pour=SOLID Thermals=Off Layer=Top) Polygon V4 Data
+  {POLYGON L="Top" T=POUR W=0.0000 ID=5 X=1.4500 Y=1.4000
+    (LINE X=1.4500 Y=0.4000 ) Polygon V4
+    (LINE X=1.3500 Y=0.4000 ) Polygon V4
+    (LINE X=1.3500 Y=1.4000 ) Polygon V4
+    (LINE X=1.2700 Y=1.4000 ) Polygon V4
+    (LINE X=1.2700 Y=0.4000 ) Polygon V4
+    (LINE X=1.1700 Y=0.4000 ) Polygon V4
+    (LINE X=1.1700 Y=1.4000 ) Polygon V4
+    (LINE X=1.2700 Y=1.5000 ) Polygon V4
+    (LINE X=1.3500 Y=1.5000 ) Polygon V4
+    (LINE X=1.4500 Y=1.4000 ) Polygon V4
+  }
+}
+
+{NET=V5
+(PIN X=1.5100 Y=0.2500 R=TP5.TP P=SMD001) V5, Smd Dx: 0.0394  Dy: 0.0394
+* (PLG Isolate=0.0000 Spacing=0.0500 Width=0.0000 Orphans=Off Pour=SOLID Thermals=Off Layer=Top) Polygon V5 Data
+  {POLYGON L="Top" T=POUR W=0.0000 ID=6 X=1.5600 Y=1.4000
+    (LINE X=1.5600 Y=0.2000 ) Polygon V5
+    (LINE X=1.4600 Y=0.2000 ) Polygon V5
+    (LINE X=1.4600 Y=1.4000 ) Polygon V5
+    (LINE X=1.5600 Y=1.4000 ) Polygon V5
+  }
+}
+
+**********************************************************************
+* End of data
+*
+{END}
+
+{KEY=028-015E-4E5D}
+

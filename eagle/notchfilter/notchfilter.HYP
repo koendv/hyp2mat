@@ -1,0 +1,95 @@
+**********************************************************************
+* Exports the board to HyperLynx Signal-Integrity Transfer Format (.HYP)
+* Version 2.00 9/11/97 -- 4.14 17/08/2005
+*
+* EAGLE Version 5.12.0 Copyright (c) 1988-2011 CadSoft
+*
+* HyperLynx Board exported from:
+* /home/name/hyp2mat/eagle/notchfilter/notchfilter.brd
+* At 9/29/12 12:15 PM
+*
+* Schematic is loaded.
+*
+
+{VERSION=2.10}  Compatible with Hyperlynx version 2.10.
+{UNITS=ENGLISH WEIGHT}
+
+**********************************************************************
+* Board Dimensions
+*
+{BOARD
+(PERIMETER_SEGMENT X1=0.0000 Y1=0.0000 X2=2.0000 Y2=0.0000) Wires: From Board
+(PERIMETER_SEGMENT X1=2.0000 Y1=0.0000 X2=2.0000 Y2=1.5000) Wires: From Board
+(PERIMETER_SEGMENT X1=2.0000 Y1=1.5000 X2=0.0000 Y2=1.5000) Wires: From Board
+(PERIMETER_SEGMENT X1=0.0000 Y1=1.5000 X2=0.0000 Y2=0.0000) Wires: From Board
+}
+
+**********************************************************************
+* Thickness of Copper and Dielectric Layer Data
+*
+{STACKUP
+(SIGNAL T=0.00070 P=0.00070 L=Top)
+(DIELECTRIC T=0.05970 C=4.80000 L=DL01)
+(SIGNAL T=0.00070 P=0.00070 L=Bottom)
+}
+* Total Board Thickness 0.0625 inch
+
+**********************************************************************
+* Components
+*
+{DEVICES
+(? REF="TP1" NAME="TPTP10SQ" L="Top")  R000 X=0.1500 Y=0.7000 :  Lib: testpad : TP10SQ : Pins 1
+(? REF="TP2" NAME="TPTP10SQ" L="Bottom")  R000 X=0.1500 Y=0.7000 :  Lib: testpad : TP10SQ : Pins 1
+(? REF="TP3" NAME="TPTP10SQ" L="Top")  R000 X=1.8500 Y=0.7000 :  Lib: testpad : TP10SQ : Pins 1
+(? REF="TP4" NAME="TPTP10SQ" L="Bottom")  R000 X=1.8500 Y=0.7000 :  Lib: testpad : TP10SQ : Pins 1
+}
+
+**********************************************************************
+* Pads, Smds, and Via Library
+*
+{PADSTACK=SMD001
+(Top,1,0.039,0.039,0.0) ISASMD Shape was Smd and is now Smd
+}
+
+{PADSTACK=SMD002
+(Bottom,1,0.039,0.039,180.0) ISASMD Shape was Smd and is now Smd
+}
+
+**********************************************************************
+* Nets
+*
+{NET=GND
+(PIN X=0.1500 Y=0.7000 R=TP2.TP P=SMD002) GND, Smd Dx: 0.0394  Dy: 0.0394
+(PIN X=1.8500 Y=0.7000 R=TP4.TP P=SMD002) GND, Smd Dx: 0.0394  Dy: 0.0394
+* (PLG Isolate=0.0000 Spacing=0.0500 Width=0.0000 Orphans=Off Pour=SOLID Thermals=Off Layer=Bottom) Polygon GND Data
+  {POLYGON L="Bottom" T=POUR W=0.0000 ID=1 X=1.9500 Y=1.4500
+    (LINE X=1.9500 Y=0.0500 ) Polygon GND
+    (LINE X=0.0500 Y=0.0500 ) Polygon GND
+    (LINE X=0.0500 Y=1.4500 ) Polygon GND
+    (LINE X=1.9500 Y=1.4500 ) Polygon GND
+  }
+}
+
+{NET=VX
+(PIN X=0.1500 Y=0.7000 R=TP1.TP P=SMD001) VX, Smd Dx: 0.0394  Dy: 0.0394
+(PIN X=1.8500 Y=0.7000 R=TP3.TP P=SMD001) VX, Smd Dx: 0.0394  Dy: 0.0394
+* (PLG Isolate=0.0000 Spacing=0.0500 Width=0.0000 Orphans=Off Pour=SOLID Thermals=Off Layer=Top) Polygon VX Data
+  {POLYGON L="Top" T=POUR W=0.0000 ID=2 X=0.9000 Y=0.7500
+    (LINE X=0.9000 Y=1.2500 ) Polygon VX
+    (LINE X=1.0000 Y=1.2500 ) Polygon VX
+    (LINE X=1.0000 Y=0.7500 ) Polygon VX
+    (LINE X=1.9000 Y=0.7500 ) Polygon VX
+    (LINE X=1.9000 Y=0.6500 ) Polygon VX
+    (LINE X=0.1000 Y=0.6500 ) Polygon VX
+    (LINE X=0.1000 Y=0.7500 ) Polygon VX
+    (LINE X=0.9000 Y=0.7500 ) Polygon VX
+  }
+}
+
+**********************************************************************
+* End of data
+*
+{END}
+
+{KEY=028-015E-4E5D}
+

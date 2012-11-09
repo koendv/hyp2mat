@@ -1,0 +1,14 @@
+Compiles on Linux, MacOSX, and MinGW.
+
+Change to the source directory and type "make".
+
+Copy the following files:
+1. hyp2mat        to /usr/local/bin                binary
+2. hyp2mat.1      to /usr/local/man/man1           man page
+3. hyp2mat/matlab to openEMS/openems/matlab        m-files
+4. If you use CADSoft Eagle, patch eagle/ulp/hyperlynx.ulp with hyperlynx.ulp.patch
+
+The file demo.m in the matlab directory contains a self-contained demo.
+
+koen 
+

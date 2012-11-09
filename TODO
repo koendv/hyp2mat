@@ -1,0 +1,18 @@
+Fix polygons.
+
+From the Hyperlynx manual:
+HyperLynx polygons ("POLYGON")
+- have a contour, consisting of straight lines ("LINE") and circular arcs ("CURVE")
+- the contour has a width ("W")
+- may have several cut-outs or holes ("POLYVOID"). The contour of the holes is a sequence of straight lines and circular arcs.
+
+To correctly import a Hyperlynx polygon in CSXCAD, one has to go through the following steps:
+- create polygon from line and arc segments
+- create holes from line and arc segments
+- subtract holes from polygon
+- extend polygon by width w/2
+- reduce self-intersecting polygon to set of non-intersecting polygons
+- draw
+
+Implement a CXDCAD primitive for Hyperlynx polygons using a computational geometry library, e.g. cgal.org ?
+
