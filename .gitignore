@@ -1,1 +1,5 @@
 private/
+*.o
+parse.c
+parse.h
+hyp2mat
