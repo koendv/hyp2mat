@@ -31,8 +31,8 @@ install: hyp2mat
 	install -d "$(DESTDIR)/usr/bin" "$(DESTDIR)/usr/share/hyp2mat/matlab"
 	install -d "$(DESTDIR)/usr/share/man/man1" "$(DESTDIR)/usr/share/doc/hyp2mat/screenshots"
 	install hyp2mat "$(DESTDIR)/usr/bin"
-	install matlab/*.m matlab/README.txt "$(DESTDIR)/usr/share/hyp2mat/matlab"
-	install hyp2mat.1 "$(DESTDIR)/usr/share/man/man1"
-	install screenshots/* "$(DESTDIR)/usr/share/doc/hyp2mat/screenshots"
+	install --mode=u=rwX,go=rX matlab/*.m matlab/README.txt "$(DESTDIR)/usr/share/hyp2mat/matlab"
+	install --mode=u=rwX,go=rX hyp2mat.1 "$(DESTDIR)/usr/share/man/man1"
+	install --mode=u=rwX,go=rX screenshots/* "$(DESTDIR)/usr/share/doc/hyp2mat/screenshots"
 
 # not truncated
