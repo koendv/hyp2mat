@@ -6,7 +6,7 @@ Copy the following files:
 1. hyp2mat        to /usr/local/bin                binary
 2. hyp2mat.1      to /usr/local/man/man1           man page
 3. hyp2mat/matlab to openEMS/openems/matlab        m-files
-4. If you use CADSoft Eagle, patch eagle/ulp/hyperlynx.ulp with hyperlynx.ulp.patch
+4. If you use CADSoft Eagle, download hyperlynx.ulp from http://www.cadsoftusa.com/downloads/file/hyperlynx_5_7.zip 
 
 The file demo.m in the matlab directory contains a self-contained demo.
 
