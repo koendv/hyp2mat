@@ -37,7 +37,7 @@ function CSX = hyp_draw_board(CSX, s)
   % CSX.stackup{i}.z is layer vertical position
   % CSX.stackup{i}.t is layer height
   z = 0;
-  for i = 1:length(CSX.stackup)
+  for i = length(CSX.stackup):-1:1
     CSX.stackup{i}.z = z;
     z = z + CSX.stackup{i}.t;
   end

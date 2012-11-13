@@ -26,12 +26,12 @@ function CSX = hyp_version(CSX, s)
   % check version
   if (s.vers < 2.0)
     % Hyperlynx version 1.x VIA and PAD records differ from v2.x
-    warning('Hyperlynx version 1.x not supported')
+    error('Hyperlynx version 1.x not supported')
   end
 
   % initalize variables
   CSX.debug = false;         % set to false to suppress messages
-  CSX.debug = true;         % set to true for debug messages
+%  CSX.debug = true;         % set to true for debug messages
   CSX.board_outline = [];    % coordinates of pcb border
   CSX.draw_board = true;     % flag
   CSX.unnamed_layer = 0;     % number of unnamed layers
@@ -42,7 +42,7 @@ function CSX = hyp_version(CSX, s)
   CSX.stackup = {};          % list of pcb layers in 'STACKUP' record.
   CSX.current_net = '';      % name of current net in 'NET' record.
   CSX.all_nets = {};         % list of all net names
-  CSX.pin_list = {};         % list of all i/o pins
+  CSX.HyperLynxPort = {};    % list of all i/o pins/pads
 
   % priorities
 

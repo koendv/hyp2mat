@@ -19,8 +19,8 @@ CSX.conductivity          conductivity of copper layers
 CSX.current_net           name of the net which is currently being parsed
 CSX.debug                 true if debug info is to be printed
 CSX.draw_board            flag; set if the board still needs to be set up.
+CSX.HyperLynxPort         list of port names ( PIN record)
 CSX.padstack              list of padstacks ( PADSTACK record )
-CSX.pin_list              list of port names ( PIN record)
 CSX.plane_sep             default plane separation ( PLANE_SEP record)
 CSX.poly_list             list of polygon id's and parameters
 CSX.poly                  parameters of current polygon ( POLYGON, POLYVOID and POLYLINE record)
@@ -40,4 +40,4 @@ CSX.zscale                length in pcb length units of layer/board thickness
 The following matlab functions are provided:
 
 ImportHyperLynx.m         load Hyperlynx file into CSX .
-AddHyperLynxPort.m        Add openEMS port to HyperLynx pin.
+GetHyperLynxPort.m        Get HyperLynx pad or pin coordinates.

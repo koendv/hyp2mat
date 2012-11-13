@@ -74,20 +74,18 @@ function CSX = hyp_draw_padstack(CSX, s)
         % if there is a pin reference, add to list of pins.
         % we'll use this to connect ports later.
         if (isfield(s,'r'))
-          if ((pad_angle == 90) || (pad_angle == 270))
-            % rotate pad 90 degrees
-            pin.start = [x - pad_sy/2, y - pad_sx/2, pad_z]; % 3D start rowvector for port definition
-            pin.stop  = [x + pad_sy/2, y + pad_sx/2, pad_z]; % 3D end rowvector for port definition 
-            pin.angle = 0;           % already rotated
-          else
-            pin.start = [x - pad_sx/2, y - pad_sy/2, pad_z]; % 3D start rowvector for port definition
-            pin.stop  = [x + pad_sx/2, y + pad_sy/2, pad_z]; % 3D end rowvector for port definition
-            pin.angle = pad_angle;   % rotation
-          end
-          pin.ref = s.r;             % pin reference
-          pin.net = CSX.current_net; % pin net name
-          pin.material = material;   % pin material
-          CSX.pin_list{end+1}=pin;   % add to list
+          port.x = x;                      % x coordinate
+          port.y = y;                      % y coordinate
+          port.z = pad_z;                  % z coordinate
+          port.t = pad_t;                  % copper thickness
+          port.sx = pad_sx;                % pad width
+          port.sy = pad_sy;                % pad height
+          port.angle = pad_angle;          % pad rotation
+          port.shape = pad_shape;          % pad shape. 0 = circular, 1 = rectangular, 2 = oblong
+          port.ref = s.r;                  % reference
+          port.net = CSX.current_net;      % net name
+          port.material = material;        % material
+          CSX.HyperLynxPort{end+1}=port;   % add to list
         end
 
         % draw pad
