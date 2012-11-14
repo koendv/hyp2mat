@@ -1,0 +1,285 @@
+--- hyperlynx.ulp.ORIG	2012-08-09 11:40:31.000000000 +0200
++++ hyperlynx.ulp	2012-08-17 19:05:44.000000000 +0200
+@@ -25,6 +25,10 @@
+        "* 21.04.2005 alf@cadsoft.de<br>"
+        "* - {PADSTACK=...%03d correct number while count from 1<br>"
+        "* 17.08.2005 alf@cadsoft.de<br>"
++       "* 16.08.2012 Koen De Vleeschauwer www.kdvelectronics.eu<br>"
++       "* - export polygons as POLYGON/POLYVOID <br>"
++       "* - put quotes around device/layer names in case they contain whitespace<br>"
++       "* - fix typo in padstack format 0f) -> 0) <br>"
+        "* <br>";
+ 
+ 
+@@ -145,6 +149,8 @@
+ 
+ 
+ 
++int PolygonID = 0;          // polygon id. First polygon = 1.
++int needRatsNest = 1;       // ratsnest is needed to obtain polygon contour
+ 
+ // copper layer info
+ string LayerNames[];        // layer names
+@@ -890,7 +896,7 @@
+       if ( UseComponentTypes == yes ) {
+         if ( strstr( componentname, "IC" ) == 0 ) {
+           if ( isdigit( componentname[2] ) ) {
+-            printf("(IC REF=%s NAME=%s L=%s",componentname,componentvalue,
++            printf("(IC REF=\"%s\" NAME=\"%s\" L=\"%s\"",componentname,componentvalue,
+                      E.mirror ? LayerNames[16] : LayerNames[1] );
+                      saypackagetype(E.package.name);
+             unknowncomponenttype = no;
+@@ -898,58 +904,58 @@
+         }
+         else if ( strstr( componentname, "BD" ) == 0 ) {
+           if ( isdigit( componentname[2] ) ) {
+-            printf("(BD REF=%s NAME=%s L=%s",componentname,componentvalue,
++            printf("(BD REF=\"%s\" NAME=\"%s\" L=\"%s\"",componentname,componentvalue,
+                      E.mirror ? LayerNames[16] : LayerNames[1] );
+             unknowncomponenttype = no;
+           }
+         }
+         else if ( strstr( componentname, "BEAD" ) == 0 ) {
+           if ( isdigit( componentname[4] ) ) {
+-            printf("(BD REF=%s NAME=%s L=%s",componentname, componentvalue,
++            printf("(BD REF=\"%s\" NAME=\"%s\" L=\"%s\"",componentname, componentvalue,
+                      E.mirror ? LayerNames[16] : LayerNames[1] );
+             unknowncomponenttype = no;
+           }
+         }
+         else if ( isdigit( componentname[1] ) ) {
+           if ( strchr( componentname, 'U' ) == 0 ) {
+-            printf("(IC REF=%s NAME=%s L=%s",componentname, componentvalue,
++            printf("(IC REF=\"%s\" NAME=\"%s\" L=\"%s\"",componentname, componentvalue,
+                      E.mirror ? LayerNames[16] : LayerNames[1] );
+                      saypackagetype(E.package.name);
+             unknowncomponenttype = no;
+           }
+           else if ( strchr( componentname, 'C' ) == 0 ) {
+-            printf("(C REF=%s VAL=",componentname);
++            printf("(C REF=\"%s\" VAL=",componentname);
+             ConvertCapValue(componentvalue);
+-            printf(" L=%s",E.mirror ? LayerNames[16] : LayerNames[1] );
++            printf(" L=\"%s\"",E.mirror ? LayerNames[16] : LayerNames[1] );
+             unknowncomponenttype = no;
+           }
+           else if ( strchr( componentname, 'R' ) == 0 ) {
+-            printf("(R REF=%s VAL=%s L=%s",componentname, componentvalue,
++            printf("(R REF=\"%s\" VAL=%s L=\"%s\"",componentname, componentvalue,
+                     E.mirror ? LayerNames[16] : LayerNames[1] );
+             unknowncomponenttype = no;
+           }
+           else if ( strchr( componentname, 'L' ) == 0 ) {
+-            printf("(L REF=%s VAL=%s L=%s",componentname, componentvalue,
++            printf("(L REF=\"%s\" VAL=%s L=\"%s\"",componentname, componentvalue,
+                     E.mirror ? LayerNames[16] : LayerNames[1] );
+             unknowncomponenttype = no;
+           }
+           else if ( strchr( componentname, 'D' ) == 0 ) {
+-            printf("(CR REF=%s NAME=%s L=%s",componentname, componentvalue,
++            printf("(CR REF=\"%s\" NAME=\"%s\" L=\"%s\"",componentname, componentvalue,
+                     E.mirror ? LayerNames[16] : LayerNames[1] );
+             unknowncomponenttype = no;
+           }
+           else if ( strchr( componentname, 'J' ) == 0 ) {
+-            printf("(J REF=%s NAME=%s L=%s",componentname, componentvalue,
++            printf("(J REF=\"%s\" NAME=\"%s\" L=\"%s\"",componentname, componentvalue,
+                     E.mirror ? LayerNames[16] : LayerNames[1] );
+             unknowncomponenttype = no;
+           }
+           else if ( strchr( componentname, 'Q' ) == 0 ) {
+-            printf("(J REF=%s NAME=%s L=%s",componentname, componentvalue,
++            printf("(J REF=\"%s\" NAME=\"%s\" L=\"%s\"",componentname, componentvalue,
+                     E.mirror ? LayerNames[16] : LayerNames[1] );
+             unknowncomponenttype = no;
+           }
+           else if ( strchr( componentname, 'T' ) == 0 ) {
+-            printf("(J REF=%s NAME=%s L=%s",componentname, componentvalue,
++            printf("(J REF=\"%s\" NAME=\"%s\" L=\"%s\"",componentname, componentvalue,
+                     E.mirror ? LayerNames[16] : LayerNames[1] );
+             unknowncomponenttype = no;
+           }
+@@ -958,7 +964,7 @@
+ 
+       // handle unknown component types
+       if ( ( unknowncomponenttype == yes ) || ( UseComponentTypes == no ) ) {
+-        printf("(? REF=%s NAME=%s L=%s",componentname,componentvalue,
++        printf("(? REF=\"%s\" NAME=\"%s\" L=\"%s\"",componentname,componentvalue,
+                 E.mirror ? LayerNames[16] : LayerNames[1] );
+         saypackagetype(E.package.name);
+       }
+@@ -1055,13 +1061,10 @@
+           printf("{PADSTACK=SMD%03d\n",i);   // **** 17.08.2005 alf@cadsoft.de ***
+           // smds are square, round or oblong
+ 
+-          // * if you wish layer name for layer number remark *
+-          // * this next 2 lines und mark the second 2 lines  *
+-          //  printf("(%s,%d,%5.*f,%5.*f,%.1f) Shape was Smd and is now Smd\n",
+-          //           LayerNames[pad_layer[i]],  // Layer name
++          // Using layer names throughout
+ 
+-          printf("(%d,%d,%5.*f,%5.*f,%.1f) %s Shape was Smd and is now Smd\n",
+-                   pad_layer[i],           // Layer number
++           printf("(%s,%d,%5.*f,%5.*f,%.1f) %s Shape was Smd and is now Smd\n",
++                   LayerNames[pad_layer[i]],           // Layer name
+                    pad_shape_Top_rnds[i],
+                    precision_of_pads, u2inch(pad_diameter_Top_or_dx[i]),
+                    precision_of_pads, u2inch(pad_dy_elong_start[i]),
+@@ -1086,7 +1089,8 @@
+ 
+             // Pad layer Top
+             if (pad_shape_Top_rnds[i] == OBLONG) {
+-              printf("(1,%s,%5.*f,%5.*f,%.1f) %s Shape was %s and is now %s\n",
++              printf("(%s,%s,%5.*f,%5.*f,%.1f) %s Shape was %s and is now %s\n",
++                      LayerNames[1],
+                       PadShapes[pad_shape_Top_rnds[i]],
+                       precision_of_pads,u2inch(pad_diameter_Top_or_dx[i] * pad_dy_elong_start[i]),
+                       precision_of_pads,u2inch(pad_diameter_Top_or_dx[i]),
+@@ -1096,7 +1100,8 @@
+                       HypPadShapes[pad_shape_Top_rnds[i]] );
+             }
+             else {  // OVALROUND or RECTSQUARE
+-              printf("(1,%s,%5.*f,%5.*f,%.1f) %s Shape was %s and is now %s\n",
++              printf("(%s,%s,%5.*f,%5.*f,%.1f) %s Shape was %s and is now %s\n",
++                      LayerNames[1],
+                       PadShapes[pad_shape_Top_rnds[i]],
+                       precision_of_pads,u2inch(pad_diameter_Top_or_dx[i]),
+                       precision_of_pads,u2inch(pad_diameter_Top_or_dx[i]),
+@@ -1115,7 +1120,8 @@
+ 
+             // Pad layer Bottom
+             if (pad_shape_Bott[i] == OBLONG) {
+-              printf("(16,%s,%5.*f,%5.*f,%.1f) %s Shape was %s and is now %s\n",
++              printf("(%s,%s,%5.*f,%5.*f,%.1f) %s Shape was %s and is now %s\n",
++                      LayerNames[16],
+                       PadShapes[pad_shape_Bott[i]],
+                       precision_of_pads,u2inch(pad_diameter_Bott[i] * pad_dy_elong_start[i]),
+                       precision_of_pads,u2inch(pad_diameter_Bott[i]),
+@@ -1125,7 +1131,8 @@
+                       HypPadShapes[pad_shape_Bott[i]]);
+             }
+             else {  // OVALROUND or RECTSQUARE
+-              printf("(16,%s,%5.*f,%5.*f,%.1f) %s Shape was %s and is now %s\n",
++              printf("(%s,%s,%5.*f,%5.*f,%.1f) %s Shape was %s and is now %s\n",
++                      LayerNames[16],
+                       PadShapes[pad_shape_Bott[i]],
+                       precision_of_pads,u2inch(pad_diameter_Bott[i]),
+                       precision_of_pads,u2inch(pad_diameter_Bott[i]),
+@@ -1142,7 +1149,8 @@
+               // layer used and allowed?
+               if (copp_used_layer[vlay]) {    // layer used for copper an visible
+                 if (vlay == 1)
+-                  printf("(1,%s,%5.*f,%5.*f,0) %s Shape was %s and is now %s\n",
++                  printf("(%s,%s,%5.*f,%5.*f,0) %s Shape was %s and is now %s\n",
++                          LayerNames[1],
+                           PadShapes[pad_shape_Top_rnds[i]],
+                           precision_of_pads,u2inch(pad_diameter_Top_or_dx[i] * pad_dy_elong_start[i]),
+                           precision_of_pads,u2inch(pad_diameter_Top_or_dx[i]),
+@@ -1151,7 +1159,8 @@
+                           HypPadShapes[pad_shape_Top_rnds[i]] );
+ 
+                 else if (vlay == 16)
+-                  printf("(16,%s,%5.*f,%5.*f,0f) %s Shape was %s and is now %s\n",
++                  printf("(%s,%s,%5.*f,%5.*f,0) %s Shape was %s and is now %s\n",
++                          LayerNames[16],
+                           PadShapes[pad_shape_Bott[i]],
+                           precision_of_pads,u2inch(pad_diameter_Bott[i] * pad_dy_elong_start[i]),
+                           precision_of_pads,u2inch(pad_diameter_Bott[i]),
+@@ -1159,8 +1168,8 @@
+                           EaglePadShapes[pad_shape_Top_rnds[i]],
+                           HypPadShapes[pad_shape_Top_rnds[i]] );
+ 
+-                else  printf("(%d,0,%5.*f,%5.*f,0) %s always round in inner layer\n",
+-                        vlay,
++                else  printf("(%s,0,%5.*f,%5.*f,0) %s always round in inner layer\n",
++                        LayerNames[vlay],
+                         precision_of_pads,u2inch(pad_diameter_Inner[i]),
+                         precision_of_pads,u2inch(pad_diameter_Inner[i]),
+                         s );
+@@ -1436,24 +1445,74 @@
+         }
+       }
+       S.polygons(P) {
+-        printf("* POLYGONS   NOT Allowed in HYP as of BoardSimm 2.2 Build 70.  ");
+-        printf("Hopefully someday they will!\n");
+-        printf("* I=Isolate S=Spacing W=Width O=Orphins_On/Off P=Pour_SOLID/HATCH T=Thermals_On/Off L=Layer) Polygon Format\n");
+-        printf("*(PLG I=%5.*f S=%5.*f W=%5.*f O=%s P=%s T=%s L=%s) Polygon %s Data\n",
+-                precision_of_nets,u2inch(P.isolate),precision_of_nets,u2inch(P.spacing),
+-                precision_of_nets,u2inch(P.width),P.orphans ? "On" : "Off",
++        // POLYGON - Koen De Vleeschauwer - www.kdvelectronics.eu 12/08/12
++
++        // print info
++        printf("* (PLG Isolate=%5.*f Spacing=%5.*f Width=%5.*f Orphans=%s Pour=%s Thermals=%s Layer=%s) Polygon %s Data\n",
++                precision_of_nets, u2inch(P.isolate), precision_of_nets, u2inch(P.spacing),
++                precision_of_nets, u2inch(P.width), P.orphans ? "On" : "Off",
+                 P.pour == POLYGON_POUR_SOLID ? "SOLID" : "HATCH",
+-                P.thermals ? "On" : "Off",LayerNames[P.layer],S.name);
+-        P.wires(W) {
+-          printf("(SEG X1=%5.*f Y1=%5.*f X2=%5.*f Y2=%5.*f W=%5.*f L=%s) Polygon %s\n",
+-                precision_of_nets,u2inch(W.x1),precision_of_nets,u2inch(W.y1),
+-                precision_of_nets,u2inch(W.x2),precision_of_nets,u2inch(W.y2),
+-                precision_of_nets,u2inch(W.width),LayerNames[W.layer],S.name);
++                P.thermals ? "On" : "Off", LayerNames[P.layer], S.name);
++
++        PolygonID = PolygonID + 1;
++
++        int x0, y0, first_wire = 1, first_polygon = 1; 
++
++        // fillings is empty if ratsnest has not been run
++        P.fillings(F) {
++          needRatsNest = 0; 
++          break;
++          }
++
++        // loop through polygon edges
++        P.contours(W) {
++          if (first_wire) {
++            if (first_polygon) {
++              // first partial polygon is positive
++              printf("  {POLYGON L=\"%s\" T=POUR W=%5.*f ID=%d X=%5.*f Y=%5.*f\n",
++                LayerNames[P.layer], precision_of_nets,u2inch(P.width), PolygonID,
++                precision_of_nets, u2inch(W.x1), precision_of_nets, u2inch(W.y1));
++              first_polygon = 0;
++              }
++            else {
++              // negative partial polygon
++              printf("  {POLYVOID ID=%d X=%5.*f Y=%5.*f\n",
++                PolygonID,
++                precision_of_nets, u2inch(W.x1), precision_of_nets, u2inch(W.y1));
++              }
++            
++            // a new partial polygon is starting 
++            x0 = W.x1; 
++            y0 = W.y1; 
++            
++            }
++          else {
++            // Output the wire 
++            printf("    (LINE X=%5.*f Y=%5.*f ) Polygon %s\n",
++                  precision_of_nets, u2inch(W.x1), precision_of_nets, u2inch(W.y1), S.name);
++            }
++          if (first_wire)
++            first_wire = 0; 
++          else if (W.x2 == x0 && W.y2 == y0) {
++            // this was the last wire of the partial polygon, 
++            // so the next wire (if any) will be the first wire
++            // of the next partial polygon 
++            first_wire = 1;
++            // output final wire of polygon
++            printf("    (LINE X=%5.*f Y=%5.*f ) Polygon %s\n",
++                  precision_of_nets, u2inch(W.x2), precision_of_nets, u2inch(W.y2), S.name);
++            printf("  }\n");
++          }
+         }
+       }
+       printf("}\n\n");
+     }
+ 
++   if (needRatsNest && (PolygonID != 0)) {
++     dlgMessageBox("Polygons may not have exported correctly.\nRun RATSNEST first.", "OK");
++     needRatsNest = 0;
++     }
++
+     // Unconnected Component Pins are on their own special net "HYP$xPy"
+     // where x=element name and y=pin name
+ 
