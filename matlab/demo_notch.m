@@ -44,7 +44,6 @@ FDTD = SetBoundaryCond( FDTD, BC );
 % create 3d model
 CSX = InitCSX();
 disp([ 'loading ' hypfilename ]);
-% There's no need to import the ground plane; the z-axis 'PEC' boundary condition is our ground plane
 CSX = ImportHyperLynx(CSX, hypfilename);
 
 mesh = DetectEdges(CSX);
@@ -59,12 +58,6 @@ port1_stop(3)=mesh.z(1); % port goes all the way to the ground plane
 
 port2_stop(3)=mesh.z(1); % port goes all the way to the ground plane
 [CSX, port{2}] = AddLumpedPort( CSX, 999, 2, 50, port2_start, port2_stop, [0 0 -1]);
-
-% add ground plane
-%CSX = AddMetal(CSX, 'gnd');
-%start = [min(mesh.x) min(mesh.y) min(mesh.z)];
-%stop  = [max(mesh.x) max(mesh.y) min(mesh.z)];
-%CSX = AddBox(CSX, 'gnd', 1000, start, stop);
 
 % add air-box around the imported structure
 mesh.x = [min(mesh.x)-AirBox max(mesh.x)+AirBox mesh.x];
@@ -85,6 +78,8 @@ Sim_CSX = 'msl.xml';
   
 [status, message, messageid] = rmdir( Sim_Path, 's' ); % clear previous directory
 [status, message, messageid] = mkdir( Sim_Path ); % create empty simulation folder
+
+disp([ 'Estimated simulation runtime: 2500 timesteps' ]); % inform user this may take a while...
  
 WriteOpenEMS( [Sim_Path '/' Sim_CSX], FDTD, CSX );
 CSXGeomPlot( [Sim_Path '/' Sim_CSX] );
@@ -106,3 +101,5 @@ legend('S_{11}','S_{21}');
 ylabel('S-Parameter (dB)','FontSize',12);
 xlabel('frequency (GHz) \rightarrow','FontSize',12);
 ylim([-40 2]);
+
+% not truncated

@@ -1,4 +1,4 @@
-% demo for hyp2mat - simulation of a 1.440 GHz hairpin filter.
+% demo for hyp2mat - simulation of a hairpin filter.
 %
 % run from openems matlab command prompt
 % See hyp2mat(1) - convert hyperlynx files to matlab scripts.
@@ -28,69 +28,49 @@ clc
 % initialize
 physical_constants;
 unit = 0.0254; % this pcb has units in inches 
-
-fc = 1.440e9; % center frequency
-f0 = 1.3e9;   % est. 20 dB corner frequency
-substrate_epr = 4.3;
+fc= 1.440e9;   % center frequency
+f0= 1.300e9;   % estimated 20db frequency
+substrate_epr = 4.1; 
 resolution = c0 / (f0+fc) / sqrt(substrate_epr) / unit / 25;
 hypfilename = '../eagle/hairpinfilter/hairpinfilter.HYP';
 
+AirBox = c0/(f0+fc)/unit/4;
+
 % set up FTDT
-clear FDTD;
 FDTD  = InitFDTD();
 FDTD = SetGaussExcite( FDTD, f0, fc );
-BC   = {'PML_8' 'PML_8' 'MUR' 'MUR' 'PEC' 'MUR'};
+BC   = {'PML_8' 'PML_8' 'PML_8' 'PML_8' 'PML_8' 'PML_8'};
 FDTD = SetBoundaryCond( FDTD, BC );
 
 % create 3d model
-clear CSX;
 CSX = InitCSX();
 disp([ 'loading ' hypfilename ]);
-% There's no need to import the ground plane; the z-axis 'PEC' boundary condition is our ground plane
-CSX = ImportHyperLynx(CSX, hypfilename, { 'V1', 'V2', 'V3', 'V4', 'V5' });
+CSX = ImportHyperLynx(CSX, hypfilename);
+
+mesh = DetectEdges(CSX);
 
 % get the coordinates of the ports.
 % 'TP1.TP' is pin 'TP' of test point 'TP1'. (See schematic)
 [port1_material, port1_start, port1_stop] = GetHyperLynxPort(CSX, 'TP1.TP');
 [port2_material, port2_start, port2_stop] = GetHyperLynxPort(CSX, 'TP5.TP');
 
-% Determine size of the pcb.
-mesh.x = [ ];
-mesh.y = [ ];
-mesh.z = [ ];
-mesh = DetectEdges(CSX, mesh);
-x_max = max(mesh.x);
-x_min = min(mesh.x);
-y_max = max(mesh.y);
-y_min = min(mesh.y);
-z_max = max(mesh.z);
-z_min = min(mesh.z);
+port1_stop(3)=mesh.z(1); % port goes all the way to the ground plane
+[CSX, port{1}] = AddLumpedPort( CSX, 999, 1, 50 , port1_start, port1_stop, [0 0 -1], true);
 
-% initialize the mesh with the "air-box" dimensions and port coordinates 
-SimBox.x = unique(sort([ x_min port1_start(1) port2_start(1) port1_stop(1) port2_stop(1) x_max ]));
-SimBox.y = unique(sort([ y_min port1_start(2) port2_start(2) port1_stop(2) port2_stop(2) y_max ]));
-SimBox.z = unique(sort([ z_min port1_start(3) port2_start(3) port1_stop(3) port2_stop(3) z_max linspace(z_min, z_max, 5) z_max+4*resolution ])); 
+port2_stop(3)=mesh.z(1); % port goes all the way to the ground plane
+[CSX, port{2}] = AddLumpedPort( CSX, 999, 2, 50, port2_start, port2_stop, [0 0 -1]);
 
-% find trace/pcb edges 
-edges = DetectEdges(CSX, SimBox);
+% add air-box around the imported structure
+mesh.x = [min(mesh.x)-AirBox max(mesh.x)+AirBox mesh.x];
+mesh.y = [min(mesh.y)-AirBox max(mesh.y)+AirBox mesh.y];
+mesh.z = [min(mesh.z)-AirBox max(mesh.z)+2*AirBox mesh.z];
 
-% generate a smooth mesh with max. cell size = resolution
-smoothedmesh = SmoothMesh(edges, resolution);
+mesh = SmoothMesh(mesh, resolution);
 
-% If you want to see how the mesh is refined from SimBox -> edges -> smoothedmesh
-% uncomment the following three lines in turn.
-%CSX = DefineRectGrid(CSX, unit, SimBox);
-%CSX = DefineRectGrid(CSX, unit, edges);
-CSX = DefineRectGrid(CSX, unit, smoothedmesh);
+% add 8 additional cells for the pml
+mesh = AddPML(mesh, 8);
 
-% Add the two ports to the filter.
-CSX = AddMaterial(CSX, 'PEC');
-
-port1_stop(3)=smoothedmesh.z(1); % port goes all the way to the ground plane
-[CSX,portstruct{1}] = AddMSLPort( CSX, 999, 1, 'PEC', port1_start, port1_stop, 0, [0 0 -1], 'ExcitePort', 'excite');
-
-port2_stop(3)=smoothedmesh.z(1); % port goes all the way to the ground plane
-[CSX,portstruct{2}] = AddMSLPort( CSX, 999, 2, 'PEC', port2_start, port2_stop, 0, [0 0 -1]);
+CSX = DefineRectGrid(CSX, unit, mesh);
 
 % write/show/run the openEMS compatible xml-file
   
@@ -99,8 +79,27 @@ Sim_CSX = 'msl.xml';
   
 [status, message, messageid] = rmdir( Sim_Path, 's' ); % clear previous directory
 [status, message, messageid] = mkdir( Sim_Path ); % create empty simulation folder
- 
+
+disp([ 'Estimated simulation runtime: 65000 timesteps' ]); % inform user this may take a while... 
 WriteOpenEMS( [Sim_Path '/' Sim_CSX], FDTD, CSX );
 CSXGeomPlot( [Sim_Path '/' Sim_CSX] );
 RunOpenEMS( Sim_Path, Sim_CSX );
 
+%% post-processing
+close all
+f = linspace( 1e9, 1.8e9, 1601 );
+port = calcPort( port, Sim_Path, f, 'RefImpedance', 50);
+
+s11 = port{1}.uf.ref./ port{1}.uf.inc;
+s21 = port{2}.uf.ref./ port{1}.uf.inc;
+
+plot(f/1e9,20*log10(abs(s11)),'k-','LineWidth',2);
+hold on;
+grid on;
+plot(f/1e9,20*log10(abs(s21)),'r--','LineWidth',2);
+legend('S_{11}','S_{21}');
+ylabel('S-Parameter (dB)','FontSize',12);
+xlabel('frequency (GHz) \rightarrow','FontSize',12);
+ylim([-40 2]);
+
+% not truncated
