@@ -87,7 +87,7 @@ RunOpenEMS( Sim_Path, Sim_CSX );
 
 %% post-processing
 close all
-f = linspace( 1e9, 1.8e9, 1601 );
+f = linspace( 1e6, (f0+fc), 1601 );
 port = calcPort( port, Sim_Path, f, 'RefImpedance', 50);
 
 s11 = port{1}.uf.ref./ port{1}.uf.inc;
@@ -100,6 +100,6 @@ plot(f/1e9,20*log10(abs(s21)),'r--','LineWidth',2);
 legend('S_{11}','S_{21}');
 ylabel('S-Parameter (dB)','FontSize',12);
 xlabel('frequency (GHz) \rightarrow','FontSize',12);
-ylim([-40 2]);
+ylim([-60 2]);
 
 % not truncated
