@@ -52,9 +52,6 @@ function CSX = hyp_dielectric(CSX, s)
     s.lt = 0.020; % FR4
   end
 
-  % vertical scaling
-  s.t = s.t * CSX.zscale;
-
   % add to stackup 
   s.type = 'dielectric';
   CSX.stackup{end + 1} = s;
