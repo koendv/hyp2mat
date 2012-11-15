@@ -1,4 +1,5 @@
-Fix polygons.
+Fix polygons. 
+At the moment polygons are drawn with zero line width. This is wrong.
 
 From the Hyperlynx manual:
 HyperLynx polygons ("POLYGON")

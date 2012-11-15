@@ -28,8 +28,8 @@ clc
 % initialize
 physical_constants;
 unit = 0.0254; % this pcb has units in inches 
-fc= 1.440e9;   % center frequency
-f0= 1.300e9;   % estimated 20db frequency
+fc= 1.1e9;   % center frequency
+f0= 1.0e9;   % estimated 20db frequency
 substrate_epr = 4.1; 
 resolution = c0 / (f0+fc) / sqrt(substrate_epr) / unit / 25;
 hypfilename = '../eagle/hairpinfilter/hairpinfilter.HYP';
@@ -87,7 +87,7 @@ RunOpenEMS( Sim_Path, Sim_CSX );
 
 %% post-processing
 close all
-f = linspace( 1e6, (f0+fc), 1601 );
+f = linspace( 1e6, 2e9, 1601 );
 port = calcPort( port, Sim_Path, f, 'RefImpedance', 50);
 
 s11 = port{1}.uf.ref./ port{1}.uf.inc;

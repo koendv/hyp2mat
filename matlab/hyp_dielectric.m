@@ -38,9 +38,10 @@ function CSX = hyp_dielectric(CSX, s)
   end
 
   if (isfield(s,'er')) % dielectric constant
-    CSX.substrate_epr = s.er; % hyperlynx file specifies board dielectric constant
+    CSX.substrate_epr = s.er; % update board dielectric constant
   elseif (isfield(s,'c')) % compatibility with older versions
     s.er = s.c;
+    CSX.substrate_epr = s.er; % update board dielectric constant
   elseif (s.co) % conformal dielectric
     s.er = 3.3;
   else
