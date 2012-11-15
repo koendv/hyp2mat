@@ -41,14 +41,14 @@ function CSX = ImportHyperLynx(CSX, filename, simulated_nets)
     error ('expecting CSX struct as first argument');
   end
 
-  if (~isstr(filename))
+  if (~ischar(filename))
     error ('expecting filename string as second argument');
   end
 
   if (nargin == 2)
     % two arguments: import all nets
     CSX.simulated_nets = {};
-  elseif (isstr(simulated_nets))
+  elseif (ischar(simulated_nets))
     % third argument is a string: import a single net
     CSX.simulated_nets = { };
     CSX.simulated_nets = { simulated_nets };
