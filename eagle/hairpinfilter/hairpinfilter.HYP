@@ -1,18 +1,18 @@
 **********************************************************************
 * Exports the board to HyperLynx Signal-Integrity Transfer Format (.HYP)
-* Version 2.00 9/11/97 -- 4.14 17/08/2005
+* Version 2.00 9/11/97 -- 4.15 12/03/2012
 *
-* EAGLE Version 5.12.0 Copyright (c) 1988-2011 CadSoft
+* EAGLE Version 6.3.0 Copyright (c) 1988-2012 CadSoft
 *
 * HyperLynx Board exported from:
 * /home/name/hyp2mat/eagle/hairpinfilter/hairpinfilter.brd
-* At 9/29/12 1:09 PM
+* At 11/15/12 8:21 AM
 *
 * Schematic is loaded.
 *
 
 {VERSION=2.10}  Compatible with Hyperlynx version 2.10.
-{UNITS=ENGLISH WEIGHT}
+{UNITS=ENGLISH LENGTH}
 
 **********************************************************************
 * Board Dimensions
