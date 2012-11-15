@@ -1,5 +1,5 @@
 
-Importing a HyperLynx file occurs in two steps:
+Importing a HyperLynx file in openEMS occurs in two steps:
  1. the HyperLynx file is translated into a matlab function (hyp2mat) 
  2. the generated matlab function is executed.
 
