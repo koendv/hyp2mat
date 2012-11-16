@@ -32,7 +32,7 @@ fc= 1.1e9;   % center frequency
 f0= 1.0e9;   % estimated 20db frequency
 substrate_epr = 4.1; 
 resolution = c0 / (f0+fc) / sqrt(substrate_epr) / unit / 25;
-hypfilename = '../eagle/hairpinfilter/hairpinfilter.HYP';
+hypfilename = 'hairpinfilter.HYP';
 
 AirBox = c0/(f0+fc)/unit/4;
 
