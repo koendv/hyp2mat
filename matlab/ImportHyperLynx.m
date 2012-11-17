@@ -1,6 +1,9 @@
 % CSX = ImportHyperLynx(CSX, filename, simulated_nets)
 % load Hyperlynx file 'filename' into CSX .
 % The optional argument simulated_nets is a string or a cell array of strings.
+%
+% ImportHyperLynx needs read and write access to the current directory.
+%
 % Examples:
 % CSX = ImportHyperLynx(CSX, 'board.hyp' )
 % will import the complete Hyperlynx file 'board.hyp' into the struct CSX.
@@ -62,7 +65,7 @@ function CSX = ImportHyperLynx(CSX, filename, simulated_nets)
   end
 
   % conversion
-  cmd = [ '../hyp2mat -o pcb.m -f pcb ''' filename '''' ];
+  cmd = [ 'hyp2mat -o pcb.m -f pcb ''' filename '''' ];
   % convert .hyp to .m
   status = system(cmd); % security implications?
   if (status == 0) 
