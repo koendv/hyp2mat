@@ -1,5 +1,7 @@
+hyp2mat converts Hyperlynx files to matlab for simulation.
 
 Importing a HyperLynx file in openEMS occurs in two steps:
+
  1. the HyperLynx file is translated into a matlab function (hyp2mat) 
  2. the generated matlab function is executed.
 
@@ -38,7 +40,7 @@ DESCRIPTION
        hyp2mat	converts  Hyperlynx  Signal-Integrity Transfer Format files to
        Octave/Matlab scripts.
 
-       Input files conventionally end in .hyp , while output files convention‐
+       Input files conventionally end in .hyp , while output files convention-
        ally end in .m .
 
        hyp2mat	reads  input  from file infile.  If no input file is specified
@@ -58,7 +60,7 @@ OPTIONS
 
 
        -f funcname
-	      Use  function name funcname for the generated code.  If no func‐
+	      Use  function name funcname for the generated code.  If no func-
 	      tion name is given, omit function declaration.
 
 
@@ -83,7 +85,7 @@ EXAMPLES
 
 
 FILES
-       ~/openEMS/hyp2mat/matlab/
+       /usr/share/hyp2mat/matlab/
 	      Supporting matlab routines for OpenEMS.
 
 
