@@ -3,3 +3,4 @@ private/
 parse.c
 parse.h
 hyp2mat
+hyp2mat.exe
