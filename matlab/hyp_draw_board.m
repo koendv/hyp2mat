@@ -127,9 +127,11 @@ function CSX = hyp_draw_board(CSX, s)
   % XXX if board is not rectangular
   % CSX = AddLinPoly(CSX, 'FR4', CSX.prio_dielectric, 2, zmin, CSX.board_outline, zmax - zmin);
 
-  disp(['board: x = ', num2str(xmin), ' : ', num2str(xmax)]);
-  disp(['       y = ', num2str(ymin), ' : ', num2str(ymax)]);
-  disp(['       z = ', num2str(zmin), ' : ', num2str(zmax)]);
+  units_mm = CSX.units * 1000;
+  disp(['board: x = ', num2str(xmin*units_mm), ' : ', num2str(xmax*units_mm), ' mm']);
+  disp(['       y = ', num2str(ymin*units_mm), ' : ', num2str(ymax*units_mm), ' mm']);
+  disp(['       z = ', num2str(zmin*units_mm), ' : ', num2str(zmax*units_mm), ' mm']);
+  disp(['epsilonr = ', num2str(substrate_epr)]);
 
   % create power and ground planes
   for i = 1:length(CSX.stackup)
