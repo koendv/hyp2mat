@@ -127,12 +127,6 @@ function CSX = hyp_draw_board(CSX, s)
   % XXX if board is not rectangular
   % CSX = AddLinPoly(CSX, 'FR4', CSX.prio_dielectric, 2, zmin, CSX.board_outline, zmax - zmin);
 
-  units_mm = CSX.units * 1000;
-  disp(['board: x = ', num2str(xmin*units_mm), ' : ', num2str(xmax*units_mm), ' mm']);
-  disp(['       y = ', num2str(ymin*units_mm), ' : ', num2str(ymax*units_mm), ' mm']);
-  disp(['       z = ', num2str(zmin*units_mm), ' : ', num2str(zmax*units_mm), ' mm']);
-  disp(['epsilonr = ', num2str(substrate_epr)]);
-
   % create power and ground planes
   for i = 1:length(CSX.stackup)
     if (strcmp(CSX.stackup{i}.type, 'plane'))
@@ -142,9 +136,23 @@ function CSX = hyp_draw_board(CSX, s)
       p2 = [xmax ymax z1];
       material = CSX.stackup{i}.cutout;
       CSX = AddBox (CSX, material, CSX.prio_plane, p1, p2);
-      disp(['plane: z = ', num2str(z1), ' : ', num2str(z2)]);
     end
   end
+
+  % display helpful messages
+  units_um = CSX.units / CSX.zscale * 1e6; % thickness in um
+  for i = 1:length(CSX.stackup)
+    if (strcmp(CSX.stackup{i}.type, 'signal') || strcmp(CSX.stackup{i}.type, 'plane'))
+      disp(['copper : ', CSX.stackup{i}.l, ' = ', num2str(CSX.stackup{i}.t*units_um), ' um']);
+    end
+  end
+
+  disp(['epsilonr = ', num2str(substrate_epr)]);
+
+  units_mm = CSX.units * 1000; %  size in mm
+  disp(['board: x = ', num2str(xmin*units_mm), ' : ', num2str(xmax*units_mm), ' mm']);
+  disp(['       y = ', num2str(ymin*units_mm), ' : ', num2str(ymax*units_mm), ' mm']);
+  disp(['       z = ', num2str(zmin*units_mm), ' : ', num2str(zmax*units_mm), ' mm']);
 
 end
 
