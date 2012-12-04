@@ -77,11 +77,13 @@ function [material, start, stop] = GetHyperLynxPort(CSX, port_ref)
   % pad rotation
   if (port.shape ~= 0) % don't rotate circles/ellipses
     % rotate rectangle/oblong pads
-    if (rem(alpha, 90) == 0)
+    if (rem(alpha, 180) == 0)
+      % do nothing
+    elseif (rem(alpha, 90) == 0)
       t = dx;
       dx = dy;
       dy = t;
-    elseif (rem(angle,180) ~= 0)
+    else
       % XXX  please extend for arbitrary angles
       error('angle not a multiple of 90');
     end
