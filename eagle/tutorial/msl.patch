@@ -1,0 +1,24 @@
+*** msl.HYP.ORIG	2012-12-03 18:47:03.567775824 +0100
+--- msl.HYP	2012-12-03 18:50:55.191769514 +0100
+***************
+*** 28,36 ****
+  * Thickness of Copper and Dielectric Layer Data
+  *
+  {STACKUP
+! (SIGNAL T=0.00070 P=0.00070 L=Top)
+! (DIELECTRIC T=0.05970 C=4.80000 L=DL01)
+! (SIGNAL T=0.00070 P=0.00070 L=Bottom)
+  }
+  * Total Board Thickness 0.0625 inch
+  
+--- 28,37 ----
+  * Thickness of Copper and Dielectric Layer Data
+  *
+  {STACKUP
+! (SIGNAL T=0.00140 P=0.00140 L=Top)
+! (DIELECTRIC T=0.01259 C=4.80000 L=DL01)
+! (SIGNAL T=0.00140 P=0.00140 L=Bottom)
+! (DIELECTRIC T=0.05970 C=4.80000 L=DL02)
+  }
+  * Total Board Thickness 0.0625 inch
+  
