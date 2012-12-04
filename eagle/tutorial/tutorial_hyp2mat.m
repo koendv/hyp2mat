@@ -1,4 +1,4 @@
-% demo for hyp2mat - simulation of a notch filter.
+% tutorial for hyp2mat - capacitor in a microstrip.
 %
 % run from openems matlab command prompt
 % See hyp2mat(1) - convert hyperlynx files to matlab scripts.
