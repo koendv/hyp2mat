@@ -45,67 +45,37 @@ function CSX = hyp_draw_line(CSX, propName, prio, p1, p2, z, width)
   %
   % 
 
-  % determine angle and length
-  x1 = p1(1);
-  y1 = p1(2);
-  x2 = p2(1);
-  y2 = p2(2);
-  [theta, length] = cart2pol(x2-x1, y2-y1);
+% determine angle and length
+x1 = p1(1);
+y1 = p1(2);
+x2 = p2(1);
+y2 = p2(2);
+[theta, length] = cart2pol(x2-x1, y2-y1);
 
-%
-% two methods for drawing a line segment: 
-% as a polygon or as a box and two cylinders.
-% 2do: Choose optimal solution.
-%
+% draw line segment as LinPoly
+[dy, dx] = pol2cart(theta, width);
 
-if 0
-  % draw line segment as LinPoly
-  [dy, dx] = pol2cart(theta, width);
+s = {};
+s.x1 = x2 + dx;
+s.y1 = y2 - dy;
+s.x2 = x2 - dx;
+s.y2 = y2 + dy;
+s.xc = x2;
+s.yc = y2;
+s.r  = width/2;
+arc_right = hyp_draw_arc(CSX, s, 0);
+s.x1 = x1 - dx;
+s.y1 = y1 + dy;
+s.x2 = x1 + dx;
+s.y2 = y1 - dy;
+s.xc = x1;
+s.yc = y1;
+s.r  = width/2;
+arc_left = hyp_draw_arc(CSX, s, 0);
+line = [ arc_right arc_left ];
 
-  % draw line horizontally
-  s = {};
-  s.x1 = x2 + dx;
-  s.y1 = y2 - dy;
-  s.x2 = x2 - dx;
-  s.y2 = y2 + dy;
-  s.xc = x2;
-  s.yc = y2;
-  s.r  = width/2;
-  arc_right = hyp_draw_arc(CSX, s, 0);
-  s.x1 = x1 - dx;
-  s.y1 = y1 + dy;
-  s.x2 = x1 + dx;
-  s.y2 = y1 - dy;
-  s.xc = x1;
-  s.yc = y1;
-  s.r  = width/2;
-  arc_left = hyp_draw_arc(CSX, s, 0);
-  line = [ arc_right arc_left ];
-
-  % draw line
-  CSX = AddPolygon(CSX, propName, prio, 2, z, line);
-
-else
-
-  % draw line segment as one Box and two Cylinders
-
-  % draw trace segment
-  if (length ~= 0)
-    p1 = [ 0, width/2, z ];
-    p2 = [ length, -width/2, z];
-    p3 = [ x1, y1, 0 ];
-
-    CSX = AddBox(CSX, propName, prio, p1, p2, 'Transform', {'Rotate_Z', theta, 'Translate', p3});
-  end
-    
-  % draw endpoint 1
-  p1 = [ x1 y1 z ];
-  CSX = hyp_draw_circle(CSX, propName, prio, p1, width/2 );
-    
-  % draw endpoint 2
-  p2 = [ x2 y2 z ];
-  CSX = hyp_draw_circle(CSX, propName, prio, p2, width/2 );
-end
+% draw line
+CSX = AddPolygon(CSX, propName, prio, 2, z, line);
 
 end
 % not truncated

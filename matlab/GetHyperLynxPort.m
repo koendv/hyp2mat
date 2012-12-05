@@ -84,7 +84,6 @@ function [material, start, stop] = GetHyperLynxPort(CSX, port_ref)
       dx = dy;
       dy = t;
     else
-      % XXX  please extend for arbitrary angles
       error('angle not a multiple of 90');
     end
   end

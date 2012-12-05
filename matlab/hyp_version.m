@@ -57,7 +57,7 @@ function CSX = hyp_version(CSX, s)
   CSX.conductivity    = 56e6; % copper conductivity
 
   % arc segments
-  CSX.arc_segments    = 12;   % number of linear segments per arc; needs to be a multiple of 4
+  CSX.arc_segments    = 8;   % number of linear segments per arc; needs to be a multiple of 4
 
 end
 

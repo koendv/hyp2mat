@@ -35,7 +35,20 @@ function CSX = hyp_draw_circle(CSX, propName, prio, center, rad)
   % rotate the resulting disc so it's parallel to the xy plane, 
   % and translate the disc to the circle center.
 
-  CSX = AddCylinder(CSX, propName, prio, [ 0 0 0 ], [ 0 0 0 ], rad, 'Transform', {'Rotate_X', pi/2, 'Translate', center});
+  zc = center(3);
+
+  s = {};
+  s.xc = center(1);
+  s.yc = center(2);
+  s.r = rad;
+  s.x1 = s.xc + rad;
+  s.y1 = s.yc;
+  s.x2 = s.x1;
+  s.y2 = s.y1;
+ 
+  circle = hyp_draw_arc(CSX, s, false);
+
+  CSX = AddPolygon(CSX, propName, prio, 2, zc, circle);
 
 end
 % not truncated

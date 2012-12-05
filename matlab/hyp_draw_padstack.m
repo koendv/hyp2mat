@@ -22,7 +22,7 @@
 
 function CSX = hyp_draw_padstack(CSX, s)
 
-  % XXX Check oblong pads
+  % XXX Needs work
 
   x = s.x;
   y = s.y;
@@ -88,6 +88,19 @@ function CSX = hyp_draw_padstack(CSX, s)
           CSX.HyperLynxPort{end+1}=port;   % add to list
         end
 
+        % pad rotation
+        if (rem(pad_angle, 180) == 0)
+          % do nothing
+          pad_angle = 0;
+        elseif (rem(pad_angle, 90) == 0)
+          t = pad_sx;
+          pad_sx = pad_sy;
+          pad_sy = t;
+          pad_angle = 0;
+        else
+          warning(['pad angle ' num2str(pad_angle) ' not a multiple of 90']);
+        end
+
         % draw pad
         if (pad_shape == 0)
           if (pad_sx == pad_sy) 
@@ -103,7 +116,11 @@ function CSX = hyp_draw_padstack(CSX, s)
             ellipse_y = pad_sy / 2 * sin(alpha);
             ellipse = [ellipse_x.' ellipse_y.'].';
             p1 = [ x y 0];
-            CSX = AddPolygon(CSX, material, prio, 2, pad_z, ellipse, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p1});
+            if (pad_angle == 0)
+              CSX = AddPolygon(CSX, material, prio, 2, pad_z, ellipse, 'Transform', {'Translate', p1});
+            else
+              CSX = AddPolygon(CSX, material, prio, 2, pad_z, ellipse, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p1});
+            end
           end
         end
         if (pad_shape == 1)
@@ -112,7 +129,11 @@ function CSX = hyp_draw_padstack(CSX, s)
           p1 = [ -pad_sx/2, -pad_sy/2, pad_z];
           p2 = [  pad_sx/2,  pad_sy/2, pad_z];
           p3 = [ x, y, 0 ];
-          CSX = AddBox(CSX, material, prio, p1, p2, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p3});
+          if (pad_angle == 0)
+            CSX = AddBox(CSX, material, prio, p1, p2, 'Transform', {'Translate', p3});
+          else
+            CSX = AddBox(CSX, material, prio, p1, p2, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p3});
+          end
 
         end
         if (pad_shape == 2)
@@ -167,7 +188,11 @@ function CSX = hyp_draw_padstack(CSX, s)
           end
           % create oblong pad
           p1 = [ x y 0];
-          CSX = AddPolygon(CSX, material, prio, 2, pad_z, oblong, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p1});
+          if (pad_angle == 0)
+            CSX = AddPolygon(CSX, material, prio, 2, pad_z, oblong, 'Transform', {'Translate', p1});
+          else
+            CSX = AddPolygon(CSX, material, prio, 2, pad_z, oblong, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p1});
+          end
         end
       end
     end

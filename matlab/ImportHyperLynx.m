@@ -72,7 +72,7 @@ function CSX = ImportHyperLynx(CSX, filename, simulated_nets)
     dir = fileparts( m_filename );
     cmd = [ '"' dir '\..\hyp2mat.exe" -o pcb.m -f pcb "' filename '"' ];
   else
-    error('hype2mat:ImportHyperLynx','unknown/unsupported operating system...');
+    error('hyp2mat:ImportHyperLynx','unknown/unsupported operating system...');
   end
 
   % convert .hyp to .m
