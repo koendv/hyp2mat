@@ -1,31 +1,3 @@
-hyp2mat converts Hyperlynx files to matlab for simulation.
-
-Importing a HyperLynx file in openEMS occurs in two steps:
-
- 1. the HyperLynx file is translated into a matlab function (hyp2mat) 
- 2. the generated matlab function is executed.
-
-If an error occurs while scanning or parsing the HyperLynx file, an error message is printed, and scanning or parsing continues with the next HyperLynx record or subrecord, if any.
-
-Of course, it is always prudent to check the cause of an error message. Usually, a trivial edit of the HyperLynx file will suppress the error message.
-
-- Put all strings between double quotes
- 
-  error:  syntax error, unexpected STRING at 'Logo'
-  line: (? REF=Altium Logo BOT1 L=Bottom_Layer)
-  diagnosis: Error in program which created the .hyp file: Unquoted string contains space ' '
-  solution: (? REF="Altium Logo BOT1" L=Bottom_Layer)
-
-- Assign a value to a component if it does not have any
-
-  error: syntax error, unexpected L, expecting FLOAT or STRING at 'L'
-  line: (L REF="L1" VAL= L="Top")
-  diagnosis: Coil L1 on layer "Top" has not been assigned a value.
-  solution: (L REF="L1" VAL=0 L="Top")
-  (or assign coil a value in schematics editor)
-
-
- 
 HYP2MAT(1)							    HYP2MAT(1)
 
 
