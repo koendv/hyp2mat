@@ -1,6 +1,6 @@
 # hyp2mat makefile
 
-VERSION = 0.0.2
+VERSION = 0.0.3
 
 CC     = gcc
 LEX    = flex 
