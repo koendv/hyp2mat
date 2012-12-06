@@ -22,7 +22,9 @@
 
 function CSX = hyp_draw_padstack(CSX, s)
 
-  % XXX Needs work
+  % XXX Todo:
+  % - rotate pad polygons here; remove Rotate_Z Transform.
+  % Reason: DetectEdges does not support Rotation.
 
   x = s.x;
   y = s.y;
@@ -103,24 +105,16 @@ function CSX = hyp_draw_padstack(CSX, s)
 
         % draw pad
         if (pad_shape == 0)
-          if (pad_sx == pad_sy) 
-
-            % circular pads
-            p1 = [ x y pad_z];
-            CSX = hyp_draw_circle(CSX, material, prio, p1, pad_sx/2);
+          % circular and elliptical pads 
+          alpha = linspace(0, 2*pi, CSX.arc_segments+1);
+          ellipse_x = pad_sx / 2 * cos(alpha);
+          ellipse_y = pad_sy / 2 * sin(alpha);
+          ellipse = [ellipse_x.' ellipse_y.'].';
+          p1 = [ x y 0];
+          if (pad_angle == 0)
+            CSX = AddPolygon(CSX, material, prio, 2, pad_z, ellipse, 'Transform', {'Translate', p1});
           else
-
-            % elliptical pads 
-            alpha = linspace(0, 2*pi, CSX.arc_segments);
-            ellipse_x = pad_sx / 2 * cos(alpha);
-            ellipse_y = pad_sy / 2 * sin(alpha);
-            ellipse = [ellipse_x.' ellipse_y.'].';
-            p1 = [ x y 0];
-            if (pad_angle == 0)
-              CSX = AddPolygon(CSX, material, prio, 2, pad_z, ellipse, 'Transform', {'Translate', p1});
-            else
-              CSX = AddPolygon(CSX, material, prio, 2, pad_z, ellipse, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p1});
-            end
+            CSX = AddPolygon(CSX, material, prio, 2, pad_z, ellipse, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p1});
           end
         end
         if (pad_shape == 1)
