@@ -25,32 +25,31 @@ function q = polygon_arith(p1, operand, p2);
 
     % octave
     if strcmp(operand, '+')
-      action = 'and';
+      action = 'AND';
     elseif strcmp(operand, '-') 
-      action = 'ab';
+      action = 'AB';
     else
       error ([ 'unknown operand ' operand]);
     end
 
     [qx, qy, npol, nint, npert] = oc_polybool(p1, p2, action);
-    q = [qx qy];
-   
+    q = [qx, qy];
+  
   else
   
     % matlab
     p1x = p1(:,1).';
     p1y = p1(:,2).';
-    [p1x, p1y] = poly2cw(p1x, p1y);
   
     p2x = p2(:,1).';
     p2y = p2(:,2).';
-    [p2x, p2y] = poly2cw(p2x, p2y);
-
+  
     if (~strcmp(operand, '+') && ~strcmp(operand, '-'))
       error ([ 'unknown operand ' operand]);
     end
   
-    [qx, qy] = polybool (operand, p1x, p1y, p2x, p2y);
+    [qx, qy] = polybool (action, p1x, p1y, p2x, p2y);
+  
     q = [qx.', qy.'];
   end
  
