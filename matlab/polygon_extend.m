@@ -14,6 +14,11 @@ function q = polygon_extend(p, width);
     return;
   end
 
+  q=p;
+  return;
+  % experimental code below...
+  
+
   % use bufferm2 in matlab, expandPolygon in octave
   if exist('OCTAVE_VERSION', 'builtin')
     % octave

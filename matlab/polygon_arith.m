@@ -40,9 +40,11 @@ function q = polygon_arith(p1, operand, p2);
     % matlab
     p1x = p1(:,1).';
     p1y = p1(:,2).';
+    [p1x, p1y] = poly2cw(p1x, p1y);
   
     p2x = p2(:,1).';
     p2y = p2(:,2).';
+    [p2x, p2y] = poly2cw(p2x, p2y);
   
     if (~strcmp(operand, '+') && ~strcmp(operand, '-'))
       error ([ 'unknown operand ' operand]);
