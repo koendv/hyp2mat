@@ -44,6 +44,7 @@ function CSX = hyp_version(CSX, s)
   CSX.current_net = '';      % name of current net in 'NET' record.
   CSX.all_nets = {};         % list of all net names
   CSX.HyperLynxPort = {};    % list of all i/o pins/pads
+  CSX.HyperLynxDevice = {};  % list of all components
 
   % parameters
   CSX.substrate_epr   = 4.3;  % FR4 dielectric

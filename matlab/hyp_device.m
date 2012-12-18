@@ -29,6 +29,36 @@ function CSX = hyp_device(CSX, s)
     CSX = hyp_draw_board(CSX); % draw the pcb
   end
 
+  % device data
+  % mandatory fields are reference and layer.
+  device = {};
+
+  if (isfield(s,'ref')) % reference
+    device.reference = s.ref;
+  else
+    device.reference = '';
+  end
+
+  if (isfield(s,'name')) % name
+    device.name = s.name;
+  end
+
+  if (isfield(s,'val')) % value
+    device.value = s.val;
+  end
+
+  if (isfield(s,'l')) % layer
+    device.layer = s.l;
+  else
+    device.layer = '';
+  end
+
+  if (isfield(s,'pkg')) % package
+    device.package = s.pkg;
+  end
+
+  CSX.HyperLynxDevice{end+1} = device;
+
 end
 
 % not truncated
