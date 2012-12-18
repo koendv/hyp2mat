@@ -50,7 +50,7 @@ function q = polygon_arith(p1, operand, p2);
       error ([ 'unknown operand ' operand]);
     end
   
-    [qx, qy] = polybool (action, p1x, p1y, p2x, p2y);
+    [qx, qy] = polybool (operand, p1x, p1y, p2x, p2y);
   
     q = [qx.', qy.'];
   end
