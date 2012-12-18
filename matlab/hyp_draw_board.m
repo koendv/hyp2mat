@@ -22,18 +22,15 @@
 
 function CSX = hyp_draw_board(CSX, s)
 
-  % XXX For now, limit ourselves to homogeneous rectangular boards.
-  % XXX (no circular boards, cutouts, or boards with layers of different dielectrics yet)
-
-  % first, determine the maximum dimensions of the board
+  % determine the maximum dimensions of the board
 
   % board horizontal size: loop through all board segments and arcs.
-  xmin =  min(CSX.board_outline(1, 1:end));
-  xmax =  max(CSX.board_outline(1, 1:end));
-  ymin =  min(CSX.board_outline(2, 1:end));
-  ymax =  max(CSX.board_outline(2, 1:end));
+  xmin =  min(CSX.board_outline(:, 1));
+  xmax =  max(CSX.board_outline(:, 1));
+  ymin =  min(CSX.board_outline(:, 2));
+  ymax =  max(CSX.board_outline(:, 2));
 
-  % loop through stackup, assigning heights.
+  % board verical size: loop through stackup, assigning heights.
   % CSX.stackup{i}.z is layer vertical position
   % CSX.stackup{i}.t is layer height
   z = 0;
@@ -42,119 +39,27 @@ function CSX = hyp_draw_board(CSX, s)
     z = z + CSX.stackup{i}.t;
   end
 
-  % determine dielectric height
-  zmin = inf;
-  zmax = -inf;
-  for i = 1:length(CSX.stackup)
-    z = CSX.stackup{i}.z;
-    if (z < zmin)
-      zmin = z;
-    end
-    if (z > zmax)
-      zmax = z;
-    end
-    if (strcmp(CSX.stackup{i}.type, 'dielectric'))
-      z = z + CSX.stackup{i}.t; % add dielectric thickness
-      if (z > zmax)
-        zmax = z;
-      end 
-    end
-  end
-
-  % create minimal mesh
-  mesh.x = [ xmin xmax ];
-  mesh.y = [ ymin ymax ];
-  mesh.z = [ zmin zmax ]; 
-
-  % add mesh
-  CSX = DefineRectGrid(CSX, CSX.units, mesh);
-
-  % create materials
-  % XXX Ought to create the dielectrics from the stackup
-  physical_constants;
-  substrate_epr = CSX.substrate_epr;
-  CSX = AddMaterial( CSX, 'FR4');
-  CSX = SetMaterialProperty( CSX, 'FR4', 'Epsilon', substrate_epr, 'Mue', 1);
-  CSX = AddMetal( CSX, 'via' ); % via metal
-
-  % create a different metal/cutout for every layer
-  % allows us to inspect inner layers
+  % initialize layers
   for i = 1:length(CSX.stackup)
  
     % signal layers are drawn positive:
     % material is copper, cutout is dielectric.
     if (strcmp(CSX.stackup{i}.type, 'signal'))
-
-      material = [ CSX.stackup{i}.l '_copper' ];
-      CSX.stackup{i}.material = material;
-      thickness = CSX.stackup{i}.t * CSX.units / CSX.zscale; % thickness in m
-      conductivity = CSX.conductivity;
-      CSX = AddConductingSheet(CSX, material, conductivity, thickness);
-
-      cutout = [ CSX.stackup{i}.l '_cutout'];
-      CSX.stackup{i}.cutout = cutout;
-      CSX = AddMaterial( CSX, cutout);
-      CSX = SetMaterialProperty( CSX, cutout, 'Epsilon', substrate_epr, 'Mue', 1); 
-
-    end
+      CSX.stackup{i}.layout = [];
 
     % plane layers are drawn negative:
     % cutout is copper, material is dielectric.
-    if (strcmp(CSX.stackup{i}.type, 'plane'))
-
-      cutout = [ CSX.stackup{i}.l '_copper'];
-      CSX.stackup{i}.cutout = cutout;
-      thickness = CSX.stackup{i}.t * CSX.units / CSX.zscale; % thickness in m
-      conductivity = CSX.conductivity;
-      CSX = AddConductingSheet(CSX, cutout, conductivity, thickness);
-
-      material = [ CSX.stackup{i}.l '_cutout'];
-      CSX.stackup{i}.material = material;
-      CSX = AddMaterial( CSX, material);
-      CSX = SetMaterialProperty( CSX, material, 'Epsilon', substrate_epr, 'Mue', 1);
+    elseif (strcmp(CSX.stackup{i}.type, 'plane'))
+      corner1 = [ xmin ymin ];
+      corner2 = [ xmax ymin ];
+      corner3 = [ xmax ymax ];
+      corner4 = [ xmin ymax ];
+      CSX.stackup{i}.layout = [corner1 corner2 corner2 corner4];
 
     end
-
     % dielectric layers have no metal
 
   end
-
-  % create board 
-  p1 = [xmin ymin zmin];
-  p2 = [xmax ymax zmax];
-  CSX = AddBox (CSX, 'FR4', CSX.prio_dielectric, p1, p2);
-
-  % XXX if board is not rectangular
-  % CSX = AddLinPoly(CSX, 'FR4', CSX.prio_dielectric, 2, zmin, CSX.board_outline, zmax - zmin);
-
-  % create power and ground planes
-  for i = 1:length(CSX.stackup)
-    if (strcmp(CSX.stackup{i}.type, 'plane'))
-      z1 = CSX.stackup{i}.z;
-      z2 = CSX.stackup{i}.z+CSX.stackup{i}.t;
-      p1 = [xmin ymin z1];
-      p2 = [xmax ymax z1];
-      material = CSX.stackup{i}.cutout;
-      CSX = AddBox (CSX, material, CSX.prio_plane, p1, p2);
-    end
-  end
-
-  % display helpful messages
-  units_um = CSX.units / CSX.zscale * 1e6; % thickness in um
-  for i = 1:length(CSX.stackup)
-    if (strcmp(CSX.stackup{i}.type, 'signal') || strcmp(CSX.stackup{i}.type, 'plane'))
-      disp(['copper : ', CSX.stackup{i}.l, ' = ', num2str(CSX.stackup{i}.t*units_um), ' um']);
-    end
-  end
-
-  disp(['epsilonr = ', num2str(substrate_epr)]);
-
-  units_mm = CSX.units * 1000; %  size in mm
-  disp(['board: x = ', num2str(xmin*units_mm), ' : ', num2str(xmax*units_mm), ' mm']);
-  disp(['       y = ', num2str(ymin*units_mm), ' : ', num2str(ymax*units_mm), ' mm']);
-  disp(['       z = ', num2str(zmin*units_mm), ' : ', num2str(zmax*units_mm), ' mm']);
-
 end
-
 % not truncated
 

@@ -1,17 +1,6 @@
-% CSX = hyp_draw_line(CSX, propName, prio, p1, p2, z, width)
-% Add a hyperlynx line segment to  CSX and assign to a property with name <propName>.
-% The line segment is parallel with the xy plane.
-%
-%  p1   :   begin point
-%  p2   :   end point
-%  z    :   height above xy plane
-%  width:   line width
-%  prio :   primitive priority
-%
-%  Example:
-%       CSX = AddMetal(CSX,'metal'); %create PEC with propName 'metal'
-%       CSX = hyp_draw_line(CSX,'metal', 10, [-2 -2], [2 2], 50, 0.5);
-%
+% CSX = hyp_draw_trace(CSX, action, layer, width, p1, p2)
+% Hyperlynx 'SEG' subrecord of 'NET' record. 
+% Draws straight metal trace segment.
 % See hyp2mat(1) - convert hyperlynx files to matlab scripts.
 
 % Copyright 2012 Koen De Vleeschauwer.
@@ -31,7 +20,7 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function CSX = hyp_draw_line(CSX, propName, prio, p1, p2, z, width)
+function CSX = hyp_draw_trace(CSX, action, layer, width, p1, p2)
 
   % A hyperlynx line segment is drawn, ending in two half-circles:
   %
@@ -43,39 +32,39 @@ function CSX = hyp_draw_line(CSX, propName, prio, p1, p2, z, width)
   %
   %              <----------- length ---------->
   %
-  % 
+ 
+  % begin and end coordinates 
+  x1 = p1(1);
+  y1 = p1(2);
 
-% determine angle and length
-x1 = p1(1);
-y1 = p1(2);
-x2 = p2(1);
-y2 = p2(2);
-[theta, length] = cart2pol(x2-x1, y2-y1);
+  x2 = p2(1);
+  y2 = p2(2);
 
-% draw line segment as LinPoly
-[dy, dx] = pol2cart(theta, width);
-
-s = {};
-s.x1 = x2 + dx;
-s.y1 = y2 - dy;
-s.x2 = x2 - dx;
-s.y2 = y2 + dy;
-s.xc = x2;
-s.yc = y2;
-s.r  = width/2;
-arc_right = hyp_draw_arc(CSX, s, 0);
-s.x1 = x1 - dx;
-s.y1 = y1 + dy;
-s.x2 = x1 + dx;
-s.y2 = y1 - dy;
-s.xc = x1;
-s.yc = y1;
-s.r  = width/2;
-arc_left = hyp_draw_arc(CSX, s, 0);
-line = [ arc_right arc_left ];
-
-% draw line
-CSX = AddPolygon(CSX, propName, prio, 2, z, line);
-
+  % determine angle and length
+  [theta, length] = cart2pol(x2-x1, y2-y1);
+  
+  % draw line segment as LinPoly
+  [dy, dx] = pol2cart(theta, width/2); % XXX Check: width or width /2?
+  
+  p3 = [ x2 + dx, y2 - dy];
+  p4 = [ x2 - dx, y2 + dy];
+  center = [ x2, y2 ];
+  radius = width/2;
+  
+  arc_right = hyp_arc2poly(CSX, center, p3, p4, radius, 0);
+  
+  p5 = [ x1 - dx, y1 + dy];
+  p6 = [ x1 + dx, y1 - dy];
+  center = [ x1, y1 ];
+  radius = width/2;
+  
+  arc_left = hyp_arc2poly(CSX, center, p5, p6, radius, 0);
+  
+  line = [ arc_right; arc_left ];
+  
+  % draw line
+  CSX = hyp_draw_poly(CSX, action, layer, 0, line);
+  
 end
+
 % not truncated

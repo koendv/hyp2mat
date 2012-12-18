@@ -1,11 +1,11 @@
-% [material, start, stop] = GetHyperLynxPort(CSX, port_ref)
+% [side, start, stop] = GetHyperLynxPort(CSX, port_ref)
 % Obtain coordinates and material of HyperLynx pin or pad.
 %
 % CSX:          CSX-object created by ImportHyperLynx()
 % port_ref:     port reference from HyperLynx file.
 % If an invalid port reference is given, all valid port references are printed.
 %
-% material:     port material, created using AddMetal()
+% side:         board side, 'top', 'bottom' or ''.
 % start:        3D port start coordinates
 % stop:         3D port stop coordinates
 
@@ -34,7 +34,7 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [material, start, stop] = GetHyperLynxPort(CSX, port_ref)
+function [side, start, stop] = GetHyperLynxPort(CSX, port_ref)
 
   % the openEMS AddMSLPort, AddCurvePort functions require a port to be 
   % a rectangular prism with sides parallel to the axis,
@@ -97,7 +97,7 @@ function [material, start, stop] = GetHyperLynxPort(CSX, port_ref)
   y2 = y + dy;
 
   % return values
-  material = port.material;
+  side = port.side;
   start = [ x1 y1 z];
   stop  = [ x2 y2 z ];
   

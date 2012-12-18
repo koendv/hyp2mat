@@ -31,15 +31,13 @@ function CSX = hyp_draw_polyline(CSX, s)
   % draw polyline segments 
   if (strcmp(CSX.poly.polytype, 'polyline'))
     for k = 1:(length(CSX.poly.points)-1)
-      t = {};
-      t.lineno = CSX.poly.lineno;
-      t.l = CSX.poly.l;
-      t.x1 = CSX.poly.points(1, k);
-      t.y1 = CSX.poly.points(2, k);
-      t.x2 = CSX.poly.points(1, k+1);
-      t.y2 = CSX.poly.points(2, k+1);
-      t.w = CSX.poly.w;
-      CSX = hyp_seg(CSX, t); % draw the segment
+      layer = CSX.poly.l;
+      width = CSX.poly.w;
+      x1 = CSX.poly.points(1, k);
+      y1 = CSX.poly.points(2, k);
+      x2 = CSX.poly.points(1, k+1);
+      y2 = CSX.poly.points(2, k+1);
+      CSX = hyp_draw_trace(CSX, '+', layer, width, [x1 y1], [x2 y2]); % draw the segment
     end
     CSX.poly = {}; % clear polygon data
   end

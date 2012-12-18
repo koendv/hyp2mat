@@ -29,26 +29,17 @@ function CSX = hyp_seg(CSX, s)
 
   layer = s.l;
 
-  p1 = [ s.x1 s.y1 ];
-  p2 = [ s.x2 s.y2 ];
+  x1 = s.x1;
+  y1 = s.y1;
+
+  x2 = s.x2;
+  y2 = s.y2;
 
   width = s.w;
 
-  % look up layer
-  for j = 1:length(CSX.stackup)
-    % either this layer exactly, or MDEF for all metal layers.
-    if (strcmp(CSX.stackup{j}.l, layer) || (strcmp('MDEF', layer) && ~strcmp(CSX.stackup{j}.type, 'dielectric')))
-
-      material = CSX.stackup{j}.material;
-      prio = CSX.prio_material;
-      z = CSX.stackup{j}.z;
-
-      % draw trace segment
-      CSX = hyp_draw_line(CSX, material, prio, p1, p2, z, width);
-
-    end
-  end
-
+  % draw copper trace
+  CSX = hyp_draw_trace(CSX, '+', layer, width, [x1 y1], [x2 y2]);
+  
 end
 
 % not truncated

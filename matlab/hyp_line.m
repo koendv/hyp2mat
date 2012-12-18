@@ -22,8 +22,7 @@
 
 function CSX = hyp_line(CSX, s)
 
-  CSX.poly.points(1, end+1) = s.x;
-  CSX.poly.points(2, end) = s.y;
+  CSX.poly.points = [CSX.poly.points; s.x s.y];
 
 end
 

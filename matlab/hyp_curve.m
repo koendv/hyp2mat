@@ -22,10 +22,14 @@
 
 function CSX = hyp_curve(CSX, s)
 
-  arc = hyp_draw_arc(CSX, s, false); % 'CURVE' draws arc counterclockwise 
+  p1 = [ s.x1 s.y1 ];
+  p2 = [ s.x2 s.y2 ];
+  center = [ s.xc s.yc ];
+  radius = s.r;
+  curve = hyp_arc2poly(CSX, center, p1, p2, radius, false); % 'CURVE' draws arc counterclockwise 
 
-  % Add arc to polygon
-  CSX.poly.points = [ CSX.poly.points arc ];
+  % Add curve to polygon
+  CSX.poly.points = [ CSX.poly.points; curve ];
 
   end
 

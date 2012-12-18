@@ -1,6 +1,7 @@
-% arc = hyp_draw_arc(CSX, s, clockwise)
-% Approximate an arc using linear segments.
-% Returns array of (x,y) coordinates.
+% arc = hyp_arc2poly(CSX, center, p1, p2, radius, clockwise)
+% Approximate an arc using linear segments. 
+% p1 and p2 are the endpoints of the arc.
+% Returns a polygon.
 % See hyp2mat(1) - convert hyperlynx files to matlab scripts.
 
 % Copyright 2012 Koen De Vleeschauwer.
@@ -20,15 +21,14 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function arc = hyp_draw_arc(CSX, s, clockwise)
+function arc = hyp_arc2poly(CSX, center, p1, p2, radius, clockwise)
 
-  x1 = s.x1;
-  y1 = s.y1;
-  x2 = s.x2;
-  y2 = s.y2;
-  xc = s.xc;
-  yc = s.yc;
-  r = s.r;
+  x1 = p1(1);
+  y1 = p1(2);
+  x2 = p2(1);
+  y2 = p2(2);
+  xc = center(1);
+  yc = center(2);
 
   [alpha, r1] = cart2pol(x1-xc, y1-yc);
   [beta, r2] = cart2pol(x2-xc, y2-yc);
@@ -66,11 +66,18 @@ function arc = hyp_draw_arc(CSX, s, clockwise)
 
   % arc from (x1, y1) to (x2, y2);
   angle = linspace(alpha, beta, segments);
-  [x, y] = pol2cart(angle, r);
+  [x, y] = pol2cart(angle, radius);
   x = x + xc;
   y = y + yc;
 
-  arc = [x.' , y.'].';
+  % clean up
+  x(1) = x1;
+  y(1) = y1;
+  x(end) = x2;
+  y(end) = y2;
+
+  % output
+  arc = [x; y].';
 
 end
 % not truncated

@@ -25,6 +25,9 @@ function CSX = hyp_end(CSX, s)
   % draw last polygon, if any
   CSX = hyp_draw_polygon(CSX, s);
 
+  % export model
+  CSX = hyp_export_csxcad(CSX);
+
   % Check all simulated nets have been imported
   net_not_found = {};
   for n = 1:length(CSX.simulated_nets)
@@ -46,7 +49,7 @@ function CSX = hyp_end(CSX, s)
   % remove temporary fields if not debugging
   if (~CSX.debug)
 
-    for fld = { 'debug' 'all_nets' 'board_outline' 'conductivity' 'current_net' 'draw_board' 'f_max' 'padstack' 'plane_sep' 'poly' 'poly_list' 'stackup' 'net' 'prio_dielectric' 'prio_plane' 'prio_material' 'prio_cutout' 'prio_via' 'prio_drill' 'simulated_nets' 'substrate_epr' 'arc_segments' 'unnamed_layer' 'units' 'use_die_for_metal' 'zscale' }
+    for fld = { 'debug' 'all_nets' 'board_outline' 'conductivity' 'current_net' 'draw_board' 'f_max' 'padstack' 'plane_sep' 'poly' 'poly_list' 'stackup' 'via_list' 'net' 'simulated_nets' 'substrate_epr' 'arc_segments' 'unnamed_layer' 'units' 'use_die_for_metal' 'zscale' }
        if (isfield(CSX, fld))
          CSX = rmfield(CSX, fld);
        end

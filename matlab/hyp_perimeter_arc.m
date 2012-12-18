@@ -22,10 +22,16 @@
 
 function CSX = hyp_perimeter_arc(CSX, s)
 
-  arc = hyp_draw_arc(CSX, s, false); % 'PERIMETER_ARC' draws arc counterclockwise
+  p1 = [ s.x1 s.y1 ];
+  p2 = [ s.x2 s.y2 ];
+  center = [ s.xc s.yc ];
+  radius = s.r;
+
+  peri_arc = hyp_arc2poly(CSX, center, p1, p2, radius, false); % 'PERIMETER_ARC' draws arc counterclockwise
 
   % Add arc to board outline
-  CSX.board_outline = [ CSX.board_outline arc ];
+  separator = [ NaN NaN ];
+  CSX.board_outline = [ CSX.board_outline ; separator ; peri_arc];
 
 % not truncated
 

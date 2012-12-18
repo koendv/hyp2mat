@@ -22,11 +22,11 @@
 
 function CSX = hyp_perimeter_segment(CSX, s)
 
-  pt1 = [ s.x1 s.y1 ];
-  pt2 = [ s.x2 s.y2 ];
+  peri_segment = [ s.x1 s.y1 ; s.x2 s.y2 ];
 
   % add segment to board outline
-  CSX.board_outline = [ CSX.board_outline pt1.' pt2.' ];
+  separator = [ NaN NaN ];
+  CSX.board_outline = [ CSX.board_outline ; separator ; peri_segment ];
 
 end
 

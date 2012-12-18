@@ -27,7 +27,12 @@ function CSX = hyp_arc(CSX, s)
     return;
   end
 
-  arc = hyp_draw_arc(CSX, s, true); % 'ARC' draws arc clockwise
+  % calculate arc
+  p1 = [ s.x1 s.y1 ];
+  p2 = [ s.x2 s.y2 ];
+  center = [ s.xc s.yc ];
+  radius = s.r;
+  arc = hyp_arc2poly(CSX, center, p1, p2, radius, true); % 'ARC' draws arc clockwise
 
   % draw segments
   for k = 1:(length(arc)-1)
@@ -40,6 +45,7 @@ function CSX = hyp_arc(CSX, s)
     t.y2 = arc(2, k+1);
     t.w = s.w;
     CSX = hyp_seg(CSX, t);
+    CSX = hyp_draw_trace(CSX, '+', layer, width, [x1 y1], [x2 y2]);
   end
 
 end

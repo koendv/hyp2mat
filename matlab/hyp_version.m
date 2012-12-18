@@ -31,7 +31,7 @@ function CSX = hyp_version(CSX, s)
 
   % initalize variables
   CSX.debug = false;         % set to false to suppress messages
-%  CSX.debug = true;         % set to true for debug messages
+  CSX.debug = true;         % set to true for debug messages
   CSX.board_outline = [];    % coordinates of pcb border
   CSX.draw_board = true;     % flag
   CSX.unnamed_layer = 0;     % number of unnamed layers
@@ -40,17 +40,10 @@ function CSX = hyp_version(CSX, s)
   CSX.poly = {};             % current polygon in 'POLYGON' record.
   CSX.poly_list = {};        % list of polygon id's and parameters
   CSX.stackup = {};          % list of pcb layers in 'STACKUP' record.
+  CSX.via_list = {};         % list of vias
   CSX.current_net = '';      % name of current net in 'NET' record.
   CSX.all_nets = {};         % list of all net names
   CSX.HyperLynxPort = {};    % list of all i/o pins/pads
-
-  % priorities
-
-  CSX.prio_dielectric = 100;  % FR4 dielectric
-  CSX.prio_plane      = 200;  % power and ground planes
-  CSX.prio_material   = 300;  % copper
-  CSX.prio_cutout     = 400;  % voids in copper
-  CSX.prio_via        = 500;  % via metal
 
   % parameters
   CSX.substrate_epr   = 4.3;  % FR4 dielectric

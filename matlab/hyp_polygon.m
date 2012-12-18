@@ -36,9 +36,7 @@ function CSX = hyp_polygon(CSX, s)
 
   % store current polygon.
   CSX.poly = s;
-  CSX.poly.points = [ ] ;
-  CSX.poly.points(1,1) = s.x;
-  CSX.poly.points(2,1) = s.y;
+  CSX.poly.points = [s.x s.y];
 
 end
 

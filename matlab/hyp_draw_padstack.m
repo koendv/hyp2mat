@@ -1,6 +1,6 @@
 % CSX = hyp_draw_padstack(CSX, s)
 % Support function.
-% Draws via or pin padstack.
+% Draws via and pin padstack.
 % See hyp2mat(1) - convert hyperlynx files to matlab scripts.
 
 % Copyright 2012 Koen De Vleeschauwer.
@@ -22,10 +22,6 @@
 
 function CSX = hyp_draw_padstack(CSX, s)
 
-  % XXX Todo:
-  % - rotate pad polygons here; remove Rotate_Z Transform.
-  % Reason: DetectEdges does not support Rotation.
-
   x = s.x;
   y = s.y;
   padstack_name = s.p;
@@ -41,16 +37,17 @@ function CSX = hyp_draw_padstack(CSX, s)
     end
   end
 
-  % drill hole
+  % if there is a via, add to list of vias
   if (drill_size ~= 0)
-    z1 = CSX.stackup{1}.z;
-    z2 = CSX.stackup{end}.z;
-    p1 = [ x y z1 ];
-    p2 = [ x y z2 ];
-    radius = drill_size/2;
+    via = {};
+    via.z1 = CSX.stackup{1}.z;
+    via.z2 = CSX.stackup{end}.z;
+    via.x = x;
+    via.y = y;
+    via.radius = drill_size/2;
 
-    % copper in via
-    CSX = AddCylinder(CSX, 'via', CSX.prio_via, p1, p2, radius); % via copper
+    % add via to list
+    CSX.via_list{end+1} = via;
   end
 
   % loop through padstack
@@ -66,10 +63,7 @@ function CSX = hyp_draw_padstack(CSX, s)
       % either this layer exactly, or MDEF for all metal layers.
       if (strcmp(CSX.stackup{j}.l, layer) || (strcmp('MDEF', layer) && ~strcmp(CSX.stackup{j}.type, 'dielectric')))
 
-        % choose material
-        material = CSX.stackup{j}.material;
-        prio = CSX.prio_material;
-
+        pad_layer = CSX.stackup{j}.l;
         pad_z = CSX.stackup{j}.z;
         pad_t = CSX.stackup{j}.t;
 
@@ -86,108 +80,21 @@ function CSX = hyp_draw_padstack(CSX, s)
           port.shape = pad_shape;          % pad shape. 0 = circular, 1 = rectangular, 2 = oblong
           port.ref = s.r;                  % reference
           port.net = CSX.current_net;      % net name
-          port.material = material;        % material
+          port.layer = pad_layer;          % layer
+
+          if (pad_z == CSX.stackup{1}.z)   % side of board
+            port.side = 'top';
+          elseif (pad_z == CSX.stackup{end}.z)
+            port.side = 'bottom';
+          else
+            port.side = '';
+          end
+         
           CSX.HyperLynxPort{end+1}=port;   % add to list
         end
 
-        % pad rotation
-        if (rem(pad_angle, 180) == 0)
-          % do nothing
-          pad_angle = 0;
-        elseif (rem(pad_angle, 90) == 0)
-          t = pad_sx;
-          pad_sx = pad_sy;
-          pad_sy = t;
-          pad_angle = 0;
-        else
-          warning(['pad angle ' num2str(pad_angle) ' not a multiple of 90']);
-        end
+        CSX = hyp_draw_pad(CSX, pad_layer, pad_shape, x, y, pad_sx, pad_sy, pad_angle);
 
-        % draw pad
-        if (pad_shape == 0)
-          % circular and elliptical pads 
-          alpha = linspace(0, 2*pi, CSX.arc_segments+1);
-          ellipse_x = pad_sx / 2 * cos(alpha);
-          ellipse_y = pad_sy / 2 * sin(alpha);
-          ellipse = [ellipse_x.' ellipse_y.'].';
-          p1 = [ x y 0];
-          if (pad_angle == 0)
-            CSX = AddPolygon(CSX, material, prio, 2, pad_z, ellipse, 'Transform', {'Translate', p1});
-          else
-            CSX = AddPolygon(CSX, material, prio, 2, pad_z, ellipse, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p1});
-          end
-        end
-        if (pad_shape == 1)
-
-          % rectangular pads
-          p1 = [ -pad_sx/2, -pad_sy/2, pad_z];
-          p2 = [  pad_sx/2,  pad_sy/2, pad_z];
-          p3 = [ x, y, 0 ];
-          if (pad_angle == 0)
-            CSX = AddBox(CSX, material, prio, p1, p2, 'Transform', {'Translate', p3});
-          else
-            CSX = AddBox(CSX, material, prio, p1, p2, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p3});
-          end
-
-        end
-        if (pad_shape == 2)
-          % oblong pads
-
-          if (pad_sx > pad_sy)
-            % horizontal oblong pad
-            s = {};
-            s.x1 = (pad_sx - pad_sy)/2;
-            s.y1 = -pad_sy/2;
-            s.x2 = (pad_sx - pad_sy)/2;
-            s.y2 = pad_sy/2;
-            s.xc = (pad_sx - pad_sy)/2;
-            s.yc = 0;
-            s.r  = pad_sy/2;
-            arc_right = hyp_draw_arc(CSX, s, 0);
-            s.x1 = -(pad_sx - pad_sy)/2;
-            s.y1 = pad_sy/2;
-            s.z1 = 0;
-            s.x2 = -(pad_sx - pad_sy)/2;
-            s.y2 = -pad_sy/2;
-            s.z2 = 0;
-            s.xc = -(pad_sx - pad_sy)/2;
-            s.yc = 0;
-            s.r  = pad_sy/2;
-            arc_left = hyp_draw_arc(CSX, s, 0);
-            oblong = [ arc_right arc_left ];
-          else
-            % vertical oblong pad
-            s = {};
-            s.x1 = pad_sx/2;
-            s.y1 = (pad_sy - pad_sx)/2;
-            s.z1 = 0;
-            s.x2 = -pad_sx/2;
-            s.y2 = (pad_sy - pad_sx)/2;
-            s.z2 = 0;
-            s.xc = 0;
-            s.yc = (pad_sy - pad_sx)/2;
-            s.r  = pad_sx/2;
-            arc_top = hyp_draw_arc(CSX, s, 0);
-            s.x1 = -pad_sx/2;
-            s.y1 = -(pad_sy - pad_sx)/2;
-            s.z1 = 0;
-            s.x2 = pad_sx/2;
-            s.y2 = -(pad_sy - pad_sx)/2;
-            s.z2 = 0;
-            s.xc = 0;
-            s.yc = -(pad_sy - pad_sx)/2;
-            s.r  = pad_sx/2;
-            arc_bottom = hyp_draw_arc(CSX, s, 0);
-            oblong = [ arc_top arc_bottom ];
-          end
-          % create oblong pad
-          p1 = [ x y 0];
-          if (pad_angle == 0)
-            CSX = AddPolygon(CSX, material, prio, 2, pad_z, oblong, 'Transform', {'Translate', p1});
-          else
-            CSX = AddPolygon(CSX, material, prio, 2, pad_z, oblong, 'Transform', {'Rotate_Z', pad_angle*pi/180, 'Translate', p1});
-          end
-        end
       end
     end
   end
