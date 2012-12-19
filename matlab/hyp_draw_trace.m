@@ -33,37 +33,11 @@ function CSX = hyp_draw_trace(CSX, action, layer, width, p1, p2)
   %              <----------- length ---------->
   %
  
-  % begin and end coordinates 
-  x1 = p1(1);
-  y1 = p1(2);
-
-  x2 = p2(1);
-  y2 = p2(2);
-
-  % determine angle and length
-  [theta, length] = cart2pol(x2-x1, y2-y1);
-  
-  % draw line segment as LinPoly
-  [dy, dx] = pol2cart(theta, width/2); % XXX Check: width or width /2?
-  
-  p3 = [ x2 + dx, y2 - dy];
-  p4 = [ x2 - dx, y2 + dy];
-  center = [ x2, y2 ];
-  radius = width/2;
-  
-  arc_right = hyp_arc2poly(CSX, center, p3, p4, radius, 0);
-  
-  p5 = [ x1 - dx, y1 + dy];
-  p6 = [ x1 + dx, y1 - dy];
-  center = [ x1, y1 ];
-  radius = width/2;
-  
-  arc_left = hyp_arc2poly(CSX, center, p5, p6, radius, 0);
-  
-  line = [ arc_right; arc_left ];
+  % create line segment
+  line = [p1; p2; p1]; % polygon contains at least three vertices
   
   % draw line
-  CSX = hyp_draw_poly(CSX, action, layer, 0, line);
+  CSX = hyp_draw_poly(CSX, action, layer, width/2, line);
   
 end
 

@@ -31,7 +31,7 @@ function CSX = hyp_version(CSX, s)
 
   % initalize variables
   CSX.debug = false;         % set to false to suppress messages
-  CSX.debug = true;         % set to true for debug messages
+%  CSX.debug = true;         % set to true for debug messages
   CSX.board_outline = [];    % coordinates of pcb border
   CSX.draw_board = true;     % flag
   CSX.unnamed_layer = 0;     % number of unnamed layers

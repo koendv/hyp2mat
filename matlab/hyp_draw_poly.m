@@ -42,12 +42,11 @@ function CSX = hyp_draw_poly(CSX, action, layer, width, poly)
       end
 
       % polygon has line width 'width'. expand the polygon by width/2
-      extended_poly = polygon_extend(poly, width/2);
-      extended_poly = poly;
+      extended_poly = polygon_extend(polycw(poly), width/2);
 
       % add to already existing polygons
       current_layout = CSX.stackup{j}.layout;
-      new_layout = polygon_arith(current_layout, operation, extended_poly);
+      new_layout = polygon_arith(current_layout, operation, polycw(extended_poly));
       CSX.stackup{j}.layout = new_layout;
 
     end

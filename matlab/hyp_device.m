@@ -34,13 +34,14 @@ function CSX = hyp_device(CSX, s)
   device = {};
 
   if (isfield(s,'ref')) % reference
-    device.reference = s.ref;
+    % remove non-alpha characters, or WriteOpenEMS may crash if characters such as '%' are present
+    device.reference = regexprep(s.ref, '[^a-zA-Z0-9]', '');
   else
     device.reference = '';
   end
 
   if (isfield(s,'name')) % name
-    device.name = s.name;
+    device.name = regexprep(s.name, '[^a-zA-Z0-9]', '');
   end
 
   if (isfield(s,'val')) % value

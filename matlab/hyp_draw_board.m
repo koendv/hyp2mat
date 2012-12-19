@@ -50,10 +50,10 @@ function CSX = hyp_draw_board(CSX, s)
     % plane layers are drawn negative:
     % cutout is copper, material is dielectric.
     elseif (strcmp(CSX.stackup{i}.type, 'plane'))
-      corner1 = [ xmin ymin ];
-      corner2 = [ xmax ymin ];
-      corner3 = [ xmax ymax ];
-      corner4 = [ xmin ymax ];
+      corner1 = [ xmin ymax ];
+      corner2 = [ xmax ymax ];
+      corner3 = [ xmax ymin ];
+      corner4 = [ xmin ymin ];
       CSX.stackup{i}.layout = [corner1 corner2 corner2 corner4];
 
     end

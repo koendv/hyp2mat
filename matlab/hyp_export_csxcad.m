@@ -26,7 +26,6 @@ function CSX = hyp_export_csxcad(CSX)
   prio_dielectric = 100;  % FR4 dielectric
   prio_plane      = 200;  % power and ground planes
   prio_material   = 300;  % copper
-  prio_cutout     = 400;  % voids in copper
   prio_via        = 500;  % via metal
 
   % determine board size
@@ -91,43 +90,60 @@ function CSX = hyp_export_csxcad(CSX)
   for i = 1:length(CSX.stackup)
     if (strcmp(CSX.stackup{i}.type, 'signal') || strcmp(CSX.stackup{i}.type, 'plane'))
      
-      % polygons as nx2 array, separated with [NaN, Nan]
-      poly = CSX.stackup{i}.layout;
-
-      % flag the end of the polygons with [NaN, NaN]
-      poly(end+1, 1) = NaN;
-      poly(end, 2) = NaN;
-
-      % find the indexes where the polygons begin/end
-      inds = find(sum(isnan(poly), 2) > 0);
-      inds = [0; inds];
+      % polygons as cell array, separated with [NaN, Nan]
+      layout = CSX.stackup{i}.layout;
+ 
+      % copper and cutout not created yet
+      copper = '';
+      cutout = '';
+      % initial priority
+      current_priority = prio_material;
+      % initial material
+      current_material = '';
 
       % iterate over polygons
-      for j = 1:length(inds)-1
-        q = poly(inds(j)+1 : inds(j+1)-1, :);
+      for j = 1:length(layout)
 
-        if (isempty(q))
+        poly = layout{j};
+
+        if (isempty(poly))
           continue;
         end
 
-        % create material if necessary
-        if (~isfield(CSX.stackup{i}, 'material'))
-          % create material
-          material = [ CSX.stackup{i}.l '_copper' ];
-          CSX.stackup{i}.material = material;
-          thickness = CSX.stackup{i}.t * CSX.units / CSX.zscale; % thickness in m
-          conductivity = CSX.conductivity;
-          CSX = AddConductingSheet(CSX, material, conductivity, thickness);
+        if iscw(poly)
+          % copper: create material if necessary
+          if isempty(copper)
+            % create copper material
+            copper = [ CSX.stackup{i}.l '_copper' ];
+            thickness = CSX.stackup{i}.t * CSX.units / CSX.zscale; % thickness in m
+            conductivity = CSX.conductivity;
+            CSX = AddConductingSheet(CSX, copper, conductivity, thickness);
+          end
+          new_material = copper;
+        else
+          % cutouts in copper: create material if necessary
+          if isempty(cutout)
+            % create cutout material
+            cutout = [ CSX.stackup{i}.l '_cutout' ];
+            CSX = AddMaterial(CSX, cutout);
+            CSX = SetMaterialProperty(CSX, cutout, 'Epsilon', substrate_epr, 'Mue', 1);
+          end
+          new_material = cutout;
+       end
+
+        % increase priority if necessary
+        if (strcmp(current_material, new_material))
+          current_priority = current_priority + 1;
         end
+ 
+        % polygon material
+        current_material = new_material;
 
-        % layer material
-        material = CSX.stackup{i}.material;
-
-        % layer vertical position
+        % polygon vertical position
         layer_z = CSX.stackup{i}.z;
 
         % add to CSX model
-        CSX = AddPolygon(CSX, material, prio_material, 2, layer_z, q.');
+        CSX = AddPolygon(CSX, current_material, current_priority, 2, layer_z, poly.');
       end
     end 
   end
@@ -146,7 +162,6 @@ function CSX = hyp_export_csxcad(CSX)
   disp(['board: x = ', num2str(xmin*units_mm), ' : ', num2str(xmax*units_mm), ' mm']);
   disp(['       y = ', num2str(ymin*units_mm), ' : ', num2str(ymax*units_mm), ' mm']);
   disp(['       z = ', num2str(zmin*units_mm), ' : ', num2str(zmax*units_mm), ' mm']);
-
 
 end
 
