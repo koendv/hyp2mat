@@ -25,6 +25,9 @@ function CSX = hyp_end(CSX, s)
   % draw last polygon, if any
   CSX = hyp_draw_polygon(CSX, s);
 
+  % join adjacent copper
+  CSX = hyp_optimize(CSX);
+
   % export model
   CSX = hyp_export_csxcad(CSX);
 
