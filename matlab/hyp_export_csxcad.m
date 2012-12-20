@@ -111,7 +111,7 @@ function CSX = hyp_export_csxcad(CSX)
 
         poly = layout{j};
 
-        if (isempty(poly))
+        if (isempty(poly.polygon))
           continue;
         end
 
@@ -137,7 +137,7 @@ function CSX = hyp_export_csxcad(CSX)
        end
 
         % increase priority if necessary
-        if (strcmp(current_material, new_material))
+        if ~strcmp(current_material, new_material)
           current_priority = current_priority + 1;
         end
  
