@@ -1,0 +1,15 @@
+The files 
+  src/clipper.cpp
+  src/clipper.hpp
+are from the Clipper library by Angus Johnson (www.angusj.com).
+The Clipper library is free to use in both freeware and commercial applications, 
+under the Boost Software License ( http://www.boost.org/LICENSE_1_0.txt ).
+
+The files 
+  src/poly_boolmex.cpp 
+  src/poly_iscwmex.c
+are from the GDS II toolbox by Ulf Griesmann, NIST. 
+The GDS II toolbox can be downloaded from https://sites.google.com/site/ulfgri/numerical/gdsii-toolbox 
+The files poly_boolmex.cpp and poly_iscwmex.c are in the Public Domain. 
+
+

@@ -1,0 +1,10 @@
+Name: poly_bool
+Version: 1.0.0
+Date: 2012-12-20
+Author: Various
+Maintainer: -
+Title: polygon clipper
+Description: routines for clipping and buffering 2D polygons,
+including polygons with holes and/or self-intersections.
+Categories: polygon 
+License: Boost 1.0
