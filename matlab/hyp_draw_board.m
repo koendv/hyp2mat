@@ -45,16 +45,20 @@ function CSX = hyp_draw_board(CSX, s)
     % signal layers are drawn positive:
     % material is copper, cutout is dielectric.
     if (strcmp(CSX.stackup{i}.type, 'signal'))
-      CSX.stackup{i}.layout = [];
+      CSX.stackup{i}.layout = {};
 
     % plane layers are drawn negative:
     % cutout is copper, material is dielectric.
     elseif (strcmp(CSX.stackup{i}.type, 'plane'))
+      % initialize with solid copper
       corner1 = [ xmin ymax ];
       corner2 = [ xmax ymax ];
       corner3 = [ xmax ymin ];
       corner4 = [ xmin ymin ];
-      CSX.stackup{i}.layout = [corner1 corner2 corner2 corner4];
+      s.polygon = [corner1 corner2 corner2 corner4];
+      s.add = 1;
+      s.width = 0;
+      CSX.stackup{i}.layout{1}=s;
 
     end
     % dielectric layers have no metal
