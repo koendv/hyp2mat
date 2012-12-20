@@ -36,15 +36,12 @@ function CSX = hyp_arc(CSX, s)
 
   % draw segments
   for k = 1:(length(arc)-1)
-    t = {};
-    t.lineno = s.lineno;
-    t.l = s.l;
-    t.x1 = arc(1, k);
-    t.y1 = arc(2, k);
-    t.x2 = arc(1, k+1);
-    t.y2 = arc(2, k+1);
-    t.w = s.w;
-    CSX = hyp_seg(CSX, t);
+    layer = s.l;
+    width = s.w;
+    x1 = arc(k, 1);
+    y1 = arc(k, 2);
+    x2 = arc(k+1, 1);
+    y2 = arc(k+1, 2);
     CSX = hyp_draw_trace(CSX, '+', layer, width, [x1 y1], [x2 y2]);
   end
 
