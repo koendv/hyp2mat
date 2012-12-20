@@ -1,7 +1,9 @@
-% q = polygon_extend(p, width);
+% q = polygon_extend(p, width, arc_segments);
 %
 % Extends (buffers, expands) a polygon p by a given width.
 % Returns the extended polygon.
+% circles are drawn using 'arc_segments' arcs.
+%
 % Requires polybool extension from Ulf Griessman
 % https://sites.google.com/site/ulfgri/numerical/polybool
 %
@@ -29,8 +31,7 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function q = polygon_extend(p, width);
-
+function q = polygon_extend(p, width, arc_segments);
 
   % trivial case
   if (width == 0)
@@ -48,7 +49,6 @@ function q = polygon_extend(p, width);
   % and putting a rectangle on top of every edge.
 
   % calculate circle
-  arc_segments = 8; % use polygon as approximation of circle
   alpha = linspace(0, 2*pi, arc_segments+1) + pi/arc_segments;
   circle_x = width / cos(pi/arc_segments) * cos(alpha);
   circle_y = width / cos(pi/arc_segments) * sin(alpha);

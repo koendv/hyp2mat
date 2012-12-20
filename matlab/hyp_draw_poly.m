@@ -34,20 +34,14 @@ function CSX = hyp_draw_poly(CSX, action, layer, width, poly)
       if (strcmp(CSX.stackup{j}.type, 'plane'))
         add_poly = ~add_poly;
       end
-      
-      if (add_poly)
-        operation = '+';
-      else
-        operation = '-';
-      end
 
-      % polygon has line width 'width'. expand the polygon by width/2
-      extended_poly = polygon_extend(polycw(poly), width/2);
+      s = {};
+      s.polygon = poly;
+      s.width = width;
+      s.add = add_poly;
 
       % add to already existing polygons
-      current_layout = CSX.stackup{j}.layout;
-      new_layout = polygon_arith(current_layout, operation, polycw(extended_poly));
-      CSX.stackup{j}.layout = new_layout;
+      CSX.stackup{j}.layout{end+1} = s;
 
     end
   end

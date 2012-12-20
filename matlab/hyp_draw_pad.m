@@ -38,8 +38,8 @@ function CSX = hyp_draw_pad(CSX, layer, shape, x, y, sx, sy, angle)
   if (shape == 0)
     % circular and elliptical pads 
     alpha = linspace(0, 2*pi, CSX.arc_segments+1) + pi/CSX.arc_segments;
-    ellipse_x = sx / 2 * cos(alpha);
-    ellipse_y = sy / 2 * sin(alpha);
+    ellipse_x = sx / 2 / cos(pi/CSX.arc_segments) * cos(alpha);
+    ellipse_y = sy / 2 / cos(pi/CSX.arc_segments) * sin(alpha);
     pad_poly = [ellipse_x; ellipse_y].';
   elseif (shape == 1)
     % rectangular pads

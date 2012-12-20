@@ -89,8 +89,13 @@ function CSX = hyp_export_csxcad(CSX)
 
   for i = 1:length(CSX.stackup)
     if (strcmp(CSX.stackup{i}.type, 'signal') || strcmp(CSX.stackup{i}.type, 'plane'))
-     
-      % polygons as cell array, separated with [NaN, Nan]
+      %
+      % Each layer has a layout, which is a cell array of polygons
+      % each polygon has three fields:
+      % polygon: list of vertices
+      % width: polygon edge width
+      % add: true if polygon is positive, false if polygon is hole.
+      %
       layout = CSX.stackup{i}.layout;
  
       % copper and cutout not created yet
@@ -110,7 +115,7 @@ function CSX = hyp_export_csxcad(CSX)
           continue;
         end
 
-        if iscw(poly)
+        if poly.add
           % copper: create material if necessary
           if isempty(copper)
             % create copper material
@@ -142,8 +147,11 @@ function CSX = hyp_export_csxcad(CSX)
         % polygon vertical position
         layer_z = CSX.stackup{i}.z;
 
+        % polygon vertices
+        current_polygon = poly.polygon;
+
         % add to CSX model
-        CSX = AddPolygon(CSX, current_material, current_priority, 2, layer_z, poly.');
+        CSX = AddPolygon(CSX, current_material, current_priority, 2, layer_z, current_polygon.');
       end
     end 
   end
