@@ -52,6 +52,7 @@ function CSX = hyp_version(CSX, s)
 
   % arc segments
   CSX.arc_segments    = 8;   % number of linear segments per arc; needs to be a multiple of 4
+  CSX.arc_maxerr      = 5e-4;% maximum error between polygon and perfect circle
 
 end
 

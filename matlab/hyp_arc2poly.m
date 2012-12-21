@@ -49,16 +49,26 @@ function arc = hyp_arc2poly(CSX, center, p1, p2, radius, clockwise)
     end
   end
 
-  % calculate number of segments
-  % a full circle is drawn using CSX.arc_segments segments;
-  % a 90 degree arc using CSX.arc_segments/4
+  % calculate number of segments to have an acceptable error
 
-  segments = round(CSX.arc_segments*abs(beta-alpha)/(2*pi)) + 1;
+  max_err = CSX.arc_maxerr / CSX.units; % maximum error between perfect circular arc and polygonal approximation
+  segments = CSX.arc_segments;
+  err = inf;
+  while (err > max_err)
+    err = radius * (1-cos(pi/segments));
+    if (err > max_err)
+      segments = segments + 4;
+    end
+  end
+
+  % a full circle is drawn using 'segments' segments;
+  % a 90 degree arc using segments/4
+  segments = round(segments*abs(beta-alpha)/(2*pi)) + 1;
 
   % sanity checks.
-  if (segments > CSX.arc_segments+1)
-    segments = CSX.arc_segments+1;
-  end
+  % if (segments > CSX.arc_segments+1)
+  %   segments = CSX.arc_segments+1;
+  % end
 
   if (segments < 2)
     segments = 2;
