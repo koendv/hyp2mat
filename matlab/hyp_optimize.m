@@ -22,11 +22,18 @@
 function CSX = hyp_optimize(CSX)
 
   % check if polygon arithmetic functions available
+  if (~exist('poly_bool') && exist('OCTAVE_VERSION', 'builtin'))
+    try
+      pkg load poly_bool;
+    end
+  end
+
   if ~exist('poly_bool')
-    disp('poly_bool not installed, not optimizing');
+    disp('not optimizing: poly_bool not found.');
     return;
   end
 
+  % optimize polygons
   scale = 2^32; % needed for poly_bool. XXX
 
   for i = 1:length(CSX.stackup)
@@ -67,19 +74,24 @@ function CSX = hyp_optimize(CSX)
  
         if isempty(new_layout)
           if poly.add
-            new_layout = current_polygon;
+            new_layout = poly_cw(current_polygon);
           end
         else 
           [new_layout, hole_flag] = poly_bool(new_layout, current_polygon, action, scale);
-% Superfluous? See poly_boolmex source: creation of hole flags.
-%          % make polygons clockwise if positive, counterclockwise if hole.
-%          for j = 1:length(new_layout)
-%            if hole_flag(j)
-%              new_layout{j} = poly_ccw(new_layout{j});
-%            else
-%              new_layout{j} = poly_cw(new_layout{j});
-%            end
-%          end
+           
+          % make polygons clockwise if positive, counterclockwise if hole.
+          % Maybe superfluous? See poly_boolmex source: creation of hole flags.
+          if ~isempty(new_layout)
+            positive = poly_iscw(new_layout{1}); % orientation of outer polygon is positive
+            for j = 1:length(new_layout)
+              if (poly_iscw(new_layout{j}) == positive)
+                new_layout{j} = poly_cw(new_layout{j});
+              else
+                new_layout{j} = poly_ccw(new_layout{j});
+              end
+            end
+          end
+
         end
       end
 
@@ -90,7 +102,7 @@ function CSX = hyp_optimize(CSX)
         s.polygon = new_layout{j};
         s.add = poly_iscw(s.polygon);
         s.width = 0;
-        layout(end+1) = s;
+        layout{end+1} = s;
       end
 
       CSX.stackup{i}.layout = layout;
