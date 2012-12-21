@@ -21,6 +21,7 @@
 
 function CSX = hyp_optimize(CSX)
 
+  % return;
   % check if polygon arithmetic functions available
   if (~exist('poly_bool') && exist('OCTAVE_VERSION', 'builtin'))
     try
@@ -58,6 +59,15 @@ function CSX = hyp_optimize(CSX)
         if (isempty(current_polygon))
           continue;
         end
+
+        % sanity check
+        [dimx, dimy] = size(current_polygon);
+        if ((dimy ~= 2) || (dimx < 3))
+          warning(['malformed polygon. dimensions: ' num2str(size(current_polygon)) ]);
+          warning(['value: ' num2str(current_polygon) ]);
+          continue;
+        end
+
         current_polygon = poly_cw(current_polygon);
 
         if (poly.width ~= 0)
