@@ -1,9 +1,0 @@
-Name: poly_bool
-Version: 1.0.0
-Date: 2012-12-20
-Author: Various
-Maintainer: The Octave Community
-Title: polygon clipper
-Description: routines for clipping and buffering 2D polygons, including polygons with holes and/or self-intersections.
-Categories: polygon, geometry
-License: Boost 1.0

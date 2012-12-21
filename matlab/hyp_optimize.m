@@ -23,6 +23,7 @@ function CSX = hyp_optimize(CSX)
 
   % check if polygon arithmetic functions available
   if ~exist('poly_bool')
+    disp('poly_bool not installed, not optimizing');
     return;
   end
 
