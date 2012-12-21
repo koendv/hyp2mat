@@ -146,11 +146,6 @@ mexFunction(int nlhs, mxArray *plhs[],
 	 pa[k][m].X = (long64)floor(ud * pda[m]     + 0.5);
 	 pa[k][m].Y = (long64)floor(ud * pda[m+vnu] + 0.5);
       }
-#ifdef XXX
-      // make sure polygons have positive orientation
-      if ( !Orientation(pa[k]) )
-	  ReversePolygon(pa[k]);
-#endif
    }
 
    // pb
@@ -171,12 +166,6 @@ mexFunction(int nlhs, mxArray *plhs[],
 	 pb[k][m].X = (long64)floor(ud * pda[m]     + 0.5);
 	 pb[k][m].Y = (long64)floor(ud * pda[m+vnu] + 0.5);
       }
-
-#ifdef XXX
-      // make sure polygons have positive orientation
-      if ( !Orientation(pb[k]) )
-	  ReversePolygon(pb[k]);
-#endif
    }
 
    // scale buffering radius

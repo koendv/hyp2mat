@@ -8,8 +8,12 @@ function cw = poly_iscw(pin);
 % pin :   Nx2 array of polygon vertices or cell array of polygons.
 % cw   :  array with flags indicating the orientation of the
 %         polygons.
+%
+% The interface function 'poly_iscwmex' must be compiled
+% before using this function.
 
 % Initial version, Ulf Griesmann, NIST, November 2012
+% Koen De Vleeschauwer, December 2012
 
 % convert to cell array
 pin = poly_cell(pin);
@@ -18,4 +22,4 @@ pin = poly_cell(pin);
 cw = poly_iscwmex(pin);
 
 return
-
+%not truncated

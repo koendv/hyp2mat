@@ -22,8 +22,14 @@ function [pc, hf] = poly_bool(pa, pb, op, ud);
 %      of polygons pa and pb (can be more than one polygon)
 % hf : hole flags for each of the output polygons. If > 0, the
 %      polygon is an interior boundary of a polygon with a hole.
-
+%
 % This function is based on the Clipper library by Angus Johnson (www.angusj.com).
+% The Clipper library uses integer arithmetic. Polygons are scaled up by a scale factor 'ud'
+% before clipping, and scaled down after processing.
+% 
+% The Clipper library uses polygon orientation - clockwise or counterclockwise - to distinguish between 
+% positive polygons and negative 'holes'. It assumes the first, outer, polygon has a positive 
+% orientation. Inner 'hole' polygons have an opposite orientation.
 %
 % The interface function 'poly_boolmex' must be compiled before
 % using this function.
@@ -37,6 +43,7 @@ function [pc, hf] = poly_bool(pa, pb, op, ud);
 %
 
 % Ulf Griesmann, NIST, November 2012
+% Koen De Vleeschauwer, December 2012
 
 % check arguments
 if nargin < 4
@@ -55,3 +62,4 @@ pb = poly_cell(pb);
 [pc, hf] = poly_boolmex(pa, pb, op, 0, ud);
 
 return
+%not truncated

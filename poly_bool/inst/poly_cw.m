@@ -9,6 +9,7 @@ function po = poly_cw(pin);
 %
 
 % Initial version, Ulf Griesmann, NIST, November 2012
+% Koen De Vleeschauwer, December 2012
 
 % convert to cell array
 pin = poly_cell(pin);
@@ -31,3 +32,4 @@ if length(po) == 1
 end
 
 return
+%not truncated

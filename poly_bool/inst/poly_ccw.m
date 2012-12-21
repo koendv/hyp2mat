@@ -4,11 +4,12 @@ function po = poly_ccw(pin);
 % poly_ccw :  change all polygons with CW orientation to 
 %           polygons with CCW orientation.
 %
-% pin : Nx2 matrix of polygon vertices or cell array of polygons.
+% pin : nx2 matrix of polygon vertices or cell array of polygons.
 % po :  output polygons.
 %
 
 % Initial version, Ulf Griesmann, NIST, November 2012
+% Koen De Vleeschauwer, December 2012
 
 % convert to cell array
 pin = poly_cell(pin);
@@ -31,3 +32,4 @@ if length(po) == 1
 end
 
 return
+%not truncated
