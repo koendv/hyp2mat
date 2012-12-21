@@ -136,7 +136,8 @@ function CSX = hyp_export_csxcad(CSX)
           new_material = cutout;
        end
 
-        % increase priority if necessary
+        % increase priority if material changed 
+        % (hole within copper within hole ...)
         if ~strcmp(current_material, new_material)
           current_priority = current_priority + 1;
         end

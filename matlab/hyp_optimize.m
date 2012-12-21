@@ -21,7 +21,7 @@
 
 function CSX = hyp_optimize(CSX)
 
-   return;
+  return;
   % check if polygon arithmetic functions available
   if (~exist('poly_bool') && exist('OCTAVE_VERSION', 'builtin'))
     try
