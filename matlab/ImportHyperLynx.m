@@ -50,32 +50,39 @@ function CSX = ImportHyperLynx(CSX, filename, simulated_nets)
 
   if (nargin == 2)
     % two arguments: import all nets
-    CSX.simulated_nets = {};
+    simulated_nets = {};
   elseif (ischar(simulated_nets))
     % third argument is a string: import a single net
-    CSX.simulated_nets = { };
-    CSX.simulated_nets = { simulated_nets };
+    simulated_nets = { };
+    simulated_nets = { simulated_nets };
   elseif (iscellstr(simulated_nets))
     % third argument is a cell array of strings: import a list of nets
-    CSX.simulated_nets = simulated_nets;
+    simulated_nets = simulated_nets;
   else
     % default: import all nets
     warning('importing all nets');
-    CSX.simulated_nets = {};
+    simulated_nets = {};
+  end
+
+  cmdargs = '';
+  for i = (simulated_nets)
+    i{1}
+    cmdargs = [ cmdargs ' --net ''' i{1}  '''' ];
   end
 
   % conversion
   if isunix
-    cmd = [ 'hyp2mat -o pcb.m -f pcb ''' filename '''' ];
+    cmd = [ 'hyp2mat -v -o pcb.m -f csxcad ' cmdargs ' ''' filename '''' ];
   elseif ispc
     m_filename = mfilename('fullpath');
     dir = fileparts( m_filename );
-    cmd = [ '"' dir '\..\hyp2mat.exe" -o pcb.m -f pcb "' filename '"' ];
+    cmd = [ '"' dir '\..\hyp2mat.exe" -v -o pcb.m -f csxcad ' cmdargs ' "' filename '"' ];
   else
     error('hyp2mat:ImportHyperLynx','unknown/unsupported operating system...');
   end
 
   % convert .hyp to .m
+  disp (['command: ' cmd ]);
   status = system(cmd); % security implications?
   if (status == 0) 
     % run generated pcb.m

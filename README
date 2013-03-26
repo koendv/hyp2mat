@@ -1,0 +1,22 @@
+This is a utility which converts HyperLynx files to CSXCAD for electromagnetic simulation.
+
+Dependencies: requires libhpdf, libpng, zlib.
+Tested on Linux ubuntu, MacOSX and Windows/MingW.
+
+On Linux ubuntu, with libhpdf installed in /usr/lib:
+ ./configure
+
+On MacOSX, with libhpdf installed in /opt/local using MacPorts:
+  CPPFLAGS=-I/opt/local/include LDFLAGS=-L/opt/local/lib ./configure
+
+On Windows with MingW, compiling a static binary:
+  CPPFLAGS=-I/usr/local/include LDFLAGS="-static -static-libgcc -static-libstdc++ -L/usr/local/lib" ./configure
+
+Default is building the hyp2mat executeable only.
+If you wish to install not only the executeable, but also the hyp2mat library, includes and package information, add the "--enable-library" flag, e.g. "configure --enable-library"
+
+Default is building the static libhyp2mat.a library only.
+If you wish to build not only the static library, but also the shared libhyp2mat.so library, add the "--enable-shared" flag, e.g. "configure --enable-library --enable-shared"
+
+Note to self: Check source using 'CXXFLAGS="-g -Wall -pedantic" ./configure' and 'cppcheck -v --max-configs=24' .
+

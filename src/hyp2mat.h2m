@@ -1,0 +1,58 @@
+[NAME]
+hyp2mat \- convert hyperlynx files to octave/matlab scripts
+/Print board summary/
+All lengths are in meters.
+
+Hyperlynx input files conventionally end in 
+.BR .hyp
+\&.
+
+.I hyp2mat 
+reads input from file
+.IB infile . 
+If no input file is specified input is read from standard in.
+
+If no output file is specified output is to standard out.
+
+If a syntax error occurs during conversion, error recovery is attempted.
+.I hyp2mat 
+exits with zero status if conversion was succesful and non-zero if not.
+
+The --verbose option can be used to list board dimensions. 
+
+If only a small region of the board needs to be simulated the --xmin --xmax --ymin --ymax options can be used to crop the board to a smaller region. 
+
+If not all layers of the board need to be simulated, the --zmin and --zmax options may be used to remove layers.
+
+Arcs are approximated by polygons. If the default is unsatisfactory set --arc-precision to a non-zero value. E.g. --arc-precision=0.0001 sets accuracy to 0.1mm.
+
+Typical use of hyp2mat is with simulation packages such as OpenEMS.
+
+[EXAMPLES]
+Convert pcb.hyp to pdf:
+.nf
+hyp2mat -o pcb.pdf pcb.hyp
+.ni
+
+Examine original Hyperlynx file:
+.nf 
+hyp2mat -o pcb.pdf --raw pcb.hyp
+.ni 
+
+[FILES]
+.B /usr/share/hyp2mat/matlab/
+.br
+.ns
+Supporting matlab routines for OpenEMS.
+
+[AUTHOR]
+.nf
+Koen De Vleeschauwer, http://www.kdvelectronics.eu
+.ni
+
+[SEE ALSO]
+.IR octave (1)
+.br
+.IR "OpenEMS" ,
+a free and open-source electromagnetic field solver using the FDTD method.
+

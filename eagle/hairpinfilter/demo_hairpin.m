@@ -27,7 +27,7 @@ clc
 
 % initialize
 physical_constants;
-unit = 0.0254; % this pcb has units in inches 
+unit = 1; % this pcb has units in meters. 
 fc= 1.1e9;   % center frequency
 f0= 1.0e9;   % estimated 20db frequency
 substrate_epr = 4.8; 

@@ -1,6 +1,6 @@
 private/
-*.o
-parse.c
-parse.h
-hyp2mat
-hyp2mat.exe
+autom4te.cache/
+Makefile
+config.log
+config.status
+libtool

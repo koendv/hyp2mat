@@ -27,7 +27,7 @@ clc
 
 % initialize
 physical_constants;
-unit = 0.0254; % this pcb has units in inches 
+unit = 1; % this pcb has units in meter. 
 f_max = 7e9;
 substrate_epr = 4.8;
 resolution = c0 / f_max / sqrt(substrate_epr) / unit / 25;

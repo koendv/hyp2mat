@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: hyp2mat
+Description: Convert Hyperlynx PCB files to matlab scripts
+Requires: 
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir} -lhyp2mat
+Libs.private: @LIBS@
+Cflags: -I${includedir}

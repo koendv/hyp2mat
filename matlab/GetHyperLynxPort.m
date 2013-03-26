@@ -57,36 +57,27 @@ function [side, start, stop] = GetHyperLynxPort(CSX, port_ref)
 
   % exit if port not found
   if (~port_found)
-    disp(['Valid ports:' ]);
+    % display valid port names
+    portnames = {};
     for i = 1:length(CSX.HyperLynxPort)
-      net = CSX.HyperLynxPort{i}.net;
-      ref = CSX.HyperLynxPort{i}.ref;
-      disp(['Net: ' net ' Port: ' ref ]);
+      portnames(end+1) = CSX.HyperLynxPort{i}.ref;
     end
+    portnames = sort(portnames);
+    fprintf('Valid ports:');
+    for i = 1:length(portnames)
+      fprintf(' %s', portnames{i});
+    end
+    fprintf('\n');
+    % exit with error message
     error(['port not found: ' port_ref ]);
   end
 
   % pad dimensions
   x = port.x;
   y = port.y;
-  z = port.z;
-  dx = port.sx/2;
-  dy = port.sy/2;
-  alpha = port.angle;
-
-  % pad rotation
-  if (port.shape ~= 0) % don't rotate circles/ellipses
-    % rotate rectangle/oblong pads
-    if (rem(alpha, 180) == 0)
-      % do nothing
-    elseif (rem(alpha, 90) == 0)
-      t = dx;
-      dx = dy;
-      dy = t;
-    else
-      error('angle not a multiple of 90');
-    end
-  end
+  z = port.z0;
+  dx = port.size_x/2;
+  dy = port.size_y/2;
 
   % calculate pad corners
   dx = abs(dx);
@@ -97,7 +88,7 @@ function [side, start, stop] = GetHyperLynxPort(CSX, port_ref)
   y2 = y + dy;
 
   % return values
-  side = port.side;
+  side = port.position;
   start = [ x1 y1 z];
   stop  = [ x2 y2 z ];
   
