@@ -41,20 +41,25 @@ CSXCAD::CSXCAD()
 }
 
  /*
-  * To improve simulation speed, we assume metal layers have thickness 0.
   * adjust_z calculates the position of a layer, assuming metal layers have thickness 0.
+  * This improve simulation speed.
   */
 
 double CSXCAD::adjust_z(Hyp2Mat::PCB& pcb, double z)
 {
-  double z_new = pcb.stackup.back().z0;
- 
+
+  /* look up z in the layer list */
   for (LayerList::reverse_iterator l = pcb.stackup.rbegin(); l != pcb.stackup.rend(); ++l) {
-    if (l->z0 == z) break;
-    if (l->layer_type == LAYER_DIELECTRIC) z_new += l->thickness();
-    if (l->z1 == z) break;
+    if (l->z0 == z) return l->z0;
+    if (l->z1 == z) {
+      /* enforce zero thickness on signal and plane layers */
+      if  ((l->layer_type == LAYER_SIGNAL) || (l->layer_type == LAYER_PLANE)) return l->z0;
+      /* dielectric layers are ok */
+      else return l->z1;
+      }
     }
-  return z_new;
+  /* default is topmost layer. Ought never to get here. */
+  return pcb.stackup.front().z0;
 }
 
 void CSXCAD::export_edge(Edge& edge)
@@ -319,7 +324,7 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
 
 void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb)
 {
-#ifdef DEBUG_LAYER_ADJUST
+//#ifdef DEBUG_LAYER_ADJUST
   // XXX
   for (LayerList::reverse_iterator l = pcb.stackup.rbegin(); l != pcb.stackup.rend(); ++l) {
     std::cerr << "layer: " << l->layer_name << std::endl;
@@ -328,7 +333,7 @@ void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb)
     double z1 = adjust_z(pcb, l->z1);
     std::cerr << "adjust: " << l->z1 << " > " << z1 << std::endl; // XXX
     }
-#endif
+//#endif
 
   /* open file for output */
 
