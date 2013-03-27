@@ -34,9 +34,11 @@ private:
   int prio_via;         // via metal
   int prio_drill;       // hole
 
+  double adjust_z(Hyp2Mat::PCB& pcb, double z);
+
   void export_edge(Hyp2Mat::Edge& edge); /* output a polygon edge */
   void export_polygon(Hyp2Mat::Polygon& poly); /* output a polygon */
-  void export_layer(Hyp2Mat::Layer& layer); /* output a copper layer */
+  void export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer); /* output a copper layer */
   void export_board(Hyp2Mat::PCB& pcb); /* output the dielectric */
   void export_vias(Hyp2Mat::PCB& pcb);
   void export_devices(Hyp2Mat::PCB& pcb);

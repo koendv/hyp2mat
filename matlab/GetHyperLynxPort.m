@@ -75,7 +75,7 @@ function [side, start, stop] = GetHyperLynxPort(CSX, port_ref)
   % pad dimensions
   x = port.x;
   y = port.y;
-  z = port.z0;
+  z = port.z;
   dx = port.size_x/2;
   dy = port.size_y/2;
 
@@ -89,7 +89,7 @@ function [side, start, stop] = GetHyperLynxPort(CSX, port_ref)
 
   % return values
   side = port.position;
-  start = [ x1 y1 z];
+  start = [ x1 y1 z ];
   stop  = [ x2 y2 z ];
   
 end

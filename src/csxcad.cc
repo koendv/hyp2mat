@@ -40,6 +40,23 @@ CSXCAD::CSXCAD()
   return;
 }
 
+ /*
+  * To improve simulation speed, we assume metal layers have thickness 0.
+  * adjust_z calculates the position of a layer, assuming metal layers have thickness 0.
+  */
+
+double CSXCAD::adjust_z(Hyp2Mat::PCB& pcb, double z)
+{
+  double z_new = pcb.stackup.back().z0;
+ 
+  for (LayerList::reverse_iterator l = pcb.stackup.rbegin(); l != pcb.stackup.rend(); ++l) {
+    if (l->z0 == z) break;
+    if (l->layer_type == LAYER_DIELECTRIC) z_new += l->thickness();
+    if (l->z1 == z) break;
+    }
+  return z_new;
+}
+
 void CSXCAD::export_edge(Edge& edge)
 {
   std::cout << "pgon = [];" << std::endl;
@@ -105,7 +122,7 @@ bool CSXCAD::contains_hole(Hyp2Mat::PolygonList& polylist)
 }
 
   /*
-   * Export copper
+   * Export dielectric
    */
  
 void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
@@ -116,13 +133,16 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
 
   /* CSXCAD coordinate grid definition */
   Bounds bounds = pcb.GetBounds();
+  double z_min = adjust_z(pcb, bounds.z_min);
+  double z_max = adjust_z(pcb, bounds.z_max);
+
   std::cout << "function CSX = pcb(CSX)" << std::endl;
   std::cout << "% matlab script created by hyp2mat" << std::endl;
   std::cout << "% create minimal mesh" << std::endl;
   std::cout << "mesh = {};" << std::endl;
   std::cout << "mesh.x = [" << bounds.x_min << " " << bounds.x_max << "];" << std::endl;
   std::cout << "mesh.y = [" << bounds.y_min << " " << bounds.y_max << "];" << std::endl;
-  std::cout << "mesh.z = [" << bounds.z_min << " " << bounds.z_max << "];" << std::endl;
+  std::cout << "mesh.z = [" << z_min << " " << z_max << "];" << std::endl;
   std::cout << "% add mesh" << std::endl;
   std::cout << "CSX = DefineRectGrid(CSX, 1, mesh);" << std::endl;
 
@@ -157,9 +177,9 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
       int priority = prio_dielectric + j->nesting_level;
       // fixme XXX handle case where board layers have different dielectric constant
       if (!j->is_hole)
-        std::cout << "CSX = AddLinPoly(CSX, 'FR4', " << priority << ", 2, " << bounds.z_min << ", pgon, " << bounds.z_max - bounds.z_min << ");" << std::endl;
+        std::cout << "CSX = AddLinPoly(CSX, 'FR4', " << priority << ", 2, " << z_min << ", pgon, " << z_max - z_min << ");" << std::endl;
       else
-        std::cout << "CSX = AddLinPoly(CSX, 'Drill', " << priority << ", 2, " << bounds.z_min << ", pgon, " << bounds.z_max - bounds.z_min << ");" << std::endl;
+        std::cout << "CSX = AddLinPoly(CSX, 'Drill', " << priority << ", 2, " << z_min << ", pgon, " << z_max - z_min << ");" << std::endl;
       }
 
   return;
@@ -169,7 +189,7 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
    * Export copper
    */
  
-void CSXCAD::export_layer(Hyp2Mat::Layer& layer)
+void CSXCAD::export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer)
 {
   std::string layer_material = layer.layer_name + "_copper";
   std::string layer_cutout = layer.layer_name + "_cutout";
@@ -185,10 +205,6 @@ void CSXCAD::export_layer(Hyp2Mat::Layer& layer)
   if (contains_hole(layer.metal)) {
       std::cout << "% create layer " << layer.layer_name << " cutout" << std::endl;
       std::cout << "CSX = AddConductingSheet(CSX, '" << layer_cutout << "', " << 0 << ", " << layer.thickness() << ");" << std::endl;
-#if 0
-      std::cout << "CSX = AddMaterial( CSX, '" << layer_cutout << "');" << std::endl;
-      std::cout << "CSX = SetMaterialProperty( CSX, '" << layer_cutout << "', 'Epsilon', " << layer.epsilon_r << ", 'Mue', 1);" << std::endl; // XXX check with Thorsten Liebig
-#endif
       };
 
   /*
@@ -211,7 +227,8 @@ void CSXCAD::export_layer(Hyp2Mat::Layer& layer)
 
       export_edge(*j);
       int priority = prio_material + j->nesting_level;
-      std::cout << "CSX = AddPolygon(CSX, '" << material << "', " << priority << ", 2, " << layer.z0 << ", pgon);" << std::endl;
+      double z0 = adjust_z(pcb, layer.z0);
+      std::cout << "CSX = AddPolygon(CSX, '" << material << "', " << priority << ", 2, " << z0 << ", pgon);" << std::endl;
       }
 
   return;
@@ -228,9 +245,11 @@ void CSXCAD::export_vias(Hyp2Mat::PCB& pcb)
     std::cout << "% via copper" << std::endl;
     std::cout << "CSX = AddMetal( CSX, 'via' );" << std::endl;
     for (ViaList::iterator i = pcb.via.begin(); i != pcb.via.end(); ++i) {
+      double z0 = adjust_z(pcb, i->z0);
+      double z1 = adjust_z(pcb, i->z1);
       std::cout << "CSX = AddCylinder(CSX, 'via', " << prio_via ;
-      std::cout << ", [ " << i->x << " , " << i->y << " , " << i->z0;
-      std::cout << " ], [ " << i->x << " , " << i->y << " , " << i->z1;
+      std::cout << ", [ " << i->x << " , " << i->y << " , " << z0;
+      std::cout << " ], [ " << i->x << " , " << i->y << " , " << z1;
       std::cout << " ], " <<  i->radius << ");" << std::endl;
       }
     }
@@ -283,9 +302,10 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
     double dbottom = std::abs(i->z0 - pcb.stackup.back().z0);
     double dtop = std::abs(i->z1 - pcb.stackup.front().z1);
     bool on_top = dtop <= dbottom;
+    double z0 = adjust_z(pcb, i->z0);
 
     std::cout << "CSX.HyperLynxPort{end+1} = struct('ref', " << string2matlab(i->ref);
-    std::cout << ", 'x', " << i->x  << ", 'y', " << i->y << ", 'z0', " << i->z0  << ", 'z1', " << i->z1; 
+    std::cout << ", 'x', " << i->x  << ", 'y', " << i->y << ", 'z', " << z0; 
     std::cout << ", 'size_x', " << size_x  << ", 'size_y', " << size_y ; 
     std::cout << ", 'position', " << (on_top ? "'top'" : "'bottom'"); 
     std::cout << ", 'layer_name', " <<  string2matlab(i->layer_name) << ");" << std::endl;
@@ -299,6 +319,17 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
 
 void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb)
 {
+#ifdef DEBUG_LAYER_ADJUST
+  // XXX
+  for (LayerList::reverse_iterator l = pcb.stackup.rbegin(); l != pcb.stackup.rend(); ++l) {
+    std::cerr << "layer: " << l->layer_name << std::endl;
+    double z0 = adjust_z(pcb, l->z0);
+    std::cerr << "adjust: " << l->z0 << " > " << z0 << std::endl; // XXX
+    double z1 = adjust_z(pcb, l->z1);
+    std::cerr << "adjust: " << l->z1 << " > " << z1 << std::endl; // XXX
+    }
+#endif
+
   /* open file for output */
 
   if ((filename != "-") && (freopen(filename.c_str(), "w", stdout) == NULL)) {
@@ -312,7 +343,7 @@ void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb)
   /* Export copper */
   std::cout << "% copper" << std::endl;
   for (LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l)
-    export_layer(*l);
+    export_layer(pcb, *l);
 
   /* Export vias */
   export_vias(pcb);

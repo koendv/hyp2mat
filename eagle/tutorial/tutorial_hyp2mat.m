@@ -73,8 +73,8 @@ mesh.x = [min(mesh.x)-AirBox max(mesh.x)+AirBox mesh.x];
 mesh.y = [min(mesh.y)-AirBox max(mesh.y)+AirBox mesh.y];
 mesh.z = [min(mesh.z)-AirBox max(mesh.z)+2*AirBox mesh.z];
 
-%mesh = SmoothMesh(mesh, resolution);
-mesh = SmoothMesh(mesh, resolution, 'algorithm', [ 1 ]);
+mesh = SmoothMesh(mesh, resolution);
+%mesh = SmoothMesh(mesh, resolution, 'algorithm', [ 1 ]);
 
 % Setting boundary conditions
 
