@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -58,8 +59,8 @@ double CSXCAD::adjust_z(Hyp2Mat::PCB& pcb, double z)
       else return l->z1;
       }
     }
-  /* default is topmost layer. Ought never to get here. */
-  return pcb.stackup.front().z0;
+  /* default is unchanged. Ought never to get here. */
+  return z;
 }
 
 void CSXCAD::export_edge(Edge& edge)
@@ -151,41 +152,79 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
   std::cout << "% add mesh" << std::endl;
   std::cout << "CSX = DefineRectGrid(CSX, 1, mesh);" << std::endl;
 
-  // create board material if at least one positive polygon present
+  /*
+   * Export the board. The board outline is positive; 
+   */
+
+  /*
+   * create board material if at least one positive polygon present
+   * We output one polygon for each dielectric layer, as each layer may have 
+   * a different epsilon_r.
+   */
+
   if (contains_polygon(pcb.board)) {
-    std::cout << "% create board material" << std::endl;
-    std::cout << "CSX = AddMaterial( CSX, 'FR4');" << std::endl;
-    std::cout << "CSX = SetMaterialProperty( CSX, 'FR4', 'Epsilon', " << fr4_epsilon_r << ", 'Mue', 1);" << std::endl;
+    std::vector<double> dielectrics;
+
+    for (PolygonList::iterator i = pcb.board.begin(); i != pcb.board.end(); ++i)
+      for (Polygon::iterator j = i->begin(); j != i->end(); ++j) {
+        /* only output board material, not holes */
+        if (j->is_hole) continue; 
+        for (LayerList::reverse_iterator l = pcb.stackup.rbegin(); l != pcb.stackup.rend(); ++l) {
+          /* only output dielectrics */
+          if (l->layer_type != LAYER_DIELECTRIC) continue;
+
+          /* find material corresponding to dielectric constant */
+          std::vector<double>::iterator it = std::find(dielectrics.begin(), dielectrics.end(), l->epsilon_r);
+          if (it == dielectrics.end()) {
+            /* not found, create material */
+            /* add dielectric to list */ 
+            dielectrics.push_back(l->epsilon_r);
+            it = dielectrics.end(); --it;
+            /* create material */
+            int index = std::distance(dielectrics.begin(), it);
+            std::cout << "% create board material" << std::endl;
+            std::cout << "CSX = AddMaterial( CSX, 'Dielectric" << index << "');" << std::endl;
+            std::cout << "CSX = SetMaterialProperty( CSX, 'Dielectric" << index << "', 'Epsilon', " << *it << ", 'Mue', 1);" << std::endl;
+            }
+
+          /* output CSXCAD polygon */
+          int index = std::distance(dielectrics.begin(), it);
+          std::cout << "% board outline, layer " << l->layer_name << std::endl;
+          export_edge(*j);
+          int priority = prio_dielectric + j->nesting_level;
+          double z0 = adjust_z(pcb, l->z0);
+          double z1 = adjust_z(pcb, l->z1);
+          std::cout << "CSX = AddLinPoly(CSX, 'Dielectric" << index << "', " << priority << ", 2, " << z0 << ", pgon, " << z1 - z0 << ");" << std::endl;
+
+        }
+      }
     };
 
-  // create board cutout material if at least one negative polygon present
+
+  /*
+   * Export board cutouts
+   */
+
+  /* 
+   * create board cutout material if at least one negative polygon present
+   * For each cutout we create a single polygon which goes through all layers.
+   */
+
   if (contains_hole(pcb.board)) {
     std::cout << "% create board cutout material" << std::endl;
     std::cout << "CSX = AddMaterial( CSX, 'Drill');" << std::endl;
     std::cout << "CSX = SetMaterialProperty( CSX, 'Drill', 'Epsilon', 1, 'Mue', 1);" << std::endl;
-    };
 
-  /*
-   * Export the board. The board outline is positive; 
-   * negative edges are cutouts.
-   */
-
-
-  for (PolygonList::iterator i = pcb.board.begin(); i != pcb.board.end(); ++i)
-    for (Polygon::iterator j = i->begin(); j != i->end(); ++j) {
-      /* output CSXCAD polygon */
-      if (!j->is_hole)
-        std::cout << "% board outline" << std::endl;
-      else
+    for (PolygonList::iterator i = pcb.board.begin(); i != pcb.board.end(); ++i)
+      for (Polygon::iterator j = i->begin(); j != i->end(); ++j) {
+        /* output CSXCAD polygon */
+        if (!j->is_hole) continue;
         std::cout << "% board cutout" << std::endl;
-      export_edge(*j);
-      int priority = prio_dielectric + j->nesting_level;
-      // fixme XXX handle case where board layers have different dielectric constant
-      if (!j->is_hole)
-        std::cout << "CSX = AddLinPoly(CSX, 'FR4', " << priority << ", 2, " << z_min << ", pgon, " << z_max - z_min << ");" << std::endl;
-      else
+        export_edge(*j);
+        int priority = prio_dielectric + j->nesting_level;
         std::cout << "CSX = AddLinPoly(CSX, 'Drill', " << priority << ", 2, " << z_min << ", pgon, " << z_max - z_min << ");" << std::endl;
       }
+    };
 
   return;
 }
@@ -324,17 +363,6 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
 
 void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb)
 {
-//#ifdef DEBUG_LAYER_ADJUST
-  // XXX
-  for (LayerList::reverse_iterator l = pcb.stackup.rbegin(); l != pcb.stackup.rend(); ++l) {
-    std::cerr << "layer: " << l->layer_name << std::endl;
-    double z0 = adjust_z(pcb, l->z0);
-    std::cerr << "adjust: " << l->z0 << " > " << z0 << std::endl; // XXX
-    double z1 = adjust_z(pcb, l->z1);
-    std::cerr << "adjust: " << l->z1 << " > " << z1 << std::endl; // XXX
-    }
-//#endif
-
   /* open file for output */
 
   if ((filename != "-") && (freopen(filename.c_str(), "w", stdout) == NULL)) {
