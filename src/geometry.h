@@ -30,6 +30,7 @@ class Geometry {
     void Simplify(Hyp2Mat::PCB& pcb, double grid, Hyp2Mat::Bounds bounds);
     void CropVias(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds);
     void CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds);
+    void SnapPinsToGrid(Hyp2Mat::PCB& pcb);
 
     /* convert from Hyp2Mat to ClipperLib */
     ClipperLib::IntPoint convert (Hyp2Mat::Point p);

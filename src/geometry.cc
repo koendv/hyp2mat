@@ -58,6 +58,9 @@ void Geometry::Simplify(Hyp2Mat::PCB& pcb, double grid_size, Hyp2Mat::Bounds bou
   /* remove layers above or below bounds */
   CropLayers(pcb, bounds);
 
+  /* align pins with grid */
+  SnapPinsToGrid(pcb);
+
   return;
 }
 
@@ -300,6 +303,22 @@ void Geometry::CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds)
     }
   pcb.stackup = new_stackup;
   return;
+}
+
+/*
+ * Snap pins to grid
+ */
+
+void Geometry::SnapPinsToGrid(Hyp2Mat::PCB& pcb)
+{
+  for (Hyp2Mat::PinList::iterator i = pcb.pin.begin(); i != pcb.pin.end(); ++i) {
+    Hyp2Mat::Point p = convert(convert(Hyp2Mat::Point(i->x, i->y)));
+    i->x = p.x;
+    i->y = p.y; // XXX Check?
+    for (Hyp2Mat::PointList::iterator j = i->metal.vertex.begin(); j != i->metal.vertex.end(); j++) {
+      *j = convert(convert(*j));
+      }
+    }
 }
 
 /*

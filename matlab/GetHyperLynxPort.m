@@ -72,25 +72,10 @@ function [side, start, stop] = GetHyperLynxPort(CSX, port_ref)
     error(['port not found: ' port_ref ]);
   end
 
-  % pad dimensions
-  x = port.x;
-  y = port.y;
-  z = port.z;
-  dx = port.size_x/2;
-  dy = port.size_y/2;
-
-  % calculate pad corners
-  dx = abs(dx);
-  dy = abs(dy);
-  x1 = x - dx;
-  x2 = x + dx;
-  y1 = y - dy;
-  y2 = y + dy;
-
   % return values
   side = port.position;
-  start = [ x1 y1 z ];
-  stop  = [ x2 y2 z ];
+  start = [ port.x1 port.y1 port.z ];
+  stop  = [ port.x2 port.y2 port.z ];
   
 end
 

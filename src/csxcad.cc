@@ -331,16 +331,16 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
   std::cout << "% ports" << std::endl;
   std::cout << "CSX.HyperLynxPort = {};" << std::endl;
   for (PinList::iterator i = pcb.pin.begin(); i != pcb.pin.end(); ++i) {
-    /* csxcad requires rectangular ports, axis aligned. Use the bounding box. XXX fixme */
-    double size_x = 0, size_y = 0;
+    /* csxcad requires rectangular ports, axis aligned. Use the bounding box. XXX fixme ? Use largest inscribed rectangle instead */
+    double x_max = 0, y_max = 0, x_min = 0, y_min = 0;
+    bool first = true;
     for (PointList::iterator j = i->metal.vertex.begin(); j != i->metal.vertex.end(); j++) {
-      double dx = std::abs(i->x - j->x);
-      double dy = std::abs(i->y - j->y);
-      if (dx > size_x) size_x = dx;
-      if (dy > size_y) size_y = dy;
+      if ((j->x > x_max) || first) x_max = j->x;
+      if ((j->y > y_max) || first) y_max = j->y;
+      if ((j->x < x_min) || first) x_min = j->x;
+      if ((j->y < y_min) || first) y_min = j->y;
+      first = false;
       }
-    size_x *= 2;
-    size_y *= 2;
 
     /* determine whether port is on top or bottom layer of pcb */
     double dbottom = std::abs(i->z0 - pcb.stackup.back().z0);
@@ -349,8 +349,9 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
     double z0 = adjust_z(pcb, i->z0);
 
     std::cout << "CSX.HyperLynxPort{end+1} = struct('ref', " << string2matlab(i->ref);
-    std::cout << ", 'x', " << i->x  << ", 'y', " << i->y << ", 'z', " << z0; 
-    std::cout << ", 'size_x', " << size_x  << ", 'size_y', " << size_y ; 
+    std::cout << ", 'xc', " << i->x  << ", 'yc', " << i->y << ", 'z', " << z0; 
+    std::cout << ", 'x1', " << x_min  << ", 'y1', " << y_min ; 
+    std::cout << ", 'x2', " << x_max  << ", 'y2', " << y_max ; 
     std::cout << ", 'position', " << (on_top ? "'top'" : "'bottom'"); 
     std::cout << ", 'layer_name', " <<  string2matlab(i->layer_name) << ");" << std::endl;
     }
