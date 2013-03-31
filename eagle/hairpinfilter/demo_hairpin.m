@@ -60,6 +60,9 @@ port1_stop(3)=mesh.z(1); % port goes all the way to the ground plane
 port2_stop(3)=mesh.z(1); % port goes all the way to the ground plane
 [CSX, port{2}] = AddLumpedPort( CSX, 999, 2, 50, port2_start, port2_stop, [0 0 -1]);
 
+% re-run DetectEdges to add the lumped ports to the mesh
+mesh = DetectEdges(CSX);
+
 % add air-box around the imported structure
 mesh.x = [min(mesh.x)-AirBox max(mesh.x)+AirBox mesh.x];
 mesh.y = [min(mesh.y)-AirBox max(mesh.y)+AirBox mesh.y];

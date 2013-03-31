@@ -298,8 +298,8 @@ design rules under a new name.</description>
 <contactref element="C1" pad="1"/>
 <polygon width="0" layer="1" thermals="no">
 <vertex x="1.95" y="10.0508"/>
-<vertex x="9.8" y="10.0508"/>
-<vertex x="9.8" y="9.9492"/>
+<vertex x="9.2" y="10.0508"/>
+<vertex x="9.2" y="9.9492"/>
 <vertex x="1.95" y="9.9492"/>
 </polygon>
 </signal>
@@ -307,10 +307,10 @@ design rules under a new name.</description>
 <contactref element="C1" pad="2"/>
 <contactref element="TP2" pad="TP"/>
 <polygon width="0" layer="1" thermals="no">
-<vertex x="10.2" y="10.0508"/>
+<vertex x="10.5" y="10.0508"/>
 <vertex x="18.05" y="10.0508"/>
 <vertex x="18.05" y="9.9492"/>
-<vertex x="10.2" y="9.9492"/>
+<vertex x="10.5" y="9.9492"/>
 </polygon>
 </signal>
 <signal name="GND">

@@ -60,6 +60,7 @@ double CSXCAD::adjust_z(Hyp2Mat::PCB& pcb, double z)
       }
     }
   /* default is unchanged. Ought never to get here. */
+  if (pcb.debug > 0) std::cerr << "warning: adjust_z: z = " << z <<  std::endl;
   return z;
 }
 
@@ -190,11 +191,19 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
           /* output CSXCAD polygon */
           int index = std::distance(dielectrics.begin(), it);
           std::cout << "% board outline, layer " << l->layer_name << std::endl;
-          export_edge(*j);
           int priority = prio_dielectric + j->nesting_level;
           double z0 = adjust_z(pcb, l->z0);
           double z1 = adjust_z(pcb, l->z1);
+#ifdef USE_LINPOLY
+          /* Use AddLinPoly */
+          export_edge(*j);
           std::cout << "CSX = AddLinPoly(CSX, 'Dielectric" << index << "', " << priority << ", 2, " << z0 << ", pgon, " << z1 - z0 << ");" << std::endl;
+#else
+          /* Use AddBox */
+          std::cout << "CSX = AddBox(CSX, 'Dielectric" << index << "', " << priority << ", [ ";
+          std::cout << bounds.x_min << ", " << bounds.y_min << ", " << z0 << "], [ ";
+          std::cout << bounds.x_max << ", " << bounds.y_max << ", " << z1 << "]  );" << std::endl;
+#endif
 
         }
       }
@@ -364,6 +373,17 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
 
 void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb)
 {
+  if (pcb.debug > 0) {
+    std::cerr << "csxcad layer vertical position:" << std::endl;
+    for (LayerList::reverse_iterator l = pcb.stackup.rbegin(); l != pcb.stackup.rend(); ++l) {
+      std::cerr << "layer: " << l->layer_name << std::endl;
+      double z0 = adjust_z(pcb, l->z0);
+      double z1 = adjust_z(pcb, l->z1);
+      std::cerr << "  old: " << l->z0 << " : " << l->z1 << std::endl;
+      std::cerr << "  new: " << z0 << " : " << z1 << std::endl;
+      }
+    } 
+
   /* open file for output */
 
   if ((filename != "-") && (freopen(filename.c_str(), "w", stdout) == NULL)) {
