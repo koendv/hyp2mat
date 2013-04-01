@@ -79,6 +79,42 @@ void PCB::WritePDF (std::string filename, double hue, double saturation, double 
   pdf.Write(filename, *this);
 }
 
+/* 
+ * Set dielectric epsilon r. Overrides value in Hyperlynx file. 
+ */
+
+void PCB::SetEpsilonR(double epsilon_r) 
+{
+
+  /* set all layers to epsilon_r, except outer copper layers, which we assume are in air (er = 1) */
+
+  /* iterate over all layers, setting epsilon */
+  for (LayerList::iterator i = stackup.begin(); i != stackup.end(); ++i) {
+    i->epsilon_r = epsilon_r;
+
+    /* check for outer copper layer */ 
+    if (i->layer_type == LAYER_DIELECTRIC)
+      continue;
+    
+    /* find dielectric layer above current metal layer */
+    bool upper_layer_found = false;
+    for (LayerList::iterator j = stackup.begin(); j != i; ++j)
+      if (j->layer_type == LAYER_DIELECTRIC) upper_layer_found = true;
+
+    /* find dielectric layer below current metal layer */
+    bool lower_layer_found = false;
+    for (LayerList::iterator j = i; j != stackup.end(); ++j)
+      if (j->layer_type == LAYER_DIELECTRIC) lower_layer_found = true;
+
+    /* assume outer copper layers are in air */
+    if (!upper_layer_found || !lower_layer_found) {
+      i->epsilon_r = 1.0;
+      i->loss_tangent = 0.0;
+      }
+    }
+  return;
+}
+
 /*
  * Calculate the bounding rectangle of a pcb.
  */

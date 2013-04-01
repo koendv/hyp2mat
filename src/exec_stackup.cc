@@ -355,7 +355,7 @@ bool HypFile::Hyp::calc_layer_epsilon()
         };
 
     if (!upper_layer_found || !lower_layer_found) {
-      /* assume outer layers are in air */
+      /* assume outer copper layers are in air */
       i->epsilon_r = 1.0;
       i->loss_tangent = 0.0;
       }

@@ -164,11 +164,13 @@ namespace Hyp2Mat {
       double via_plating_thickness;
       DeviceList device;
       PinList pin;
-      void Simplify(double grid);
-      void Simplify(double grid, Bounds bounds); /* Simplifies and crops board */
-      Bounds GetBounds(); /* gets board extension in x,y and z */
-      void PrintSummary();
+
       void ReadHyperLynx(std::string filename, std::vector<std::string> nets = std::vector<std::string>(), double arc_precision = 0);
+      void SetEpsilonR(double epsilon_r); /* set dielectric epsilon r. overrides value in Hyperlynx file. */
+      Bounds GetBounds(); /* gets board extension in x,y and z */
+      void Simplify(double grid); /* join adjacent and overlapping copper */
+      void Simplify(double grid, Bounds bounds); /* Simplifies and crops board */
+      void PrintSummary();
       void WritePDF(std::string filename, double hue = -1, double saturation = -1, double brightness = -1);
       void WriteCSXCAD(std::string filename);
       unsigned int debug; /* setting debug to 0 switches debugging off */

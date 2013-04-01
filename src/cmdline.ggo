@@ -12,6 +12,7 @@ option "output" o "Output file." string typestr="filename" default="-" optional
 option "output-format" f "Output file format." enum values="csxcad","pdf" default="pdf" optional
 section "Processing options"
 option "net" n "Import named net. Repeat to import several nets. If no nets are specified all nets are imported." string optional multiple
+option "epsilonr" e "Set dielectric epsilon r. Overrides value in Hyperlynx file." double optional
 option "xmin" x "Crop pcb. Set lowest value of x coordinate." double optional 
 option "xmax" X "Crop pcb. Set highest value of x coordinate." double optional 
 option "ymin" y "Crop pcb. Set lowest value of y coordinate." double optional 

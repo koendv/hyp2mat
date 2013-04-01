@@ -72,9 +72,9 @@ int main(int argc, char **argv)
     /* load hyperlynx file */
     pcb.ReadHyperLynx(input_file, nets, arc_precision);
   
-    /* print layer summary */
-    if (args_info.verbose_given)
-      pcb.PrintSummary();
+    /* optionally set epsilon */
+    if (args_info.epsilonr_given)
+      pcb.SetEpsilonR(args_info.epsilonr_arg);
  
     /* crop model */
     Bounds bounds = pcb.GetBounds();
@@ -89,6 +89,10 @@ int main(int argc, char **argv)
     if (!args_info.raw_flag) 
       pcb.Simplify(grid, bounds);
 
+    /* print layer summary */
+    if (args_info.verbose_given)
+      pcb.PrintSummary();
+ 
     /*
      * write output 
      */
