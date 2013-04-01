@@ -1,4 +1,4 @@
-% [side, start, stop] = GetHyperLynxPort(CSX, port_ref)
+% [side, start, stop, center ] = GetHyperLynxPort(CSX, port_ref)
 % Obtain coordinates and material of HyperLynx pin or pad.
 %
 % CSX:          CSX-object created by ImportHyperLynx()
@@ -8,6 +8,7 @@
 % side:         board side, 'top', 'bottom' or ''.
 % start:        3D port start coordinates
 % stop:         3D port stop coordinates
+% centre:       3D port centre coordinates
 
 % Example:
 % place an excitation at pin 1 of component 'CON1':
@@ -76,6 +77,7 @@ function [side, start, stop] = GetHyperLynxPort(CSX, port_ref)
   side = port.position;
   start = [ port.x1 port.y1 port.z ];
   stop  = [ port.x2 port.y2 port.z ];
+  centre  = [ port.xc port.yc port.z ];
   
 end
 
