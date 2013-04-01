@@ -254,7 +254,7 @@ Hyp2Mat::Edge Geometry::convert (ClipperLib::Polygon clip_poly)
 {
   Hyp2Mat::Edge edge;
 
-  for (ClipperLib::Polygon::iterator i = clip_poly.begin(); i != clip_poly.end(); i++) 
+  for (ClipperLib::Polygon::iterator i = clip_poly.begin(); i != clip_poly.end(); ++i) 
     edge.vertex.push_back(convert(*i));
   edge.width = 0;
   edge.is_hole = !Orientation(clip_poly);
@@ -311,14 +311,10 @@ void Geometry::CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds)
 
 void Geometry::SnapPinsToGrid(Hyp2Mat::PCB& pcb)
 {
-  for (Hyp2Mat::PinList::iterator i = pcb.pin.begin(); i != pcb.pin.end(); ++i) {
-    Hyp2Mat::Point p = convert(convert(Hyp2Mat::Point(i->x, i->y)));
-    i->x = p.x;
-    i->y = p.y; // XXX Check?
-    for (Hyp2Mat::PointList::iterator j = i->metal.vertex.begin(); j != i->metal.vertex.end(); j++) {
+  for (Hyp2Mat::PinList::iterator i = pcb.pin.begin(); i != pcb.pin.end(); ++i)
+    for (Hyp2Mat::PointList::iterator j = i->metal.vertex.begin(); j != i->metal.vertex.end(); ++j)
       *j = convert(convert(*j));
-      }
-    }
+  return;
 }
 
 /*

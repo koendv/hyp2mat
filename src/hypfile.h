@@ -232,8 +232,6 @@ namespace HypFile {
       double copper_metric_weight;   /* metal thickness in grams/cm2 */
       double copper_bulk_resistivity;
       double copper_temperature_coefficient; /* temperature coefficient of bulk resistivity */
-      double copper_oz_ft2;          /* height in mil of 1 oz/square foot copper */
-      double copper_gr_cm2;          /* height in cm of 1 gr/square cm copper */
       double fr4_epsilon_r;          /* dielectric constant of substrate */
       double fr4_loss_tangent;       /* loss tangent of substrate */
       double conformal_epsilon_r;    /* dielectric constant of conformal coating */

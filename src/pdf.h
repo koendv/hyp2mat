@@ -30,7 +30,7 @@
 class PDF: public Palette {
 public:
   PDF();
-  void Write(const std::string filename, Hyp2Mat::PCB& pcb);
+  void Write(const std::string& filename, Hyp2Mat::PCB& pcb);
 
 private:
   Palette palette;

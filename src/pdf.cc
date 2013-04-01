@@ -32,6 +32,10 @@ using namespace Hyp2Mat;
 
 PDF::PDF()
 {
+  text_height = 10; /* caption size in points */
+  margin = text_height; /* page margin */
+  m_to_points = 1 / (2.54 / 100 / 72); /* convert m to points (1/72 of an inch) */
+  x_max = x_min = y_max = y_min = 0;
 }
 
 /*
@@ -246,12 +250,8 @@ void PDF::draw_layer_view(HPDF_Doc pdf, HPDF_Font font, Hyp2Mat::PCB& pcb)
  * subsequent pages are one layer each.
  */
 
-void PDF::Write(const std::string filename, Hyp2Mat::PCB& pcb)
+void PDF::Write(const std::string& filename, Hyp2Mat::PCB& pcb)
 {
-  text_height = 10; /* caption size in points */
-  margin = text_height; /* page margin */
-  m_to_points = 1 / (2.54 / 100 / 72); /* convert m to points (1/72 of an inch) */
-
   /* choose a color palette. Change HSV values to what suits your taste */
   int number_of_colors = 0;
   for (LayerList::reverse_iterator l = pcb.stackup.rbegin(); l != pcb.stackup.rend(); ++l)

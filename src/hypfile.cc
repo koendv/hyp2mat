@@ -47,6 +47,7 @@ HypFile::Hyp::Hyp()
   fr4_epsilon_r = 4.3;
   fr4_loss_tangent = 0.020;
   conformal_epsilon_r = 3.3; /* dielectric constant of conformal layer */
+  board.plane_separation = 0.0;
 }
 
 /*

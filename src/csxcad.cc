@@ -134,10 +134,6 @@ bool CSXCAD::contains_hole(Hyp2Mat::PolygonList& polylist)
  
 void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
 {
-  double fr4_epsilon_r = 4.3; // fixme XXX handle case where board layers have different dielectric constant
-  for (LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l)
-    if (l->layer_type == LAYER_DIELECTRIC) fr4_epsilon_r = l->epsilon_r;
-
   /* CSXCAD coordinate grid definition */
   Bounds bounds = pcb.GetBounds();
   double z_min = adjust_z(pcb, bounds.z_min);
@@ -343,7 +339,7 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
     /* csxcad requires rectangular ports, axis aligned. Use the bounding box. XXX fixme ? Use largest inscribed rectangle instead */
     double x_max = 0, y_max = 0, x_min = 0, y_min = 0;
     bool first = true;
-    for (PointList::iterator j = i->metal.vertex.begin(); j != i->metal.vertex.end(); j++) {
+    for (PointList::iterator j = i->metal.vertex.begin(); j != i->metal.vertex.end(); ++j) {
       if ((j->x > x_max) || first) x_max = j->x;
       if ((j->y > y_max) || first) y_max = j->y;
       if ((j->x < x_min) || first) x_min = j->x;
