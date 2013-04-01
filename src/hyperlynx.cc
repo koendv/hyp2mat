@@ -59,6 +59,14 @@ void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::
   CopyDevices(pcb, hyp_file); /* copy device info */
   CopyPins(pcb, hyp_file, nets); /* copy pin references */
 
+  /* 
+   * Check whether to print all net names 
+   */
+
+  /* if one of the nets is "?", print list of all nets */
+  if (std::find(nets.begin(), nets.end(), "?") != nets.end()) 
+    PrintNets(hyp_file);
+
   return;
 }
 
@@ -373,6 +381,28 @@ void HyperLynx::CopyPin(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, HypFile::Pin&
   
   /* add pin to pcb */
   pcb.pin.push_back(new_pin);
+    
+  return;
+}
+
+/*
+ * Print all available nets
+ */
+
+void HyperLynx::PrintNets(HypFile::Hyp& hyp_file)
+{
+  std::vector<std::string> net_names;
+
+  for (HypFile::NetList::iterator i = hyp_file.net.begin(); i != hyp_file.net.end(); ++i)
+    net_names.push_back(i->net_name);
+ 
+  sort(net_names.begin(), net_names.end()); 
+  unique(net_names.begin(), net_names.end());
+
+  std::cout << "nets:";
+  for (std::vector<std::string>::iterator i = net_names.begin(); i != net_names.end(); ++i)
+    std::cout << " " << *i;
+  std::cout << std::endl;
     
   return;
 }

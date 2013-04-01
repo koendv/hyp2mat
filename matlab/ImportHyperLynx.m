@@ -1,6 +1,18 @@
-% CSX = ImportHyperLynx(CSX, filename, simulated_nets)
+% CSX = ImportHyperLynx(CSX, filename, simulated_nets, varargin)
 % load Hyperlynx file 'filename' into CSX .
 % The optional argument simulated_nets is a string or a cell array of strings.
+% A value of '?' for nets lists all nets.
+%
+% Other optional arguments:
+% epsilonr       Set dielectric epsilon r. Overrides value in Hyperlynx file.
+% xmin           Crop pcb. Set lowest value of x coordinate.
+% xmax           Crop pcb. Set highest value of x coordinate.
+% ymin           Crop pcb. Set lowest value of y coordinate.
+% ymax           Crop pcb. Set highest value of y coordinate.
+% zmin           Crop pcb. Set lowest value of z coordinate.
+% zmax           Crop pcb. Set highest value of z coordinate.
+% grid           Set output grid size.  (default=`10e-6' = 1 um)
+% arc-precision  Set maximum difference between perfect arc and polygonal approximation.
 %
 % ImportHyperLynx needs read and write access to the current directory.
 %
@@ -13,6 +25,9 @@
 %
 % CSX = ImportHyperLynx(CSX, 'board.hyp', {'GND', 'CLK_P', 'CLK_N'} )
 % will import only the GND, CLK_P and CLK_N nets.
+%
+% CSX = ImportHyperLynx(CSX, 'board.hyp', {'GND', 'CLK_P', 'CLK_N'}, 'epsilonr', 4.3 )
+% will import only the GND, CLK_P and CLK_N nets, and sets epsilon to 4.3.
 %
 % See hyp2mat(1) - convert hyperlynx files to matlab scripts.
 
@@ -33,10 +48,10 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function CSX = ImportHyperLynx(CSX, filename, simulated_nets)
+function CSX = ImportHyperLynx(CSX, filename, simulated_nets, varargin)
 
   % determine nets to import
-  if ((nargin ~= 2) && (nargin ~= 3))
+  if (nargin < 2)
     error('Wrong number of arguments');
   end
 
@@ -53,7 +68,6 @@ function CSX = ImportHyperLynx(CSX, filename, simulated_nets)
     simulated_nets = {};
   elseif (ischar(simulated_nets))
     % third argument is a string: import a single net
-    simulated_nets = { };
     simulated_nets = { simulated_nets };
   elseif (iscellstr(simulated_nets))
     % third argument is a cell array of strings: import a list of nets
@@ -64,10 +78,60 @@ function CSX = ImportHyperLynx(CSX, filename, simulated_nets)
     simulated_nets = {};
   end
 
+  % build command line
   cmdargs = '';
   for i = (simulated_nets)
     i{1}
     cmdargs = [ cmdargs ' --net ''' i{1}  '''' ];
+  end
+
+  % parse optional arguments 
+  if (nargin < 4)
+    varargin = {};
+  end
+
+  vn = 1;
+  nargin
+  varargin
+  numel(varargin)
+  while (vn <= numel(varargin)) 
+    if (strcmpi(varargin{vn}, 'xmin'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --xmin ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'xmax'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --xmax ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'ymin'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --ymin ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'ymax'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --ymax ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'zmin'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --zmin ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'zmax'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --zmax ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'epsilonr'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --epsilonr ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'grid'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --grid ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'arc-precision'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --arc-precision ' num2str(varargin{vn}) ];
+    end
+    vn = vn + 1;
   end
 
   % conversion
@@ -82,7 +146,13 @@ function CSX = ImportHyperLynx(CSX, filename, simulated_nets)
   end
 
   % convert .hyp to .m
-  disp (['command: ' cmd ]);
+  disp (['command: ' cmd ]); 
+  if isOctave() 
+    fflush(stdout);
+  else
+    drawnow('update');
+  end
+
   status = system(cmd); % security implications?
   if (status == 0) 
     % run generated pcb.m

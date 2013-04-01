@@ -24,6 +24,8 @@ If only a small region of the board needs to be simulated the --xmin --xmax --ym
 
 If not all layers of the board need to be simulated, the --zmin and --zmax options may be used to remove layers.
 
+The option --net=? lists all available nets.
+
 Arcs are approximated by polygons. If the default is unsatisfactory set --arc-precision to a non-zero value. E.g. --arc-precision=0.0001 sets accuracy to 0.1mm.
 
 Typical use of hyp2mat is with simulation packages such as OpenEMS.
@@ -34,9 +36,9 @@ Convert pcb.hyp to pdf:
 hyp2mat -o pcb.pdf pcb.hyp
 .ni
 
-Examine original Hyperlynx file:
+Convert pcb.hyp to matlab for openEMS:
 .nf 
-hyp2mat -o pcb.pdf --raw pcb.hyp
+hyp2mat -o pcb.m -f csxcad pcb.hyp
 .ni 
 
 [FILES]

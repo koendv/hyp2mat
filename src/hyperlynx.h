@@ -42,6 +42,7 @@ private:
   void CopyDevices(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file);
   void CopyPins(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets);
   void CopyPin(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, HypFile::Pin& pin, HypFile::Padstack& padstack);
+  void PrintNets(HypFile::Hyp& hyp_file);
   };
 
 #endif

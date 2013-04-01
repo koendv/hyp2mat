@@ -69,10 +69,14 @@ namespace Hyp2Mat {
       void reverse(); /* reverse vertex order */
       int nesting_level; /* set by PCB::Simplify() */
     };
-  
+ 
+  /* a polygon has one or more edges. a polygon is drawn by adding the positive edges, and subtracting the holes. */ 
+
   typedef std::vector<Edge> Polygon;
 
   typedef std::vector<Polygon> PolygonList;
+
+  /* a pin has a reference and an outline */ 
 
   class Pin {
     public:
@@ -89,7 +93,9 @@ namespace Hyp2Mat {
   typedef std::vector<Pin> PinList;
 
   /* a polygon on a signal layer is presence of copper. 
-     a plane layer is drawn negative: a polygon on a plane layer is absence of copper.  */
+     a polygon on a plane layer is absence of copper.
+     signal layers are drawn positive,
+     plane layers are drawn negative. */
 
   enum layer_enum { LAYER_SIGNAL, LAYER_DIELECTRIC, LAYER_PLANE };
   
@@ -130,7 +136,7 @@ namespace Hyp2Mat {
       Device();
       std::string name;
       std::string ref; /* reference, e.g. R1, C2, L3, IC4 */
-      device_value_enum value_type;
+      device_value_enum value_type; /* whether to use value_float or value_string */
       double value_float; /* in ohms, farad, henry */
       std::string value_string;
       std::string layer_name;
@@ -138,6 +144,7 @@ namespace Hyp2Mat {
   
   typedef std::vector<Device> DeviceList;
 
+  /* board dimensions */
   struct Bounds {
     double x_min;
     double x_max;
