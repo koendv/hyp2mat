@@ -18,17 +18,35 @@ If a syntax error occurs during conversion, error recovery is attempted.
 .I hyp2mat 
 exits with zero status if conversion was succesful and non-zero if not.
 
-The --verbose option can be used to list board dimensions. 
+The 
+.BR --verbose 
+option can be used to list board dimensions. 
 
-If only a small region of the board needs to be simulated the --xmin --xmax --ymin --ymax options can be used to crop the board to a smaller region. 
+If only a small region of the board needs to be simulated the 
+.BR --xmin
+.BR --xmax
+.BR --ymin 
+and
+.BR --ymax 
+options can be used to crop the board to a smaller region. 
 
-If not all layers of the board need to be simulated, the --zmin and --zmax options may be used to remove layers.
+If not all layers of the board need to be simulated, the 
+.BR --zmin 
+and 
+.BR --zmax 
+options may be used to remove layers.
 
-The option --net=? lists all available nets.
+The option 
+.BR --net=? 
+lists all available nets.
 
-Arcs are approximated by polygons. If the default is unsatisfactory set --arc-precision to a non-zero value. E.g. --arc-precision=0.0001 sets accuracy to 0.1mm.
+Arcs are approximated by polygons. If the default is unsatisfactory set 
+.BR --arc-precision
+to the maximum error, in meters. 
 
-Typical use of hyp2mat is with simulation packages such as OpenEMS.
+Typical use of 
+.I hyp2mat 
+is with simulation packages such as OpenEMS.
 
 [EXAMPLES]
 Convert pcb.hyp to pdf:

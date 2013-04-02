@@ -6,7 +6,6 @@ args "--unamed-opts"
 usage " [-h] [ -o outfile ] [ -f pdf|csxcad ] [-n net]... [OPTIONS]... [-v] [infile]"
 
 description "Converts Hyperlynx Signal-Integrity Transfer Format files to Octave/matlab scripts."
-purpose "Typical use of hyp2mat is with simulation packages such as OpenEMS."
 
 option "output" o "Output file." string typestr="filename" default="-" optional
 option "output-format" f "Output file format." enum values="csxcad","pdf" default="pdf" optional

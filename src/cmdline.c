@@ -25,7 +25,7 @@
 
 #include "cmdline.h"
 
-const char *gengetopt_args_info_purpose = "Typical use of hyp2mat is with simulation packages such as OpenEMS.";
+const char *gengetopt_args_info_purpose = "";
 
 const char *gengetopt_args_info_usage = "Usage: " CMDLINE_PARSER_PACKAGE " [-h] [ -o outfile ] [ -f pdf|csxcad ] [-n net]... [OPTIONS]... [-v] [infile]";
 
