@@ -26,8 +26,8 @@
 % CSX = ImportHyperLynx(CSX, 'board.hyp', {'GND', 'CLK_P', 'CLK_N'} )
 % will import only the GND, CLK_P and CLK_N nets.
 %
-% CSX = ImportHyperLynx(CSX, 'board.hyp', {'GND', 'CLK_P', 'CLK_N'}, 'epsilonr', 4.3 )
-% will import only the GND, CLK_P and CLK_N nets, and sets epsilon to 4.3.
+% CSX = ImportHyperLynx(CSX, 'board.hyp', {}, 'xmin', 0.02, 'xmax', 0.03, 'ymin', 0.04, 'ymax', 0.05 )
+% Imports all nets, and crops the board to the region 2 cm < x < 3 cm, 4 cm < y < 5 cm.
 %
 % See hyp2mat(1) - convert hyperlynx files to matlab scripts.
 
@@ -91,9 +91,6 @@ function CSX = ImportHyperLynx(CSX, filename, simulated_nets, varargin)
   end
 
   vn = 1;
-  nargin
-  varargin
-  numel(varargin)
   while (vn <= numel(varargin)) 
     if (strcmpi(varargin{vn}, 'xmin'))
       vn = vn + 1;

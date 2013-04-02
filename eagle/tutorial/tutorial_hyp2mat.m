@@ -73,8 +73,8 @@ mesh.x = [min(mesh.x)-AirBox max(mesh.x)+AirBox mesh.x];
 mesh.y = [min(mesh.y)-AirBox max(mesh.y)+AirBox mesh.y];
 mesh.z = [min(mesh.z)-AirBox max(mesh.z)+2*AirBox mesh.z];
 
-mesh = SmoothMesh(mesh, resolution);
-%mesh = SmoothMesh(mesh, resolution, 'algorithm', [ 1 ]);
+%mesh = SmoothMesh(mesh, resolution);
+mesh = SmoothMesh(mesh, resolution, 'algorithm', [ 1 ]);
 
 % Setting boundary conditions
 
@@ -96,7 +96,7 @@ Sim_CSX = 'msl.xml';
 [status, message, messageid] = rmdir(Sim_Path, 's'); % clear previous directory
 [status, message, messageid] = mkdir(Sim_Path ); % create empty simulation folder
 
-disp([ 'Estimated simulation runtime: 12500 timesteps' ]); % inform user this may take a while... 
+disp([ 'Estimated simulation runtime: 6000 timesteps' ]); % inform user this may take a while... 
 
 WriteOpenEMS([Sim_Path '/' Sim_CSX], FDTD, CSX);
 CSXGeomPlot([Sim_Path '/' Sim_CSX]);

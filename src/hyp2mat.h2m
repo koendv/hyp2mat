@@ -36,9 +36,9 @@ Convert pcb.hyp to pdf:
 hyp2mat -o pcb.pdf pcb.hyp
 .ni
 
-Convert pcb.hyp to matlab for openEMS:
+Examine original Hyperlynx file:
 .nf 
-hyp2mat -o pcb.m -f csxcad pcb.hyp
+hyp2mat -o pcb.pdf --raw pcb.hyp
 .ni 
 
 [FILES]

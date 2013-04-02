@@ -237,8 +237,8 @@ design rules under a new name.</description>
 </pass>
 </autorouter>
 <elements>
-<element name="TP1" library="testpad" package="TP10SQ" value="TPTP10SQ" x="9.906" y="6.223">
-<attribute name="TP_SIGNAL_NAME" value="" x="9.906" y="6.223" size="1.778" layer="27" display="off"/>
+<element name="TP1" library="testpad" package="TP10SQ" value="TPTP10SQ" x="9.906" y="6.35">
+<attribute name="TP_SIGNAL_NAME" value="" x="9.906" y="6.35" size="1.778" layer="27" display="off"/>
 </element>
 <element name="TP2" library="testpad" package="TP10SQ" value="TPTP10SQ" x="12.7" y="11.43">
 <attribute name="TP_SIGNAL_NAME" value="" x="12.7" y="11.43" size="1.778" layer="27" display="off"/>

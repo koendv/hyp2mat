@@ -56,9 +56,9 @@ struct gengetopt_args_info
   unsigned int net_min; /**< @brief Import named net. Repeat to import several nets. If no nets are specified all nets are imported.'s minimum occurreces */
   unsigned int net_max; /**< @brief Import named net. Repeat to import several nets. If no nets are specified all nets are imported.'s maximum occurreces */
   const char *net_help; /**< @brief Import named net. Repeat to import several nets. If no nets are specified all nets are imported. help description.  */
-  double epsilonr_arg;	/**< @brief Set dielectric epsilon r. Overrides value in Hyperlynx file..  */
-  char * epsilonr_orig;	/**< @brief Set dielectric epsilon r. Overrides value in Hyperlynx file. original value given at command line.  */
-  const char *epsilonr_help; /**< @brief Set dielectric epsilon r. Overrides value in Hyperlynx file. help description.  */
+  double epsilonr_arg;	/**< @brief Set dielectric epsilon r..  */
+  char * epsilonr_orig;	/**< @brief Set dielectric epsilon r. original value given at command line.  */
+  const char *epsilonr_help; /**< @brief Set dielectric epsilon r. help description.  */
   double xmin_arg;	/**< @brief Crop pcb. Set lowest value of x coordinate..  */
   char * xmin_orig;	/**< @brief Crop pcb. Set lowest value of x coordinate. original value given at command line.  */
   const char *xmin_help; /**< @brief Crop pcb. Set lowest value of x coordinate. help description.  */

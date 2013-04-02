@@ -38,7 +38,7 @@ const char *gengetopt_args_info_help[] = {
   "  -f, --output-format=ENUM    Output file format.  (possible values=\"csxcad\", \n                                \"pdf\" default=`pdf')",
   "\nProcessing options:",
   "  -n, --net=STRING            Import named net. Repeat to import several nets. \n                                If no nets are specified all nets are imported.",
-  "  -e, --epsilonr=DOUBLE       Set dielectric epsilon r. Overrides value in \n                                Hyperlynx file.",
+  "  -e, --epsilonr=DOUBLE       Set dielectric epsilon r.",
   "  -x, --xmin=DOUBLE           Crop pcb. Set lowest value of x coordinate.",
   "  -X, --xmax=DOUBLE           Crop pcb. Set highest value of x coordinate.",
   "  -y, --ymin=DOUBLE           Crop pcb. Set lowest value of y coordinate.",
@@ -1079,7 +1079,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'e':	/* Set dielectric epsilon r. Overrides value in Hyperlynx file..  */
+        case 'e':	/* Set dielectric epsilon r..  */
         
         
           if (update_arg( (void *)&(args_info->epsilonr_arg), 

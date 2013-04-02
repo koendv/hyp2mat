@@ -190,6 +190,7 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
           int priority = prio_dielectric + j->nesting_level;
           double z0 = adjust_z(pcb, l->z0);
           double z1 = adjust_z(pcb, l->z1);
+          /* AddLinPoly is broken on openEMS 0.0.30, use AddBox instead */
 #ifdef USE_LINPOLY
           /* Use AddLinPoly */
           export_edge(*j);
