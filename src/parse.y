@@ -18,6 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+%code requires {
+#include "hypfile.h"
+}
+
 %parse-param {class HypFile::Hyp *hyp }
 %error-verbose
 %debug

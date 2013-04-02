@@ -8,6 +8,4 @@ hyp2mat
 hyp2mat.exe
 hyp2mat.pc
 libhyp2mat.la
-parse.c
-parse.h
 stamp-h1
