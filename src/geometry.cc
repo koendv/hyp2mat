@@ -43,7 +43,7 @@ void Geometry::Simplify(Hyp2Mat::PCB& pcb, double grid_size, Hyp2Mat::Bounds bou
     ClipperLib::Polygons metal_layer = convert(l->metal);
     
     /* invert plane layers */
-    if (l->layer_type == Hyp2Mat::LAYER_PLANE) metal_layer = invert(metal_layer);
+    if (l->layer_type == Hyp2Mat::LAYER_PLANE) metal_layer = invert(metal_layer, clipper_board);
 
     /* remove any copper outside bounds */
     l->metal = convert(crop(metal_layer, bounds.x_min, bounds.x_max, bounds.y_min, bounds.y_max));
@@ -186,12 +186,13 @@ ClipperLib::Polygons Geometry::crop (ClipperLib::Polygons polys, double x_min, d
   return result;
 }
 
-ClipperLib::Polygons Geometry::invert (ClipperLib::Polygons poly)
+ClipperLib::Polygons Geometry::invert (ClipperLib::Polygons poly, ClipperLib::Polygons board)
 {
   ClipperLib::Clipper clipper;
   ClipperLib::Polygons result;
 
   clipper.AddPolygons(poly, ClipperLib::ptClip);
+  clipper.AddPolygons(board, ClipperLib::ptSubject);
   clipper.Execute(ClipperLib::ctXor, result);
   return result;
 }

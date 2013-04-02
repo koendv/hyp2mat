@@ -42,7 +42,7 @@ class Geometry {
     ClipperLib::Polygon unique (ClipperLib::Polygon p);
     /* crop polygon to bounding box */
     ClipperLib::Polygons crop (ClipperLib::Polygons poly, double x_min, double x_max, double y_min, double y_max);
-    ClipperLib::Polygons invert (ClipperLib::Polygons poly);
+    ClipperLib::Polygons invert (ClipperLib::Polygons poly, ClipperLib::Polygons board);
 
     /* convert from ClipperLib to Hyp2Mat */
     Hyp2Mat::Point convert (ClipperLib::IntPoint p);
