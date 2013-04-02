@@ -342,7 +342,7 @@ dist_man_MANS = hyp2mat.1
 
 # create cmdline.c and cmdline.h from cmdline.ggo
 BUILT_SOURCES = cmdline.c cmdline.h
-EXTRA_DIST = parse.h hyp2mat.h2m
+EXTRA_DIST = parse.h hyp2mat.h2m clipper.txt
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
