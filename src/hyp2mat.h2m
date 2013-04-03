@@ -42,7 +42,7 @@ lists all available nets.
 
 Arcs are approximated by polygons. If the default is unsatisfactory set 
 .BR --arc-precision
-to the maximum error.
+to the maximum error. 
 
 Typical use of 
 .I hyp2mat 
@@ -58,6 +58,49 @@ Examine original Hyperlynx file:
 .nf 
 hyp2mat -o pcb.pdf --raw pcb.hyp
 .ni 
+
+Draw arcs with an accuracy of 0.1 mm or better:
+hyp2mat -o pcb.pdf --arc-precision 1E-4 pcb.hyp
+
+[NOTES]
+Common causes of errors are unquoted strings, and unassigned component values.
+
+.SS Unquoted strings
+.IP "Error:"
+.I syntax error, unexpected STRING at 'Logo'
+
+.IP "Source:"
+.nf
+(? REF=My Logo BOT1 L=Bottom_Layer)
+.fi
+
+.IP Cause:
+An unquoted string contains a space (' '). 
+
+.IP Solution:
+Edit the .hyp file and put the string between double quotes:
+.nf
+(? REF="My Logo BOT1" L=Bottom_Layer)
+.fi
+
+.SS Unassigned component values
+.IP "Error:"
+.I syntax error, unexpected L, expecting FLOAT or STRING at 'L'
+
+.IP "Source:" 
+.nf
+(L REF="L1" VAL= L="Top")
+.fi
+
+.IP Cause:
+Component has not been assigned a value (VAL =). 
+
+.IP Solution:
+Edit the .hyp file and assign a value to coil L1:
+.nf
+(L REF="L1" VAL=0 L="Top")
+.fi
+or assign the coil a value in the schematics editor and re-export to HyperLynx.
 
 [FILES]
 .B /usr/share/hyp2mat/matlab/
