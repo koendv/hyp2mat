@@ -922,6 +922,10 @@ cmdline.c cmdline.h: cmdline.ggo
 hyp2mat.1: hyp2mat.h2m cmdline.ggo hyp2mat.cc
 	-$(HELP2MAN) --output=$@ --no-info --include=$< $(CURDIR)/hyp2mat
 
+# pdf man page
+hyp2mat.pdf: hyp2mat.1
+	groff -Tps -man hyp2mat.1 | ps2pdf - hyp2mat.pdf
+
 #not truncated
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

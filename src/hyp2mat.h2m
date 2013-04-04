@@ -1,5 +1,5 @@
 [NAME]
-hyp2mat \- convert hyperlynx files to octave/matlab scripts
+hyp2mat \- convert hyperlynx files to octave/matlab scripts for electromagnetic simulation.
 /Print board summary/
 All lengths are in meters.
 

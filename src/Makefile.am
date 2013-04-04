@@ -74,6 +74,10 @@ cmdline.c cmdline.h: cmdline.ggo
 hyp2mat.1: hyp2mat.h2m cmdline.ggo hyp2mat.cc
 	-$(HELP2MAN) --output=$@ --no-info --include=$< $(CURDIR)/hyp2mat
 
+# pdf man page
+hyp2mat.pdf: hyp2mat.1
+	groff -Tps -man hyp2mat.1 | ps2pdf - hyp2mat.pdf
+
 EXTRA_DIST=parse.h hyp2mat.h2m clipper.txt
 
 #not truncated
