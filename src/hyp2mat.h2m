@@ -89,24 +89,29 @@ Edit the .hyp file and put the string between double quotes:
 
 .IP "Source:" 
 .nf
-(L REF="L1" VAL= L="Top")
+(R REF="R1" VAL= L="Top")
 .fi
 
 .IP Cause:
-Component has not been assigned a value (VAL =). 
+Component has not been assigned a value (VAL=). 
 
 .IP Solution:
-Edit the .hyp file and assign a value to coil L1:
+Edit the .hyp file and assign a value to resistor R1:
 .nf
-(L REF="L1" VAL=0 L="Top")
+(R REF="R1" VAL=0 L="Top")
 .fi
-or assign the coil a value in the schematics editor and re-export to HyperLynx.
+or assign the resistor a value in the schematics editor and re-export to HyperLynx.
 
 [FILES]
 .B /usr/share/hyp2mat/matlab/
 .br
 .ns
 Supporting matlab routines for OpenEMS.
+
+.B /usr/share/hyp2mat/eagle/
+.br
+.ns
+Examples and tutorial.
 
 [AUTHOR]
 .nf

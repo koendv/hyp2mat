@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT([hyp2mat], [0.0.4])
+AC_INIT([hyp2mat], [0.0.5])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_MACRO_DIR([m4])
