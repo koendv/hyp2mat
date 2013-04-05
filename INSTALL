@@ -19,9 +19,11 @@ On MacOSX, with libhpdf installed in /opt/local using MacPorts:
   make 
   make install
 
-On Windows with MingW, compiling a static binary:
+On Windows:
 
-  Compile zlib, libpng and libharu (libhpdf) as follows:
+  Install MinGW (http://www.mingw.org)
+
+  Compile zlib, libpng and libharu (libhpdf):
 
   zlib-1.2.7
   INCLUDE_PATH=/usr/include LIBRARY_PATH=/usr/lib BINARY_PATH=/usr/bin make -f win32/Makefile.gcc  install
@@ -39,7 +41,7 @@ On Windows with MingW, compiling a static binary:
   make
   make install
 
-  Compile hyp2mat: 
+  Compile hyp2mat as a static binary: 
   
   hyp2mat
   CPPFLAGS=-I/usr/local/include LDFLAGS="-static -static-libgcc -static-libstdc++ -L/usr/local/lib" ./configure
