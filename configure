@@ -633,7 +633,6 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-HELP2MAN
 CXXCPP
 CPP
 OTOOL64
@@ -693,6 +692,18 @@ CPPFLAGS
 LDFLAGS
 CXXFLAGS
 CXX
+NO_PS2PDF_FALSE
+NO_PS2PDF_TRUE
+PS2PDF
+NO_GROFF_FALSE
+NO_GROFF_TRUE
+GROFF
+NO_HELP2MAN_FALSE
+NO_HELP2MAN_TRUE
+HELP2MAN
+NO_GENGETOPT_FALSE
+NO_GENGETOPT_TRUE
+GENGETOPT
 INSTALL_LIBRARY_FALSE
 INSTALL_LIBRARY_TRUE
 am__untar
@@ -2339,10 +2350,8 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-am__api_version='1.11'
-
 ac_aux_dir=
-for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
+for ac_dir in config "$srcdir"/config; do
   if test -f "$ac_dir/install-sh"; then
     ac_aux_dir=$ac_dir
     ac_install_sh="$ac_aux_dir/install-sh -c"
@@ -2358,7 +2367,7 @@ for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   fi
 done
 if test -z "$ac_aux_dir"; then
-  as_fn_error $? "cannot find install-sh, install.sh, or shtool in \"$srcdir\" \"$srcdir/..\" \"$srcdir/../..\"" "$LINENO" 5
+  as_fn_error $? "cannot find install-sh, install.sh, or shtool in config \"$srcdir\"/config" "$LINENO" 5
 fi
 
 # These three variables are undocumented and unsupported,
@@ -2369,6 +2378,14 @@ ac_config_guess="$SHELL $ac_aux_dir/config.guess"  # Please don't use this var.
 ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
+
+
+
+ac_config_headers="$ac_config_headers src/config.h"
+
+ac_config_files="$ac_config_files Makefile src/Makefile lib/Makefile lib/hyp2mat.pc doc/Makefile matlab/Makefile eagle/Makefile"
+
+am__api_version='1.11'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -2847,13 +2864,6 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
-
-
-ac_config_headers="$ac_config_headers src/config.h"
-
-ac_config_files="$ac_config_files Makefile src/Makefile src/hyp2mat.pc matlab/Makefile eagle/Makefile"
-
-
 # optionally install libraries and headers
 # Check whether --enable-library was given.
 if test "${enable_library+set}" = set; then :
@@ -2872,6 +2882,201 @@ fi
 else
   INSTALL_LIBRARY_TRUE='#'
   INSTALL_LIBRARY_FALSE=
+fi
+
+
+# For building documentation
+#
+# Extract the first word of "gengetopt", so it can be a program name with args.
+set dummy gengetopt; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_GENGETOPT+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $GENGETOPT in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_GENGETOPT="$GENGETOPT" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_GENGETOPT="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+GENGETOPT=$ac_cv_path_GENGETOPT
+if test -n "$GENGETOPT"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GENGETOPT" >&5
+$as_echo "$GENGETOPT" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+ if test -z "$ac_cv_path_GENGETOPT" ; then
+  NO_GENGETOPT_TRUE=
+  NO_GENGETOPT_FALSE='#'
+else
+  NO_GENGETOPT_TRUE='#'
+  NO_GENGETOPT_FALSE=
+fi
+
+# Extract the first word of "help2man", so it can be a program name with args.
+set dummy help2man; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_HELP2MAN+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $HELP2MAN in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_HELP2MAN="$HELP2MAN" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_HELP2MAN="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+HELP2MAN=$ac_cv_path_HELP2MAN
+if test -n "$HELP2MAN"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HELP2MAN" >&5
+$as_echo "$HELP2MAN" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+ if test -z "$ac_cv_path_HELP2MAN" ; then
+  NO_HELP2MAN_TRUE=
+  NO_HELP2MAN_FALSE='#'
+else
+  NO_HELP2MAN_TRUE='#'
+  NO_HELP2MAN_FALSE=
+fi
+
+# Extract the first word of "groff", so it can be a program name with args.
+set dummy groff; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_GROFF+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $GROFF in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_GROFF="$GROFF" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_GROFF="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+GROFF=$ac_cv_path_GROFF
+if test -n "$GROFF"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GROFF" >&5
+$as_echo "$GROFF" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+ if test -z "$ac_cv_path_GROFF" ; then
+  NO_GROFF_TRUE=
+  NO_GROFF_FALSE='#'
+else
+  NO_GROFF_TRUE='#'
+  NO_GROFF_FALSE=
+fi
+
+# Extract the first word of "ps2pdf", so it can be a program name with args.
+set dummy ps2pdf; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PS2PDF+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PS2PDF in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PS2PDF="$PS2PDF" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PS2PDF="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+PS2PDF=$ac_cv_path_PS2PDF
+if test -n "$PS2PDF"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PS2PDF" >&5
+$as_echo "$PS2PDF" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+ if test -z "$ac_cv_path_PS2PDF" ; then
+  NO_PS2PDF_TRUE=
+  NO_PS2PDF_FALSE='#'
+else
+  NO_PS2PDF_TRUE='#'
+  NO_PS2PDF_FALSE=
 fi
 
 
@@ -15075,47 +15280,6 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 # Only expand once:
 
 
-# Extract the first word of "help2man", so it can be a program name with args.
-set dummy help2man; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_HELP2MAN+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $HELP2MAN in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_HELP2MAN="$HELP2MAN" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_HELP2MAN="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_path_HELP2MAN" && ac_cv_path_HELP2MAN="false // No help2man // "
-  ;;
-esac
-fi
-HELP2MAN=$ac_cv_path_HELP2MAN
-if test -n "$HELP2MAN"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HELP2MAN" >&5
-$as_echo "$HELP2MAN" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
 
 # libhpdf is used for pdf output
 # libhpdf needs -lhpdf -lpng -lz -lm
@@ -15432,6 +15596,22 @@ fi
 
 if test -z "${INSTALL_LIBRARY_TRUE}" && test -z "${INSTALL_LIBRARY_FALSE}"; then
   as_fn_error $? "conditional \"INSTALL_LIBRARY\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${NO_GENGETOPT_TRUE}" && test -z "${NO_GENGETOPT_FALSE}"; then
+  as_fn_error $? "conditional \"NO_GENGETOPT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${NO_HELP2MAN_TRUE}" && test -z "${NO_HELP2MAN_FALSE}"; then
+  as_fn_error $? "conditional \"NO_HELP2MAN\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${NO_GROFF_TRUE}" && test -z "${NO_GROFF_FALSE}"; then
+  as_fn_error $? "conditional \"NO_GROFF\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${NO_PS2PDF_TRUE}" && test -z "${NO_PS2PDF_FALSE}"; then
+  as_fn_error $? "conditional \"NO_PS2PDF\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
@@ -16416,7 +16596,9 @@ do
     "src/config.h") CONFIG_HEADERS="$CONFIG_HEADERS src/config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "src/hyp2mat.pc") CONFIG_FILES="$CONFIG_FILES src/hyp2mat.pc" ;;
+    "lib/Makefile") CONFIG_FILES="$CONFIG_FILES lib/Makefile" ;;
+    "lib/hyp2mat.pc") CONFIG_FILES="$CONFIG_FILES lib/hyp2mat.pc" ;;
+    "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "matlab/Makefile") CONFIG_FILES="$CONFIG_FILES matlab/Makefile" ;;
     "eagle/Makefile") CONFIG_FILES="$CONFIG_FILES eagle/Makefile" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;

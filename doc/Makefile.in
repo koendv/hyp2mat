@@ -15,6 +15,12 @@
 
 @SET_MAKE@
 
+# used by automake
+
+# 
+# man page and friends
+#
+
 VPATH = @srcdir@
 am__make_dryrun = \
   { \
@@ -51,10 +57,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = eagle
-DIST_COMMON = $(dist_eagle_DATA) $(dist_hairpinfilter_DATA) \
-	$(dist_notchfilter_DATA) $(dist_tutorial_DATA) \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
+subdir = doc
+DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
@@ -100,11 +105,11 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(eagledir)" \
-	"$(DESTDIR)$(hairpinfilterdir)" "$(DESTDIR)$(notchfilterdir)" \
-	"$(DESTDIR)$(tutorialdir)"
-DATA = $(dist_eagle_DATA) $(dist_hairpinfilter_DATA) \
-	$(dist_notchfilter_DATA) $(dist_tutorial_DATA)
+man1dir = $(mandir)/man1
+am__installdirs = "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(distdir)"
+NROFF = nroff
+MANS = $(dist_man_MANS)
+DATA = $(dist_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -233,44 +238,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-eagledir = $(pkgdatadir)/eagle
-dist_eagle_DATA = README_eagle.txt
-hairpinfilterdir = $(eagledir)/hairpinfilter
-dist_hairpinfilter_DATA = \
- hairpinfilter/hairpinfilter_board.png \
- hairpinfilter/hairpinfilter.HYP \
- hairpinfilter/README.txt \
- hairpinfilter/hairpinfilter.pdf \
- hairpinfilter/hairpinfilter.sch \
- hairpinfilter/demo_hairpin.m \
- hairpinfilter/hairpinfilter.brd \
- hairpinfilter/hairpinfilter_simulation.png
-
-tutorialdir = $(eagledir)/tutorial
-dist_tutorial_DATA = \
- tutorial/msl.brd \
- tutorial/GetUnits.m \
- tutorial/msl.lbr \
- tutorial/README.txt \
- tutorial/msl.patch \
- tutorial/msl.pdf \
- tutorial/msl.sch \
- tutorial/sparam.png \
- tutorial/msl.HYP \
- tutorial/GetEpsilon.m \
- tutorial/tutorial_hyp2mat.m
-
-notchfilterdir = $(eagledir)/notchfilter
-dist_notchfilter_DATA = \
- notchfilter/demo_notch.m \
- notchfilter/notchfilter.pdf \
- notchfilter/notchfilter.sch \
- notchfilter/README.txt \
- notchfilter/notchfilter_simulation.png \
- notchfilter/notchfilter_board.png \
- notchfilter/notchfilter.brd \
- notchfilter/notchfilter.HYP
-
+dist_man_MANS = hyp2mat.1
+dist_DATA = hyp2mat.pdf
+distdir = $(pkgdatadir)
+PROGNAME = $(top_builddir)/src/hyp2mat$(EXEEXT)
+EXTRA_DIST = hyp2mat.h2m hyp2mat.pdf
 all: all-am
 
 .SUFFIXES:
@@ -283,9 +255,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu eagle/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu doc/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu eagle/Makefile
+	  $(AUTOMAKE) --gnu doc/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -310,90 +282,70 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-dist_eagleDATA: $(dist_eagle_DATA)
+install-man1: $(dist_man_MANS)
 	@$(NORMAL_INSTALL)
-	@list='$(dist_eagle_DATA)'; test -n "$(eagledir)" || list=; \
+	@list1=''; \
+	list2='$(dist_man_MANS)'; \
+	test -n "$(man1dir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(man1dir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(man1dir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.1[a-z]*$$/p'; \
+	fi; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
+	done; }
+
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list=''; test -n "$(man1dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	l2='$(dist_man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+	  sed -n '/\.1[a-z]*$$/p'; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
+install-distDATA: $(dist_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_DATA)'; test -n "$(distdir)" || list=; \
 	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(eagledir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(eagledir)" || exit 1; \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(distdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(distdir)" || exit 1; \
 	fi; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(eagledir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(eagledir)" || exit $$?; \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(distdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(distdir)" || exit $$?; \
 	done
 
-uninstall-dist_eagleDATA:
+uninstall-distDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(dist_eagle_DATA)'; test -n "$(eagledir)" || list=; \
+	@list='$(dist_DATA)'; test -n "$(distdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(eagledir)'; $(am__uninstall_files_from_dir)
-install-dist_hairpinfilterDATA: $(dist_hairpinfilter_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(dist_hairpinfilter_DATA)'; test -n "$(hairpinfilterdir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(hairpinfilterdir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(hairpinfilterdir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(hairpinfilterdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(hairpinfilterdir)" || exit $$?; \
-	done
-
-uninstall-dist_hairpinfilterDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(dist_hairpinfilter_DATA)'; test -n "$(hairpinfilterdir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(hairpinfilterdir)'; $(am__uninstall_files_from_dir)
-install-dist_notchfilterDATA: $(dist_notchfilter_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(dist_notchfilter_DATA)'; test -n "$(notchfilterdir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(notchfilterdir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(notchfilterdir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(notchfilterdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(notchfilterdir)" || exit $$?; \
-	done
-
-uninstall-dist_notchfilterDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(dist_notchfilter_DATA)'; test -n "$(notchfilterdir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(notchfilterdir)'; $(am__uninstall_files_from_dir)
-install-dist_tutorialDATA: $(dist_tutorial_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(dist_tutorial_DATA)'; test -n "$(tutorialdir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(tutorialdir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(tutorialdir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(tutorialdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(tutorialdir)" || exit $$?; \
-	done
-
-uninstall-dist_tutorialDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(dist_tutorial_DATA)'; test -n "$(tutorialdir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(tutorialdir)'; $(am__uninstall_files_from_dir)
+	dir='$(DESTDIR)$(distdir)'; $(am__uninstall_files_from_dir)
 tags: TAGS
 TAGS:
 
@@ -402,6 +354,19 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
+	@list='$(MANS)'; if test -n "$$list"; then \
+	  list=`for p in $$list; do \
+	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	    if test -f "$$d$$p"; then echo "$$d$$p"; else :; fi; done`; \
+	  if test -n "$$list" && \
+	    grep 'ab help2man is required to generate this page' $$list >/dev/null; then \
+	    echo "error: found man pages containing the \`missing help2man' replacement text:" >&2; \
+	    grep -l 'ab help2man is required to generate this page' $$list | sed 's/^/         /' >&2; \
+	    echo "       to fix them, install help2man, remove and regenerate the man pages;" >&2; \
+	    echo "       typically \`make maintainer-clean' will remove them" >&2; \
+	    exit 1; \
+	  else :; fi; \
+	else :; fi
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	list='$(DISTFILES)'; \
@@ -433,9 +398,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(DATA)
+all-am: Makefile $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(eagledir)" "$(DESTDIR)$(hairpinfilterdir)" "$(DESTDIR)$(notchfilterdir)" "$(DESTDIR)$(tutorialdir)"; do \
+	for dir in "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(distdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -488,8 +453,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-dist_eagleDATA install-dist_hairpinfilterDATA \
-	install-dist_notchfilterDATA install-dist_tutorialDATA
+install-data-am: install-distDATA install-man
 
 install-dvi: install-dvi-am
 
@@ -505,7 +469,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man:
+install-man: install-man1
 
 install-pdf: install-pdf-am
 
@@ -533,27 +497,46 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-dist_eagleDATA \
-	uninstall-dist_hairpinfilterDATA \
-	uninstall-dist_notchfilterDATA uninstall-dist_tutorialDATA
+uninstall-am: uninstall-distDATA uninstall-man
+
+uninstall-man: uninstall-man1
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
 	distclean distclean-generic distclean-libtool distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dist_eagleDATA \
-	install-dist_hairpinfilterDATA install-dist_notchfilterDATA \
-	install-dist_tutorialDATA install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-dist_eagleDATA uninstall-dist_hairpinfilterDATA \
-	uninstall-dist_notchfilterDATA uninstall-dist_tutorialDATA
+	install-data install-data-am install-distDATA install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-man1 install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
+	ps ps-am uninstall uninstall-am uninstall-distDATA \
+	uninstall-man uninstall-man1
 
+
+# create man page from --help output
+
+@NO_HELP2MAN_TRUE@hyp2mat.1: hyp2mat.h2m $(top_srcdir)/src/cmdline.ggo
+@NO_HELP2MAN_TRUE@	touch $@
+@NO_HELP2MAN_FALSE@hyp2mat.1: hyp2mat.h2m $(top_srcdir)/src/cmdline.ggo
+@NO_HELP2MAN_FALSE@	-$(HELP2MAN) --output=$@ --no-info --include=$< $(PROGNAME)
+
+#
+# pdf man page, mainly for Windows users
+#
+
+@NO_GROFF_TRUE@hyp2mat.pdf: hyp2mat.1
+@NO_GROFF_TRUE@	touch $@
+@NO_GROFF_TRUE@else if NO_PS2PDF
+@NO_GROFF_TRUE@hyp2mat.pdf: hyp2mat.1
+@NO_GROFF_TRUE@	touch $@
+@NO_GROFF_FALSE@hyp2mat.pdf: hyp2mat.1
+@NO_GROFF_FALSE@	-$(GROFF) -Tps -man hyp2mat.1 | $(PS2PDF) - hyp2mat.pdf
+
+#not truncated
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
