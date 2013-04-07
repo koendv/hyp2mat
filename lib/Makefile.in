@@ -328,9 +328,7 @@ libhyp2mat_la_SOURCES = \
   scan.l
 
 EXTRA_DIST = clipper.txt
-BUILT_SOURCES = scan.c parse.c parse.h
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cc .cpp .l .lo .o .obj .y
@@ -639,15 +637,13 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) check-am
+check: check-am
 all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs:
 	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) install-am
+install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -679,7 +675,6 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f parse.c
 	-rm -f scan.c
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
@@ -752,7 +747,7 @@ ps-am:
 uninstall-am: uninstall-includeHEADERS uninstall-libLTLIBRARIES \
 	uninstall-pkgconfigDATA
 
-.MAKE: all check install install-am install-strip
+.MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libLTLIBRARIES clean-libtool clean-noinstLTLIBRARIES \
@@ -772,8 +767,6 @@ uninstall-am: uninstall-includeHEADERS uninstall-libLTLIBRARIES \
 
 
 parse.h: parse.c
-
-scan.c: scan.l parse.h
 
 #not truncated
 

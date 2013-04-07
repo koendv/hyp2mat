@@ -6,4 +6,3 @@ config.h
 config.h.in~
 hyp2mat.pc
 libhyp2mat.la
-stamp-h1

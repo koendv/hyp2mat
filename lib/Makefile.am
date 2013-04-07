@@ -52,8 +52,8 @@ libhyp2mat_la_SOURCES=\
   pdf.h \
   scan.l
 
-EXTRA_DIST=clipper.txt
+parse.h: parse.c
 
-BUILT_SOURCES=parse.h
+EXTRA_DIST=clipper.txt
 
 #not truncated
