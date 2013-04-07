@@ -239,10 +239,6 @@ top_srcdir = @top_srcdir@
 hyp2mat_SOURCES = hyp2mat.cc cmdline.ggo cmdline.c cmdline.h
 hyp2mat_LDADD = $(top_builddir)/lib/libhyp2mat.la
 INCLUDES = -I$(top_srcdir)/lib
-
-# command line option parsing using gengetopt.
-
-# create cmdline.c and cmdline.h from cmdline.ggo
 BUILT_SOURCES = cmdline.c cmdline.h
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -608,6 +604,10 @@ uninstall-am: uninstall-binPROGRAMS
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-binPROGRAMS
+
+
+# command line option parsing using gengetopt.
+# create cmdline.c and cmdline.h from cmdline.ggo
 
 cmdline.c cmdline.h: cmdline.ggo
 	$(GENGETOPT) < $^

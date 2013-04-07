@@ -11,10 +11,11 @@ hyp2mat_LDADD=$(top_builddir)/lib/libhyp2mat.la
 INCLUDES= -I$(top_srcdir)/lib
 
 # command line option parsing using gengetopt.
-
 # create cmdline.c and cmdline.h from cmdline.ggo
-BUILT_SOURCES=cmdline.c cmdline.h
+
 cmdline.c cmdline.h: cmdline.ggo
 	$(GENGETOPT) < $^
+
+BUILT_SOURCES=cmdline.c cmdline.h
 
 #not truncated

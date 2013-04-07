@@ -327,7 +327,7 @@ libhyp2mat_la_SOURCES = \
   pdf.h \
   scan.l
 
-EXTRA_DIST = clipper.txt
+EXTRA_DIST = clipper.txt parse.h
 all: all-am
 
 .SUFFIXES:
@@ -766,7 +766,7 @@ uninstall-am: uninstall-includeHEADERS uninstall-libLTLIBRARIES \
 	uninstall-libLTLIBRARIES uninstall-pkgconfigDATA
 
 
-parse.h: parse.c
+BUILT_SOURCES: parse.c parse.h
 
 #not truncated
 
