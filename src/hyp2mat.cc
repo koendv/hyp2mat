@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
     /* join overlapping copper etc. */
     if (!args_info.raw_flag) 
-      pcb.Simplify(grid, bounds);
+      pcb.Simplify(grid, arc_precision, bounds);
 
     /* print layer summary */
     if (args_info.verbose_given)

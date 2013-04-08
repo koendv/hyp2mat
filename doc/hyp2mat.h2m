@@ -40,9 +40,9 @@ The option
 .BR --net=? 
 lists all available nets.
 
-Arcs are approximated by polygons. If the default is unsatisfactory set 
+Arcs are approximated by polygons. If higher accuracy is needed, set 
 .BR --arc-precision
-to the maximum error. 
+to the desired precision. This will increase the number of line segments used to draw circular, oval and oblong pads, amongst others.
 
 Typical use of 
 .I hyp2mat 

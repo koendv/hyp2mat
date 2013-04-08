@@ -27,7 +27,9 @@
 class Geometry {
   public:
     Geometry();
-    void Simplify(Hyp2Mat::PCB& pcb, double grid, Hyp2Mat::Bounds bounds);
+    void Simplify(Hyp2Mat::PCB& pcb, double grid, double arc_precision, Hyp2Mat::Bounds bounds);
+
+  private:
     void CropVias(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds);
     void CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds);
     void SnapPinsToGrid(Hyp2Mat::PCB& pcb);
@@ -49,10 +51,10 @@ class Geometry {
     Hyp2Mat::Edge convert (ClipperLib::Polygon poly);
     Hyp2Mat::PolygonList convert (ClipperLib::Polygons poly);
 
-  private:
     void AddToPolyList(ClipperLib::PolyNode& polynode, Hyp2Mat::PolygonList& poly_list, int level);
     void PrintPcb(Hyp2Mat::PCB& pcb);
     double grid;
+    double limit;
   };
 
 #endif

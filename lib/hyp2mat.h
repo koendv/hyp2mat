@@ -175,8 +175,14 @@ namespace Hyp2Mat {
       void ReadHyperLynx(std::string filename, std::vector<std::string> nets = std::vector<std::string>(), double arc_precision = 0);
       void SetEpsilonR(double epsilon_r); /* set dielectric epsilon r. overrides value in Hyperlynx file. */
       Bounds GetBounds(); /* gets board extension in x,y and z */
-      void Simplify(double grid); /* join adjacent and overlapping copper */
-      void Simplify(double grid, Bounds bounds); /* Simplifies and crops board */
+      /*
+       * Parameters to Simplify:
+       * grid: resolution of x and y coordinates.
+       * arc_precision: maximum difference between a circle arc and its polygonal approximation. 
+       * bounds: crop board bounds.
+       */
+      void Simplify(double grid, double arc_precision); /* join adjacent and overlapping copper */
+      void Simplify(double grid, double arc_precision, Bounds bounds); /* Simplifies and crops board */
       void PrintSummary();
       void WritePDF(std::string filename, double hue = -1, double saturation = -1, double brightness = -1);
       void WriteCSXCAD(std::string filename);

@@ -37,15 +37,15 @@ PCB::PCB()
   via_plating_thickness = 0;
 }
 
-void PCB::Simplify(double grid)
+void PCB::Simplify(double grid, double arc_precision)
 {
-  Simplify(grid, GetBounds());
+  Simplify(grid, arc_precision, GetBounds());
 }
 
-void PCB::Simplify(double grid, Bounds bounds)
+void PCB::Simplify(double grid, double arc_precision, Bounds bounds)
 {
   Geometry geom;
-  geom.Simplify(*this, grid, bounds);
+  geom.Simplify(*this, grid, arc_precision, bounds);
 }
 
 /*

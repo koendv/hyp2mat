@@ -28,10 +28,13 @@ Geometry::Geometry()
   grid = 1E-6;
 }
 
-void Geometry::Simplify(Hyp2Mat::PCB& pcb, double grid_size, Hyp2Mat::Bounds bounds)
+void Geometry::Simplify(Hyp2Mat::PCB& pcb, double grid_size, double arc_precision, Hyp2Mat::Bounds bounds)
 {
   if (grid_size > 0) grid = grid_size;
   else grid = 1E-6;
+
+  if (arc_precision > 0) limit = arc_precision / grid_size;
+  else limit = 0;
 
   /* Crop copper */
    
@@ -99,10 +102,16 @@ ClipperLib::Polygons Geometry::convert (Hyp2Mat::Edge edge)
   double delta = edge.width / 2 / grid;
   if (edge.is_hole) delta = -delta;
   ClipperLib::Polygons offset_polys;
-  OffsetPolygons(polys, offset_polys, delta, ClipperLib::jtRound, false);
+
+  if (limit == 0)
+    /* square corners */
+    OffsetPolygons(polys, offset_polys, delta, ClipperLib::jtSquare);
+  else
+    /* round corners */
+    OffsetPolygons(polys, offset_polys, delta, ClipperLib::jtRound, limit);
 
   /* Set polygons to same orientation as initial*/
-  for (ClipperLib::Polygons::iterator i = polys.begin(); i != polys.end(); ++i)
+  for (ClipperLib::Polygons::iterator i = offset_polys.begin(); i != offset_polys.end(); ++i)
     if (Orientation(*i) == edge.is_hole) ClipperLib::ReversePolygon(*i);
 
   return offset_polys;
