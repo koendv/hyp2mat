@@ -27,12 +27,14 @@ endif
 if NO_GROFF
 hyp2mat.pdf: hyp2mat.1
 	touch $@
-else if NO_PS2PDF
+else 
+if NO_PS2PDF
 hyp2mat.pdf: hyp2mat.1
 	touch $@
 else
 hyp2mat.pdf: hyp2mat.1
 	-$(GROFF) -Tps -man hyp2mat.1 | $(PS2PDF) - hyp2mat.pdf
+endif
 endif
 
 EXTRA_DIST=hyp2mat.h2m hyp2mat.pdf

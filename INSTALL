@@ -21,7 +21,7 @@ On MacOSX, with libhpdf installed in /opt/local using MacPorts:
 
 On Windows:
 
-  Install MinGW (http://www.mingw.org)
+  Install MinGW (http://www.mingw.org) with g++, bison, flex, and gengetopt
 
   Compile zlib, libpng and libharu (libhpdf):
 

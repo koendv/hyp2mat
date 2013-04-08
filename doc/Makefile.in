@@ -530,11 +530,10 @@ uninstall-man: uninstall-man1
 
 @NO_GROFF_TRUE@hyp2mat.pdf: hyp2mat.1
 @NO_GROFF_TRUE@	touch $@
-@NO_GROFF_TRUE@else if NO_PS2PDF
-@NO_GROFF_TRUE@hyp2mat.pdf: hyp2mat.1
-@NO_GROFF_TRUE@	touch $@
-@NO_GROFF_FALSE@hyp2mat.pdf: hyp2mat.1
-@NO_GROFF_FALSE@	-$(GROFF) -Tps -man hyp2mat.1 | $(PS2PDF) - hyp2mat.pdf
+@NO_GROFF_FALSE@@NO_PS2PDF_TRUE@hyp2mat.pdf: hyp2mat.1
+@NO_GROFF_FALSE@@NO_PS2PDF_TRUE@	touch $@
+@NO_GROFF_FALSE@@NO_PS2PDF_FALSE@hyp2mat.pdf: hyp2mat.1
+@NO_GROFF_FALSE@@NO_PS2PDF_FALSE@	-$(GROFF) -Tps -man hyp2mat.1 | $(PS2PDF) - hyp2mat.pdf
 
 #not truncated
 
