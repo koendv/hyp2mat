@@ -1,0 +1,19 @@
+#!/bin/sh -x
+#
+# Script to build win32 binary - run in MinGW.
+#
+HYPDIR=~/hyp2mat
+BUILDDIR=~/build-w32
+INSTDIR=~/install-w32
+rm -rf $BUILDDIR $INSTDIR
+mkdir $BUILDDIR
+cd $BUILDDIR
+CPPFLAGS=-I/usr/include LDFLAGS="-static -static-libgcc -static-libstdc++ -L/usr/lib" $HYPDIR/configure --prefix=$INSTDIR
+make install
+cp $HYPDIR/COPYING $INSTDIR/share/hyp2mat
+cp $INSTDIR/bin/hyp2mat $INSTDIR/share/hyp2mat
+cd $INSTDIR/share/
+zip -9 -r $BUILDDIR/hyp2mat-win32-current.zip ./hyp2mat
+cd $BUILDDIR
+rm -rf $INSTDIR
+#not truncated

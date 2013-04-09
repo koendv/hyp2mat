@@ -81,8 +81,8 @@ bool HypFile::Hyp::exec_seg(parse_param& h)
   h.x2 *= unit;
   h.y2 *= unit;
   h.width *= unit;
-  h.plane_separation_set *= unit;
-  h.left_plane_separation_set *= unit;
+  h.plane_separation *= unit;
+  h.left_plane_separation *= unit;
 
   p = segment2poly(h.x1 , h.y1, h.x2, h.y2, h.width);
   p.layer_name = h.layer_name;
@@ -118,8 +118,8 @@ bool HypFile::Hyp::exec_arc(parse_param& h)
   h.yc *= unit;
   h.r *= unit;
   h.width *= unit;
-  h.plane_separation_set *= unit;
-  h.left_plane_separation_set *= unit;
+  h.plane_separation *= unit;
+  h.left_plane_separation *= unit;
 
   /* 'ARC' draws arc clockwise */
   Polygon arc = arc2poly(h.x1, h.y1, h.x2, h.y2, h.xc, h.yc, h.r, true);
