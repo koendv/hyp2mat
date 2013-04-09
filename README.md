@@ -1,6 +1,6 @@
 # hyp2mat
 
-hyp2mat is a utility which converts HyperLynx files to CSXCAD for electromagnetic simulation, or to PDF for printing.
+hyp2mat is a utility which converts HyperLynx files to matlab for electromagnetic simulation, or to PDF for printing.
 hyp2mat is distributed with [openEMS] (http://www.openems.de), a free open-source electromagnetic field solver.
 
 ## Installation
@@ -13,4 +13,4 @@ hyp2mat can be installed from pre-compiled binaries, or compiled from source:
 
 ## Tutorial
 
-How to [simulate a printed circuit board in OpenEMS using HyperLynx files] ( http://openems.de/index.php/Tutorial:_Importing_with_hyp2mat ) 
+How to [simulate a printed circuit board in openEMS using HyperLynx files] ( http://openems.de/index.php/Tutorial:_Importing_with_hyp2mat ) 

@@ -12,12 +12,12 @@ option "output-format" f "Output file format." enum values="csxcad","pdf" defaul
 section "Processing options"
 option "net" n "Import named net. Repeat to import several nets. If no nets are specified all nets are imported." string optional multiple
 option "epsilonr" e "Set dielectric epsilon r." double optional
-option "xmin" x "Crop pcb. Set lowest value of x coordinate." double optional 
-option "xmax" X "Crop pcb. Set highest value of x coordinate." double optional 
-option "ymin" y "Crop pcb. Set lowest value of y coordinate." double optional 
-option "ymax" Y "Crop pcb. Set highest value of y coordinate." double optional 
-option "zmin" z "Crop pcb. Set lowest value of z coordinate." double optional 
-option "zmax" Z "Crop pcb. Set highest value of z coordinate." double optional 
+option "xmin" x "Crop pcb. Set lower bound of x coordinate." double optional 
+option "xmax" X "Crop pcb. Set upper bound of x coordinate." double optional 
+option "ymin" y "Crop pcb. Set lower bound of y coordinate." double optional 
+option "ymax" Y "Crop pcb. Set upper bound of y coordinate." double optional 
+option "zmin" z "Crop pcb. Set lower bound of z coordinate." double optional 
+option "zmax" Z "Crop pcb. Set upper bound of z coordinate." double optional 
 option "grid" g "Set output grid size." double default="10e-6" optional 
 option "arc-precision" p "Set maximum difference between perfect arc and polygonal approximation." default="0" double optional 
 section "PDF output options"
@@ -26,6 +26,6 @@ option "saturation" - "Set PDF color saturation. Range 0.0 to 1.0" double defaul
 option "brightness" - "Set PDF color brightness. Range 0.0 to 1.0" double default="0.9" optional
 section "Debugging options"
 option "raw" r "Raw output. Do not join adjacent or overlapping copper. Do not invert planes." flag off
-option "debug" d "Increase debugging level. Repeat option for more detailed debugging." optional multiple
+option "debug" d "Increase debugging level. Repeat for more detailed debugging." optional multiple
 option "verbose" v "Print board summary." no
 # not truncated

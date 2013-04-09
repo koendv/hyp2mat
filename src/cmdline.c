@@ -39,12 +39,12 @@ const char *gengetopt_args_info_help[] = {
   "\nProcessing options:",
   "  -n, --net=STRING            Import named net. Repeat to import several nets. \n                                If no nets are specified all nets are imported.",
   "  -e, --epsilonr=DOUBLE       Set dielectric epsilon r.",
-  "  -x, --xmin=DOUBLE           Crop pcb. Set lowest value of x coordinate.",
-  "  -X, --xmax=DOUBLE           Crop pcb. Set highest value of x coordinate.",
-  "  -y, --ymin=DOUBLE           Crop pcb. Set lowest value of y coordinate.",
-  "  -Y, --ymax=DOUBLE           Crop pcb. Set highest value of y coordinate.",
-  "  -z, --zmin=DOUBLE           Crop pcb. Set lowest value of z coordinate.",
-  "  -Z, --zmax=DOUBLE           Crop pcb. Set highest value of z coordinate.",
+  "  -x, --xmin=DOUBLE           Crop pcb. Set lower bound of x coordinate.",
+  "  -X, --xmax=DOUBLE           Crop pcb. Set upper bound of x coordinate.",
+  "  -y, --ymin=DOUBLE           Crop pcb. Set lower bound of y coordinate.",
+  "  -Y, --ymax=DOUBLE           Crop pcb. Set upper bound of y coordinate.",
+  "  -z, --zmin=DOUBLE           Crop pcb. Set lower bound of z coordinate.",
+  "  -Z, --zmax=DOUBLE           Crop pcb. Set upper bound of z coordinate.",
   "  -g, --grid=DOUBLE           Set output grid size.  (default=`10e-6')",
   "  -p, --arc-precision=DOUBLE  Set maximum difference between perfect arc and \n                                polygonal approximation.  (default=`0')",
   "\nPDF output options:",
@@ -53,7 +53,7 @@ const char *gengetopt_args_info_help[] = {
   "      --brightness=DOUBLE     Set PDF color brightness. Range 0.0 to 1.0  \n                                (default=`0.9')",
   "\nDebugging options:",
   "  -r, --raw                   Raw output. Do not join adjacent or overlapping \n                                copper. Do not invert planes.  (default=off)",
-  "  -d, --debug                 Increase debugging level. Repeat option for more \n                                detailed debugging.",
+  "  -d, --debug                 Increase debugging level. Repeat for more \n                                detailed debugging.",
   "  -v, --verbose               Print board summary.",
     0
 };
@@ -1091,7 +1091,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'x':	/* Crop pcb. Set lowest value of x coordinate..  */
+        case 'x':	/* Crop pcb. Set lower bound of x coordinate..  */
         
         
           if (update_arg( (void *)&(args_info->xmin_arg), 
@@ -1103,7 +1103,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'X':	/* Crop pcb. Set highest value of x coordinate..  */
+        case 'X':	/* Crop pcb. Set upper bound of x coordinate..  */
         
         
           if (update_arg( (void *)&(args_info->xmax_arg), 
@@ -1115,7 +1115,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'y':	/* Crop pcb. Set lowest value of y coordinate..  */
+        case 'y':	/* Crop pcb. Set lower bound of y coordinate..  */
         
         
           if (update_arg( (void *)&(args_info->ymin_arg), 
@@ -1127,7 +1127,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'Y':	/* Crop pcb. Set highest value of y coordinate..  */
+        case 'Y':	/* Crop pcb. Set upper bound of y coordinate..  */
         
         
           if (update_arg( (void *)&(args_info->ymax_arg), 
@@ -1139,7 +1139,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'z':	/* Crop pcb. Set lowest value of z coordinate..  */
+        case 'z':	/* Crop pcb. Set lower bound of z coordinate..  */
         
         
           if (update_arg( (void *)&(args_info->zmin_arg), 
@@ -1151,7 +1151,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'Z':	/* Crop pcb. Set highest value of z coordinate..  */
+        case 'Z':	/* Crop pcb. Set upper bound of z coordinate..  */
         
         
           if (update_arg( (void *)&(args_info->zmax_arg), 
@@ -1197,7 +1197,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'd':	/* Increase debugging level. Repeat option for more detailed debugging..  */
+        case 'd':	/* Increase debugging level. Repeat for more detailed debugging..  */
         
           local_args_info.debug_given++;
         

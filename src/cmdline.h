@@ -59,24 +59,24 @@ struct gengetopt_args_info
   double epsilonr_arg;	/**< @brief Set dielectric epsilon r..  */
   char * epsilonr_orig;	/**< @brief Set dielectric epsilon r. original value given at command line.  */
   const char *epsilonr_help; /**< @brief Set dielectric epsilon r. help description.  */
-  double xmin_arg;	/**< @brief Crop pcb. Set lowest value of x coordinate..  */
-  char * xmin_orig;	/**< @brief Crop pcb. Set lowest value of x coordinate. original value given at command line.  */
-  const char *xmin_help; /**< @brief Crop pcb. Set lowest value of x coordinate. help description.  */
-  double xmax_arg;	/**< @brief Crop pcb. Set highest value of x coordinate..  */
-  char * xmax_orig;	/**< @brief Crop pcb. Set highest value of x coordinate. original value given at command line.  */
-  const char *xmax_help; /**< @brief Crop pcb. Set highest value of x coordinate. help description.  */
-  double ymin_arg;	/**< @brief Crop pcb. Set lowest value of y coordinate..  */
-  char * ymin_orig;	/**< @brief Crop pcb. Set lowest value of y coordinate. original value given at command line.  */
-  const char *ymin_help; /**< @brief Crop pcb. Set lowest value of y coordinate. help description.  */
-  double ymax_arg;	/**< @brief Crop pcb. Set highest value of y coordinate..  */
-  char * ymax_orig;	/**< @brief Crop pcb. Set highest value of y coordinate. original value given at command line.  */
-  const char *ymax_help; /**< @brief Crop pcb. Set highest value of y coordinate. help description.  */
-  double zmin_arg;	/**< @brief Crop pcb. Set lowest value of z coordinate..  */
-  char * zmin_orig;	/**< @brief Crop pcb. Set lowest value of z coordinate. original value given at command line.  */
-  const char *zmin_help; /**< @brief Crop pcb. Set lowest value of z coordinate. help description.  */
-  double zmax_arg;	/**< @brief Crop pcb. Set highest value of z coordinate..  */
-  char * zmax_orig;	/**< @brief Crop pcb. Set highest value of z coordinate. original value given at command line.  */
-  const char *zmax_help; /**< @brief Crop pcb. Set highest value of z coordinate. help description.  */
+  double xmin_arg;	/**< @brief Crop pcb. Set lower bound of x coordinate..  */
+  char * xmin_orig;	/**< @brief Crop pcb. Set lower bound of x coordinate. original value given at command line.  */
+  const char *xmin_help; /**< @brief Crop pcb. Set lower bound of x coordinate. help description.  */
+  double xmax_arg;	/**< @brief Crop pcb. Set upper bound of x coordinate..  */
+  char * xmax_orig;	/**< @brief Crop pcb. Set upper bound of x coordinate. original value given at command line.  */
+  const char *xmax_help; /**< @brief Crop pcb. Set upper bound of x coordinate. help description.  */
+  double ymin_arg;	/**< @brief Crop pcb. Set lower bound of y coordinate..  */
+  char * ymin_orig;	/**< @brief Crop pcb. Set lower bound of y coordinate. original value given at command line.  */
+  const char *ymin_help; /**< @brief Crop pcb. Set lower bound of y coordinate. help description.  */
+  double ymax_arg;	/**< @brief Crop pcb. Set upper bound of y coordinate..  */
+  char * ymax_orig;	/**< @brief Crop pcb. Set upper bound of y coordinate. original value given at command line.  */
+  const char *ymax_help; /**< @brief Crop pcb. Set upper bound of y coordinate. help description.  */
+  double zmin_arg;	/**< @brief Crop pcb. Set lower bound of z coordinate..  */
+  char * zmin_orig;	/**< @brief Crop pcb. Set lower bound of z coordinate. original value given at command line.  */
+  const char *zmin_help; /**< @brief Crop pcb. Set lower bound of z coordinate. help description.  */
+  double zmax_arg;	/**< @brief Crop pcb. Set upper bound of z coordinate..  */
+  char * zmax_orig;	/**< @brief Crop pcb. Set upper bound of z coordinate. original value given at command line.  */
+  const char *zmax_help; /**< @brief Crop pcb. Set upper bound of z coordinate. help description.  */
   double grid_arg;	/**< @brief Set output grid size. (default='10e-6').  */
   char * grid_orig;	/**< @brief Set output grid size. original value given at command line.  */
   const char *grid_help; /**< @brief Set output grid size. help description.  */
@@ -94,9 +94,9 @@ struct gengetopt_args_info
   const char *brightness_help; /**< @brief Set PDF color brightness. Range 0.0 to 1.0 help description.  */
   int raw_flag;	/**< @brief Raw output. Do not join adjacent or overlapping copper. Do not invert planes. (default=off).  */
   const char *raw_help; /**< @brief Raw output. Do not join adjacent or overlapping copper. Do not invert planes. help description.  */
-  unsigned int debug_min; /**< @brief Increase debugging level. Repeat option for more detailed debugging.'s minimum occurreces */
-  unsigned int debug_max; /**< @brief Increase debugging level. Repeat option for more detailed debugging.'s maximum occurreces */
-  const char *debug_help; /**< @brief Increase debugging level. Repeat option for more detailed debugging. help description.  */
+  unsigned int debug_min; /**< @brief Increase debugging level. Repeat for more detailed debugging.'s minimum occurreces */
+  unsigned int debug_max; /**< @brief Increase debugging level. Repeat for more detailed debugging.'s maximum occurreces */
+  const char *debug_help; /**< @brief Increase debugging level. Repeat for more detailed debugging. help description.  */
   const char *verbose_help; /**< @brief Print board summary. help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
