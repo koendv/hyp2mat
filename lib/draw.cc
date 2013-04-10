@@ -37,10 +37,12 @@ using namespace HypFile;
 Polygon::Polygon()
 {
   vertex.clear();
-  polygon_type = POLYGON_TYPE_PLANE;
+  polygon_type = POLYGON_TYPE_COPPER;
   id = -1;
   positive = true;
   width = 0.0;
+  plane_separation = -1.0; /* negative if not set */
+  left_plane_separation = -1.0; /* negative if not set */
   net_name.clear();
   layer_name.clear();
 }

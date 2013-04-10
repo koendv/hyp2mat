@@ -51,6 +51,9 @@ namespace HypFile {
     int id;
     bool positive; /* false if hole */
     double width; /* edge width of polygon */
+    /* if polygon_type == POLYGON_TYPE_PLANE keep plane_separation distance from other nets */
+    double plane_separation;  /* -1.0 if not set */
+    double left_plane_separation;  /* -1.0 if not set */
     std::string layer_name;
     };
   
@@ -188,7 +191,6 @@ namespace HypFile {
     std::string net_name;
     PolygonMap metal;
     double plane_separation;
-    bool plane_separation_set;
     ViaList via;
     UnroutedSegmentList unrouted_segment;
     PinList pin;

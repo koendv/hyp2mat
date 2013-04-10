@@ -37,8 +37,7 @@ bool HypFile::Hyp::exec_net(parse_param& h)
 
   Net n;
   n.net_name = h.net_name;
-  n.plane_separation = 0;
-  n.plane_separation_set = false;
+  n.plane_separation = -1.0;
   net.push_back(n);
 
   return false;
@@ -52,9 +51,9 @@ bool HypFile::Hyp::exec_net(parse_param& h)
 bool HypFile::Hyp::exec_net_plane_separation(parse_param& h)
 {
   if (trace_hyp) cerr << "net_plane_separation: plane_separation = " << h.plane_separation << endl;
+  h.plane_separation *= unit;
 
   net.back().plane_separation = h.plane_separation;
-  net.back().plane_separation_set = true;
 
   return false;
 }
@@ -82,12 +81,16 @@ bool HypFile::Hyp::exec_seg(parse_param& h)
   h.y2 *= unit;
   h.width *= unit;
   h.plane_separation *= unit;
+  if (!h.plane_separation_set) h.plane_separation = -1.0;
   h.left_plane_separation *= unit;
+  if (!h.left_plane_separation_set) h.left_plane_separation = -1.0;
 
   p = segment2poly(h.x1 , h.y1, h.x2, h.y2, h.width);
   p.layer_name = h.layer_name;
   p.width = 0;
   p.positive = true;
+  p.plane_separation = h.plane_separation; /* distance to other copper; -1 if not set */
+  p.left_plane_separation = h.left_plane_separation;
 
   add_polygon(p);
 
@@ -119,7 +122,9 @@ bool HypFile::Hyp::exec_arc(parse_param& h)
   h.r *= unit;
   h.width *= unit;
   h.plane_separation *= unit;
+  if (!h.plane_separation_set) h.plane_separation = -1.0;
   h.left_plane_separation *= unit;
+  if (!h.left_plane_separation_set) h.left_plane_separation = -1.0;
 
   /* 'ARC' draws arc clockwise */
   Polygon arc = arc2poly(h.x1, h.y1, h.x2, h.y2, h.xc, h.yc, h.r, true);
@@ -132,6 +137,8 @@ bool HypFile::Hyp::exec_arc(parse_param& h)
     line_segment.positive = true;
     line_segment.layer_name = h.layer_name;
     line_segment.width = 0;
+    line_segment.plane_separation = h.plane_separation;
+    line_segment.left_plane_separation = h.left_plane_separation;
     add_polygon(line_segment);
     }
 
