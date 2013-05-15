@@ -47,9 +47,8 @@ private:
   void draw_composite_view(HPDF_Doc pdf, HPDF_Font font, Hyp2Mat::PCB& pcb);
   void draw_layer_view(HPDF_Doc pdf, HPDF_Font font, Hyp2Mat::PCB& pcb);
   void draw_caption(HPDF_Page page, HPDF_Font font, std::string txt);
-  void draw(HPDF_Page page, Hyp2Mat::PolygonList& polylist); /* output a list of polygons */
-  void draw(HPDF_Page page, Hyp2Mat::Polygon& poly); /* output a polygon */
-  void draw(HPDF_Page page, Hyp2Mat::Edge& edge); /* output a polygon edge */
+  void draw(HPDF_Page page, Hyp2Mat::FloatPolygons& polygons); /* output a polygon */
+  void draw(HPDF_Page page, Hyp2Mat::FloatPolygon& polygon); /* output a polygon edge */
   void draw(HPDF_Page page, Hyp2Mat::Via& via); /* output a via */
   void page_fill(HPDF_Page page); /* fill */
   void page_stroke(HPDF_Page page); /* draw lines */

@@ -36,7 +36,7 @@ HypFile::Hyp::Hyp()
   metal_thickness_unit = 1;
   use_die_for_metal = false;
 
-  min_circle_segments = 16; // 8 seems minimal, 16 seems ok.
+  min_circle_segments = 8; // 8 seems minimal, 16 seems more than sufficient.
   arc_precision = 0;
   pi = M_PI;
   inches  = 0.0254; /* inches to m */

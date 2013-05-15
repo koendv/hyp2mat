@@ -18,52 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <limits>
+#ifndef CROP_H
+#define CROP_H
 
-#include "config.h"
 #include "hyp2mat.h"
+#include "polygon.h"
 
-using namespace Hyp2Mat;
+namespace Hyp2Mat {
+  Hyp2Mat::Bounds AdjustBounds(Hyp2Mat::PCB& pcb, Bounds bounds);
+  Hyp2Mat::Polygon CropPolygon (Hyp2Mat::Polygon poly, Hyp2Mat::Bounds bounds);
+  void CropVias(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds);
+  void CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds);
+  }
 
-std::string Hyp2Mat::version()
-{
-  return VERSION;
-}
-
-double Layer::thickness() {
-  return z1 - z0; 
-}
-
-Device::Device()
-{
-  name.clear();
-  ref.clear();
-  value_type = DEVICE_VALUE_NONE;
-  value_float = -1;
-  value_string.clear();
-}
-
-Pin::Pin()
-{
-  ref.clear();
-  x = 0;
-  y = 0;
-  z0 = 0;
-  z1 = 0;
-  layer_name.clear();
-  metal.clear();
-}
-
-Bounds::Bounds()
-{
-  /* bounds default to infinity */
-  double dbl_max = std::numeric_limits<double>::max();
-  x_min = - dbl_max;
-  x_max =   dbl_max;
-  y_min = - dbl_max;
-  y_max =   dbl_max;
-  z_min = - dbl_max;
-  z_max =   dbl_max;
-}
+#endif
 
 /* not truncated */

@@ -28,7 +28,7 @@ AM_CONDITIONAL(NO_GROFF, test -z "$ac_cv_path_GROFF" )
 AC_PATH_PROG(PS2PDF, ps2pdf)
 AM_CONDITIONAL(NO_PS2PDF, test -z "$ac_cv_path_PS2PDF" )
 
-AC_LANG(C++)
+AC_LANG([C++])
 AC_PROG_CXX
 # Compile all C programs with g++.
 # Bison and flex generate C source. 

@@ -105,11 +105,11 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgconfigdir)" \
 	"$(DESTDIR)$(includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 libhyp2mat_la_LIBADD =
-am_libhyp2mat_la_OBJECTS = clipper.lo csxcad.lo draw.lo edge.lo \
+am_libhyp2mat_la_OBJECTS = clipper.lo crop.lo csxcad.lo draw.lo \
 	exec_board.lo exec_devices.lo exec_end.lo exec_net.lo \
 	exec_netclass.lo exec_padstack.lo exec_polygon.lo \
-	exec_stackup.lo exec_supplies.lo geometry.lo hyperlynx.lo \
-	hypfile.lo misc.lo palette.lo parse.lo pcb.lo pdf.lo scan.lo
+	exec_stackup.lo exec_supplies.lo hyperlynx.lo hypfile.lo \
+	misc.lo palette.lo parse.lo polygon.lo pcb.lo pdf.lo scan.lo
 libhyp2mat_la_OBJECTS = $(am_libhyp2mat_la_OBJECTS)
 @INSTALL_LIBRARY_FALSE@am_libhyp2mat_la_rpath =
 @INSTALL_LIBRARY_TRUE@am_libhyp2mat_la_rpath = -rpath $(libdir)
@@ -296,10 +296,11 @@ pkgconfigdir = $(datarootdir)/pkgconfig
 libhyp2mat_la_SOURCES = \
   clipper.cpp \
   clipper.hpp \
+  crop.h \
+  crop.cc \
   csxcad.cc \
   csxcad.h \
   draw.cc \
-  edge.cc \
   exec_board.cc \
   exec_devices.cc \
   exec_end.cc \
@@ -309,8 +310,6 @@ libhyp2mat_la_SOURCES = \
   exec_polygon.cc \
   exec_stackup.cc \
   exec_supplies.cc \
-  geometry.cc \
-  geometry.h \
   hyp2mat.h \
   hyperlynx.cc \
   hyperlynx.h \
@@ -322,6 +321,8 @@ libhyp2mat_la_SOURCES = \
   parse_param.h \
   parser.h \
   parse.y \
+  polygon.h \
+  polygon.cc \
   pcb.cc \
   pdf.cc \
   pdf.h \
@@ -415,9 +416,9 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clipper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/csxcad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/draw.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edge.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec_board.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec_devices.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec_end.Plo@am__quote@
@@ -427,7 +428,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec_polygon.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec_stackup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec_supplies.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/geometry.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hyperlynx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hypfile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/misc.Plo@am__quote@
@@ -435,6 +435,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcb.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pdf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/polygon.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scan.Plo@am__quote@
 
 .c.o:

@@ -21,10 +21,11 @@ pkgconfigdir=$(datarootdir)/pkgconfig
 libhyp2mat_la_SOURCES=\
   clipper.cpp \
   clipper.hpp \
+  crop.h \
+  crop.cc \
   csxcad.cc \
   csxcad.h \
   draw.cc \
-  edge.cc \
   exec_board.cc \
   exec_devices.cc \
   exec_end.cc \
@@ -34,8 +35,6 @@ libhyp2mat_la_SOURCES=\
   exec_polygon.cc \
   exec_stackup.cc \
   exec_supplies.cc \
-  geometry.cc \
-  geometry.h \
   hyp2mat.h \
   hyperlynx.cc \
   hyperlynx.h \
@@ -47,6 +46,8 @@ libhyp2mat_la_SOURCES=\
   parse_param.h \
   parser.h \
   parse.y \
+  polygon.h \
+  polygon.cc \
   pcb.cc \
   pdf.cc \
   pdf.h \

@@ -36,15 +36,14 @@ private:
 
   double adjust_z(Hyp2Mat::PCB& pcb, double z);
 
-  void export_edge(Hyp2Mat::Edge& edge); /* output a polygon edge */
-  void export_polygon(Hyp2Mat::Polygon& poly); /* output a polygon */
+  void export_edge(Hyp2Mat::FloatPolygon& edge); /* output a polygon edge */
   void export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer); /* output a copper layer */
   void export_board(Hyp2Mat::PCB& pcb); /* output the dielectric */
   void export_vias(Hyp2Mat::PCB& pcb);
   void export_devices(Hyp2Mat::PCB& pcb);
   void export_ports(Hyp2Mat::PCB& pcb);
-  bool contains_polygon(Hyp2Mat::PolygonList& polylist); /* true if polygon list contains at least one (positive) polygon */
-  bool contains_hole(Hyp2Mat::PolygonList& polylist); /* true if polygon list contains at least one hole */
+  bool contains_polygon(Hyp2Mat::FloatPolygons& polygons); /* true if polygon list contains at least one (positive) polygon */
+  bool contains_hole(Hyp2Mat::FloatPolygons& polygons); /* true if polygon list contains at least one hole */
   std::string string2matlab(std::string str); /* quote a string using matlab conventions */
 
   };

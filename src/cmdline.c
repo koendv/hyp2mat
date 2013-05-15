@@ -37,7 +37,8 @@ const char *gengetopt_args_info_help[] = {
   "  -o, --output=filename       Output file.  (default=`-')",
   "  -f, --output-format=ENUM    Output file format.  (possible values=\"csxcad\", \n                                \"pdf\" default=`pdf')",
   "\nProcessing options:",
-  "  -n, --net=STRING            Import named net. Repeat to import several nets. \n                                If no nets are specified all nets are imported.",
+  "  -n, --net=STRING            Import net. Repeat to import several nets. \n                                Default is importing all nets.",
+  "  -l, --layer=STRING          Import layer. Repeat to import several layers. \n                                Default is importing all layers.",
   "  -e, --epsilonr=DOUBLE       Set dielectric epsilon r.",
   "  -x, --xmin=DOUBLE           Crop pcb. Set lower bound of x coordinate.",
   "  -X, --xmax=DOUBLE           Crop pcb. Set upper bound of x coordinate.",
@@ -90,6 +91,7 @@ void clear_given (struct gengetopt_args_info *args_info)
   args_info->output_given = 0 ;
   args_info->output_format_given = 0 ;
   args_info->net_given = 0 ;
+  args_info->layer_given = 0 ;
   args_info->epsilonr_given = 0 ;
   args_info->xmin_given = 0 ;
   args_info->xmax_given = 0 ;
@@ -117,6 +119,8 @@ void clear_args (struct gengetopt_args_info *args_info)
   args_info->output_format_orig = NULL;
   args_info->net_arg = NULL;
   args_info->net_orig = NULL;
+  args_info->layer_arg = NULL;
+  args_info->layer_orig = NULL;
   args_info->epsilonr_orig = NULL;
   args_info->xmin_orig = NULL;
   args_info->xmax_orig = NULL;
@@ -150,23 +154,26 @@ void init_args_info(struct gengetopt_args_info *args_info)
   args_info->net_help = gengetopt_args_info_help[5] ;
   args_info->net_min = 0;
   args_info->net_max = 0;
-  args_info->epsilonr_help = gengetopt_args_info_help[6] ;
-  args_info->xmin_help = gengetopt_args_info_help[7] ;
-  args_info->xmax_help = gengetopt_args_info_help[8] ;
-  args_info->ymin_help = gengetopt_args_info_help[9] ;
-  args_info->ymax_help = gengetopt_args_info_help[10] ;
-  args_info->zmin_help = gengetopt_args_info_help[11] ;
-  args_info->zmax_help = gengetopt_args_info_help[12] ;
-  args_info->grid_help = gengetopt_args_info_help[13] ;
-  args_info->arc_precision_help = gengetopt_args_info_help[14] ;
-  args_info->hue_help = gengetopt_args_info_help[16] ;
-  args_info->saturation_help = gengetopt_args_info_help[17] ;
-  args_info->brightness_help = gengetopt_args_info_help[18] ;
-  args_info->raw_help = gengetopt_args_info_help[20] ;
-  args_info->debug_help = gengetopt_args_info_help[21] ;
+  args_info->layer_help = gengetopt_args_info_help[6] ;
+  args_info->layer_min = 0;
+  args_info->layer_max = 0;
+  args_info->epsilonr_help = gengetopt_args_info_help[7] ;
+  args_info->xmin_help = gengetopt_args_info_help[8] ;
+  args_info->xmax_help = gengetopt_args_info_help[9] ;
+  args_info->ymin_help = gengetopt_args_info_help[10] ;
+  args_info->ymax_help = gengetopt_args_info_help[11] ;
+  args_info->zmin_help = gengetopt_args_info_help[12] ;
+  args_info->zmax_help = gengetopt_args_info_help[13] ;
+  args_info->grid_help = gengetopt_args_info_help[14] ;
+  args_info->arc_precision_help = gengetopt_args_info_help[15] ;
+  args_info->hue_help = gengetopt_args_info_help[17] ;
+  args_info->saturation_help = gengetopt_args_info_help[18] ;
+  args_info->brightness_help = gengetopt_args_info_help[19] ;
+  args_info->raw_help = gengetopt_args_info_help[21] ;
+  args_info->debug_help = gengetopt_args_info_help[22] ;
   args_info->debug_min = 0;
   args_info->debug_max = 0;
-  args_info->verbose_help = gengetopt_args_info_help[22] ;
+  args_info->verbose_help = gengetopt_args_info_help[23] ;
   
 }
 
@@ -300,6 +307,7 @@ cmdline_parser_release (struct gengetopt_args_info *args_info)
   free_string_field (&(args_info->output_orig));
   free_string_field (&(args_info->output_format_orig));
   free_multiple_string_field (args_info->net_given, &(args_info->net_arg), &(args_info->net_orig));
+  free_multiple_string_field (args_info->layer_given, &(args_info->layer_arg), &(args_info->layer_orig));
   free_string_field (&(args_info->epsilonr_orig));
   free_string_field (&(args_info->xmin_orig));
   free_string_field (&(args_info->xmax_orig));
@@ -405,6 +413,7 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
   if (args_info->output_format_given)
     write_into_file(outfile, "output-format", args_info->output_format_orig, cmdline_parser_output_format_values);
   write_multiple_into_file(outfile, args_info->net_given, "net", args_info->net_orig, 0);
+  write_multiple_into_file(outfile, args_info->layer_given, "layer", args_info->layer_orig, 0);
   if (args_info->epsilonr_given)
     write_into_file(outfile, "epsilonr", args_info->epsilonr_orig, 0);
   if (args_info->xmin_given)
@@ -686,6 +695,9 @@ cmdline_parser_required2 (struct gengetopt_args_info *args_info, const char *pro
 
   /* checks for required options */
   if (check_multiple_option_occurrences(prog_name, args_info->net_given, args_info->net_min, args_info->net_max, "'--net' ('-n')"))
+     error = 1;
+  
+  if (check_multiple_option_occurrences(prog_name, args_info->layer_given, args_info->layer_min, args_info->layer_max, "'--layer' ('-l')"))
      error = 1;
   
   if (check_multiple_option_occurrences(prog_name, args_info->debug_given, args_info->debug_min, args_info->debug_max, "'--debug' ('-d')"))
@@ -977,6 +989,7 @@ cmdline_parser_internal (
   int c;	/* Character of the parsed option.  */
 
   struct generic_list * net_list = NULL;
+  struct generic_list * layer_list = NULL;
   int error = 0;
   struct gengetopt_args_info local_args_info;
   
@@ -1012,6 +1025,7 @@ cmdline_parser_internal (
         { "output",	1, NULL, 'o' },
         { "output-format",	1, NULL, 'f' },
         { "net",	1, NULL, 'n' },
+        { "layer",	1, NULL, 'l' },
         { "epsilonr",	1, NULL, 'e' },
         { "xmin",	1, NULL, 'x' },
         { "xmax",	1, NULL, 'X' },
@@ -1030,7 +1044,7 @@ cmdline_parser_internal (
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVo:f:n:e:x:X:y:Y:z:Z:g:p:rdv", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVo:f:n:l:e:x:X:y:Y:z:Z:g:p:rdv", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -1070,11 +1084,20 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'n':	/* Import named net. Repeat to import several nets. If no nets are specified all nets are imported..  */
+        case 'n':	/* Import net. Repeat to import several nets. Default is importing all nets..  */
         
           if (update_multiple_arg_temp(&net_list, 
               &(local_args_info.net_given), optarg, 0, 0, ARG_STRING,
               "net", 'n',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'l':	/* Import layer. Repeat to import several layers. Default is importing all layers..  */
+        
+          if (update_multiple_arg_temp(&layer_list, 
+              &(local_args_info.layer_given), optarg, 0, 0, ARG_STRING,
+              "layer", 'l',
               additional_error))
             goto failure;
         
@@ -1275,9 +1298,15 @@ cmdline_parser_internal (
     &(args_info->net_orig), args_info->net_given,
     local_args_info.net_given, 0,
     ARG_STRING, net_list);
+  update_multiple_arg((void *)&(args_info->layer_arg),
+    &(args_info->layer_orig), args_info->layer_given,
+    local_args_info.layer_given, 0,
+    ARG_STRING, layer_list);
 
   args_info->net_given += local_args_info.net_given;
   local_args_info.net_given = 0;
+  args_info->layer_given += local_args_info.layer_given;
+  local_args_info.layer_given = 0;
   args_info->debug_given += local_args_info.debug_given;
   local_args_info.debug_given = 0;
   
@@ -1319,6 +1348,7 @@ cmdline_parser_internal (
 
 failure:
   free_list (net_list, 1 );
+  free_list (layer_list, 1 );
   
   cmdline_parser_release (&local_args_info);
   return (EXIT_FAILURE);

@@ -1,10 +1,10 @@
-% CSX = ImportHyperLynx(CSX, filename, simulated_nets, varargin)
+% CSX = ImportHyperLynx(CSX, filename, varargin)
 % load Hyperlynx file 'filename' into CSX .
-% The optional argument simulated_nets is a string or a cell array of strings.
-% A value of '?' for nets lists all nets.
 %
 % Other optional arguments:
 % epsilonr       Set dielectric epsilon r. Overrides value in Hyperlynx file.
+% layer          Import layer. Default is importing all layers.
+% net            Import net. Default is importing all nets.
 % xmin           Crop pcb. Set lowest value of x coordinate.
 % xmax           Crop pcb. Set highest value of x coordinate.
 % ymin           Crop pcb. Set lowest value of y coordinate.
@@ -20,13 +20,16 @@
 % CSX = ImportHyperLynx(CSX, 'board.hyp' )
 % will import the complete Hyperlynx file 'board.hyp' into the struct CSX.
 %
-% CSX = ImportHyperLynx(CSX, 'board.hyp', 'CLK_P' )
+% CSX = ImportHyperLynx(CSX, 'board.hyp', 'net', 'CLK_P' )
 % will import only the CLK_P net from the Hyperlynx file 'board.hyp' into the struct CSX.
 %
-% CSX = ImportHyperLynx(CSX, 'board.hyp', {'GND', 'CLK_P', 'CLK_N'} )
+% CSX = ImportHyperLynx(CSX, 'board.hyp', 'net', '?' )
+% lists all available nets.
+%
+% CSX = ImportHyperLynx(CSX, 'board.hyp', 'net', 'GND', 'net', 'CLK_P', 'net', 'CLK_N' )
 % will import only the GND, CLK_P and CLK_N nets.
 %
-% CSX = ImportHyperLynx(CSX, 'board.hyp', {}, 'xmin', 0.02, 'xmax', 0.03, 'ymin', 0.04, 'ymax', 0.05 )
+% CSX = ImportHyperLynx(CSX, 'board.hyp', 'xmin', 0.02, 'xmax', 0.03, 'ymin', 0.04, 'ymax', 0.05 )
 % Imports all nets, and crops the board to the region 2 cm < x < 3 cm, 4 cm < y < 5 cm.
 %
 % See hyp2mat(1) - convert hyperlynx files to matlab scripts.
@@ -48,7 +51,7 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function CSX = ImportHyperLynx(CSX, filename, simulated_nets, varargin)
+function CSX = ImportHyperLynx(CSX, filename, varargin)
 
   % determine nets to import
   if (nargin < 2)
@@ -63,35 +66,24 @@ function CSX = ImportHyperLynx(CSX, filename, simulated_nets, varargin)
     error ('expecting filename string as second argument');
   end
 
-  if (nargin == 2)
-    % two arguments: import all nets
-    simulated_nets = {};
-  elseif (ischar(simulated_nets))
-    % third argument is a string: import a single net
-    simulated_nets = { simulated_nets };
-  elseif (iscellstr(simulated_nets))
-    % third argument is a cell array of strings: import a list of nets
-    simulated_nets = simulated_nets;
-  else
-    % default: import all nets
-    warning('importing all nets');
-    simulated_nets = {};
-  end
-
   % build command line
   cmdargs = '';
-  for i = (simulated_nets)
-    i{1}
-    cmdargs = [ cmdargs ' --net ''' i{1}  '''' ];
-  end
 
   % parse optional arguments 
-  if (nargin < 4)
+  if (nargin < 3)
     varargin = {};
   end
 
   vn = 1;
   while (vn <= numel(varargin)) 
+    if (strcmpi(varargin{vn}, 'layer'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --layer ''' varargin{vn} '''' ];
+    end
+    if (strcmpi(varargin{vn}, 'net'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --net ''' varargin{vn} '''' ];
+    end
     if (strcmpi(varargin{vn}, 'xmin'))
       vn = vn + 1;
       cmdargs = [ cmdargs ' --xmin ' num2str(varargin{vn}) ];

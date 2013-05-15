@@ -10,7 +10,8 @@ description "Converts Hyperlynx Signal-Integrity Transfer Format files to Octave
 option "output" o "Output file." string typestr="filename" default="-" optional
 option "output-format" f "Output file format." enum values="csxcad","pdf" default="pdf" optional
 section "Processing options"
-option "net" n "Import named net. Repeat to import several nets. If no nets are specified all nets are imported." string optional multiple
+option "net" n "Import net. Repeat to import several nets. Default is importing all nets." string optional multiple
+option "layer" l "Import layer. Repeat to import several layers. Default is importing all layers." string optional multiple
 option "epsilonr" e "Set dielectric epsilon r." double optional
 option "xmin" x "Crop pcb. Set lower bound of x coordinate." double optional 
 option "xmax" X "Crop pcb. Set upper bound of x coordinate." double optional 

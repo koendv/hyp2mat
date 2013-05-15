@@ -24,7 +24,6 @@
 #include "config.h"
 #include "hyp2mat.h"
 
-#include "geometry.h"
 #include "hyperlynx.h"
 #include "csxcad.h"
 #include "pdf.h"
@@ -35,27 +34,20 @@ PCB::PCB()
 {
   debug = 0;
   via_plating_thickness = 0;
-}
-
-void PCB::Simplify(double grid, double arc_precision)
-{
-  Simplify(grid, arc_precision, GetBounds());
-}
-
-void PCB::Simplify(double grid, double arc_precision, Bounds bounds)
-{
-  Geometry geom;
-  geom.Simplify(*this, grid, arc_precision, bounds);
+  _arc_precision = 0;
 }
 
 /*
  * Read a pcb in hyperlynx format 
  */
 
-void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> nets, double arc_precision)
+void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, std::vector<std::string> nets, bool raw)
 {
+
+  Polygon::SetArcPrecision(_arc_precision);
+
   HyperLynx hyperlynx;
-  hyperlynx.Read(filename, *this, nets, arc_precision);
+  hyperlynx.Read(filename, *this, layers, nets, raw, _arc_precision, _bounds);
 }
 
 /*
@@ -116,6 +108,26 @@ void PCB::SetEpsilonR(double epsilon_r)
 }
 
 /*
+ * set resolution of x and y coordinates
+ */
+
+void PCB::SetGrid(double new_grid)
+{
+  if (new_grid > 0.0) Polygon::SetGrid(new_grid);
+  return;
+}
+
+/*
+ * set maximum difference between perfect circle arc and polygonal approximation
+ */
+
+void PCB::SetArcPrecision(double new_arc_precision)
+{
+  if (new_arc_precision >= 0.0) _arc_precision = new_arc_precision;
+  return;
+}
+
+/*
  * Calculate the bounding rectangle of a pcb.
  */
 
@@ -129,9 +141,7 @@ Bounds PCB::GetBounds() {
   bounds.z_max = 0;
 
   /* iterate over layers; find z_max and z_min */
-  if (stackup.empty())
-    std::cerr << "warning: no layers" << std::endl;
-  else {
+  if (!stackup.empty()) {
     bounds.z_min = stackup.back().z0;
     bounds.z_max = stackup.front().z1;
     for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l) {
@@ -143,18 +153,27 @@ Bounds PCB::GetBounds() {
   /* iterate over board edge; find x_min, x_max, y_min, y_max */
   bool first_point = true;
 
-  for (PolygonList::iterator i = board.begin(); i != board.end(); ++i)
-    for (Polygon::iterator j = i->begin(); j != i->end(); ++j)
-      for (PointList::iterator k = j->vertex.begin(); k != j->vertex.end(); ++k) {
-        if ((k->x > bounds.x_max) || first_point) bounds.x_max = k->x;
-        if ((k->y > bounds.y_max) || first_point) bounds.y_max = k->y;
-        if ((k->x < bounds.x_min) || first_point) bounds.x_min = k->x;
-        if ((k->y < bounds.y_min) || first_point) bounds.y_min = k->y;
+  for (FloatPolygons::iterator i = board.begin(); i != board.end(); ++i)
+    for (FloatPolygon::iterator j = i->poly.begin(); j != i->poly.end(); ++j) {
+        if ((j->x > bounds.x_max) || first_point) bounds.x_max = j->x;
+        if ((j->y > bounds.y_max) || first_point) bounds.y_max = j->y;
+        if ((j->x < bounds.x_min) || first_point) bounds.x_min = j->x;
+        if ((j->y < bounds.y_min) || first_point) bounds.y_min = j->y;
         first_point = false;
         }
 
   return bounds;
   }
+
+/*
+ * Set the bounding rectangle of a pcb.
+ */
+
+void PCB::SetBounds(Bounds new_bounds) 
+{
+  _bounds = new_bounds; 
+}
+
 
 void PCB::PrintSummary() {
   Bounds bounds = GetBounds();

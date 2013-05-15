@@ -51,11 +51,16 @@ struct gengetopt_args_info
   enum enum_output_format output_format_arg;	/**< @brief Output file format. (default='pdf').  */
   char * output_format_orig;	/**< @brief Output file format. original value given at command line.  */
   const char *output_format_help; /**< @brief Output file format. help description.  */
-  char ** net_arg;	/**< @brief Import named net. Repeat to import several nets. If no nets are specified all nets are imported..  */
-  char ** net_orig;	/**< @brief Import named net. Repeat to import several nets. If no nets are specified all nets are imported. original value given at command line.  */
-  unsigned int net_min; /**< @brief Import named net. Repeat to import several nets. If no nets are specified all nets are imported.'s minimum occurreces */
-  unsigned int net_max; /**< @brief Import named net. Repeat to import several nets. If no nets are specified all nets are imported.'s maximum occurreces */
-  const char *net_help; /**< @brief Import named net. Repeat to import several nets. If no nets are specified all nets are imported. help description.  */
+  char ** net_arg;	/**< @brief Import net. Repeat to import several nets. Default is importing all nets..  */
+  char ** net_orig;	/**< @brief Import net. Repeat to import several nets. Default is importing all nets. original value given at command line.  */
+  unsigned int net_min; /**< @brief Import net. Repeat to import several nets. Default is importing all nets.'s minimum occurreces */
+  unsigned int net_max; /**< @brief Import net. Repeat to import several nets. Default is importing all nets.'s maximum occurreces */
+  const char *net_help; /**< @brief Import net. Repeat to import several nets. Default is importing all nets. help description.  */
+  char ** layer_arg;	/**< @brief Import layer. Repeat to import several layers. Default is importing all layers..  */
+  char ** layer_orig;	/**< @brief Import layer. Repeat to import several layers. Default is importing all layers. original value given at command line.  */
+  unsigned int layer_min; /**< @brief Import layer. Repeat to import several layers. Default is importing all layers.'s minimum occurreces */
+  unsigned int layer_max; /**< @brief Import layer. Repeat to import several layers. Default is importing all layers.'s maximum occurreces */
+  const char *layer_help; /**< @brief Import layer. Repeat to import several layers. Default is importing all layers. help description.  */
   double epsilonr_arg;	/**< @brief Set dielectric epsilon r..  */
   char * epsilonr_orig;	/**< @brief Set dielectric epsilon r. original value given at command line.  */
   const char *epsilonr_help; /**< @brief Set dielectric epsilon r. help description.  */
@@ -104,6 +109,7 @@ struct gengetopt_args_info
   unsigned int output_given ;	/**< @brief Whether output was given.  */
   unsigned int output_format_given ;	/**< @brief Whether output-format was given.  */
   unsigned int net_given ;	/**< @brief Whether net was given.  */
+  unsigned int layer_given ;	/**< @brief Whether layer was given.  */
   unsigned int epsilonr_given ;	/**< @brief Whether epsilonr was given.  */
   unsigned int xmin_given ;	/**< @brief Whether xmin was given.  */
   unsigned int xmax_given ;	/**< @brief Whether xmax was given.  */

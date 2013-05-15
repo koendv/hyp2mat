@@ -31,12 +31,14 @@
 #include <algorithm>
 
 #include "hyperlynx.h"
+#include "polygon.h"
+#include "crop.h"
 
 /*
  * Read a pcb in hyperlynx format
  */
 
-void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::string> nets, double arc_precision)
+void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::string> layers, std::vector<std::string> nets, bool raw, double arc_precision, Hyp2Mat::Bounds bounds)
 {
   HypFile::Hyp hyp_file;
 
@@ -52,10 +54,13 @@ void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::
    * Copy hyperlynx file data from hyp_file to pcb
    */
 
-  CopyBoard(pcb, hyp_file); /* copy board outline */
-  CopyStackUp(pcb, hyp_file); /* copy layer stackup */
-  CopyPolygons(pcb, hyp_file, nets); /* copy polygons */
-  CopyVias(pcb, hyp_file, nets); /* copy layer stackup */
+  CopyBoard(pcb, hyp_file, bounds); /* copy board outline */
+  CopyStackUp(pcb, hyp_file, bounds); /* copy layer stackup */
+  if (raw)
+    CopyRawPolygons(pcb, hyp_file, layers, nets); /* copy polygons */
+  else   
+    CopyPolygons(pcb, hyp_file, layers, nets, bounds); /* copy polygons */
+  CopyVias(pcb, hyp_file, nets, bounds); /* copy layer stackup */
   CopyDevices(pcb, hyp_file); /* copy device info */
   CopyPins(pcb, hyp_file, nets); /* copy pin references */
 
@@ -100,21 +105,38 @@ bool HyperLynx::LoadHypFile(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::stri
  * copy board outline 
  */
 
-void HyperLynx::CopyBoard(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file)
+void HyperLynx::CopyBoard(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds)
 {
+  Hyp2Mat::Polygon board;
   bool outer_edge = true;
-  Hyp2Mat::Polygon board_polygon;
+
   for (HypFile::PolygonList::iterator i = hyp_file.board.edge.begin(); i != hyp_file.board.edge.end(); ++i) {
-    Hyp2Mat::Edge edge;
-    edge.width = 0;
-    edge.is_hole = !outer_edge;
+    Hyp2Mat::Polygon poly;
+    Hyp2Mat::FloatPolygon edge;
     for (HypFile::PointList::iterator j = i->vertex.begin(); j != i->vertex.end(); ++j)
-      edge.vertex.push_back(Hyp2Mat::Point(j->x, j->y));
-    
-    board_polygon.push_back(edge);
+      edge.push_back(Hyp2Mat::FloatPoint(j->x, j->y));
+    poly.AddEdge(edge);
+    if (outer_edge)
+      board.Union(poly);
+    else 
+      board.Difference(poly);
     outer_edge = false;
   }
-  pcb.board.push_back(board_polygon);
+
+  /*
+   * Store intermediate result
+   */
+
+  pcb.board = board.Result();
+
+  /*
+   * Cropping - Remove board outside bounds
+   */
+
+  Hyp2Mat::Bounds crop_bounds = AdjustBounds(pcb, bounds);
+  board = CropPolygon(board, crop_bounds);
+  pcb.board = board.Result();
+
   return;
 }
 
@@ -122,7 +144,7 @@ void HyperLynx::CopyBoard(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file)
  * copy layer stackup
  */
 
-void HyperLynx::CopyStackUp(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file)
+void HyperLynx::CopyStackUp(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds)
 {
   for (HypFile::LayerList::iterator l = hyp_file.stackup.begin(); l != hyp_file.stackup.end(); ++l) {
     Hyp2Mat::Layer layer;
@@ -146,6 +168,14 @@ void HyperLynx::CopyStackUp(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file)
     layer.resistivity_temp_coeff = l->temperature_coefficient;
     pcb.stackup.push_back(layer);
     }
+
+  /*
+   * Cropping - Remove stackup outside bounds
+   */
+
+  Hyp2Mat::Bounds crop_bounds = AdjustBounds(pcb, bounds);
+  CropLayers(pcb, crop_bounds);
+
   return;
 }
 
@@ -153,12 +183,21 @@ void HyperLynx::CopyStackUp(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file)
  * copy polygons
  */
 
-void HyperLynx::CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> net_names)
+void HyperLynx::CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> layer_names, std::vector<std::string> net_names, Hyp2Mat::Bounds bounds)
 {
+
+  Hyp2Mat::Bounds crop_bounds = AdjustBounds(pcb, bounds);
+
   /* iterate over all layers */
   for (Hyp2Mat::LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l) {
 
     if (l->layer_type == Hyp2Mat::LAYER_DIELECTRIC) continue;
+
+    /* check if we're interested in this layer. if no layers are specified, copy all layers */
+    bool layer_wanted = layer_names.empty() || (std::find(layer_names.begin(), layer_names.end(), l->layer_name) != layer_names.end());
+    if (!layer_wanted) continue;
+
+    Hyp2Mat::Polygon layer_metal;
 
     /* iterate over all nets */
     for (HypFile::NetList::iterator i = hyp_file.net.begin(); i != hyp_file.net.end(); ++i) {
@@ -175,6 +214,7 @@ void HyperLynx::CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vec
            If polygon id is negative (e.g. -1) emit a Hyp2Mat polygon for every Hyperlynx polygon */
 
         Hyp2Mat::Polygon poly;
+        double width = 0;
 
         for (HypFile::PolygonList::iterator k = j->second.begin(); k != j->second.end(); ++k) {
 
@@ -189,42 +229,115 @@ void HyperLynx::CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vec
           if (!on_this_layer) continue;
 
           /* copy vertices */
-          Hyp2Mat::Edge edge;
+          Hyp2Mat::FloatPolygon edge;
           for (HypFile::PointList::iterator v = k->vertex.begin(); v != k->vertex.end(); ++v)
-            edge.vertex.push_back(Hyp2Mat::Point(v->x, v->y));
-          edge.is_hole = !k->positive;
-          edge.width = k->width;
+            edge.push_back(Hyp2Mat::FloatPoint(v->x, v->y));
 
-          if (edge.vertex.empty()) 
-            continue;
-
-          /* if polygon_id is positive or zero, join all Hyperlynx polygons with this id in a single Hyp2Mat polygon */
-          if (j->first >= 0)
-            poly.push_back(edge);
-          else {
-            /* negative polygon id: emit a Hyp2Mat polygon */
-            Hyp2Mat::Polygon freestanding_poly;
-            freestanding_poly.push_back(edge);
-            l->metal.push_back(freestanding_poly);
+          /* A negative polygon id (e.g. -1) indicates a freestanding edge. emit a Hyp2Mat polygon for every Hyperlynx polygon with id -1 */
+          if (k->id < 0) {
+            Hyp2Mat::Polygon poly;
+            if (k->positive) poly.AddEdge(edge);
+            else poly.AddHole(edge);
+            width = k->width;
+            poly.Simplify();
+            poly.Offset(width/2);
+            layer_metal.Union(poly);
+            continue; 
             }
 
+          if (k->positive) poly.AddEdge(edge);
+          else poly.AddHole(edge);
+
+          width = k->width;
           }
 
-        /* add the Hyp2Mat polygon to the copper on this layer */
-        if (!poly.empty())
-          l->metal.push_back(poly);
+        /* take line width of polygon into account */
+        poly.Simplify();
+        poly.Offset(width/2);
+
+        /* add the polygon to the copper on this layer */
+        layer_metal.Union(poly);
+        }
+      }
+    /* Crop */
+    layer_metal = CropPolygon(layer_metal, crop_bounds);
+    /* calculate layer */
+    l->metal = layer_metal.Result();
+    }
+  return;
+}
+
+/*
+ * copy raw polygons 
+ */
+
+void HyperLynx::CopyRawPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> layer_names, std::vector<std::string> net_names)
+{
+
+  /* iterate over all layers */
+  for (Hyp2Mat::LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l) {
+
+    if (l->layer_type == Hyp2Mat::LAYER_DIELECTRIC) continue;
+
+    /* check if we're interested in this layer. if no layers are specified, copy all layers */
+    bool layer_wanted = layer_names.empty() || (std::find(layer_names.begin(), layer_names.end(), l->layer_name) != layer_names.end());
+    if (!layer_wanted) continue;
+
+    Hyp2Mat::Polygon layer_metal;
+
+    /* iterate over all nets */
+    for (HypFile::NetList::iterator i = hyp_file.net.begin(); i != hyp_file.net.end(); ++i) {
+
+      /* check if we're interested in this net. if no nets are specified, copy all nets */
+      bool net_wanted = net_names.empty() || (std::find(net_names.begin(), net_names.end(), i->net_name) != net_names.end());
+      if (!net_wanted) continue;
+
+      /* iterate over all Hyperlynx polygon id's */
+      for (HypFile::PolygonMap::iterator j =  i->metal.begin(); j != i->metal.end(); ++j) {
+
+        /* iterate over all Hyperlynx polygons with this id */
+
+        for (HypFile::PolygonList::iterator k = j->second.begin(); k != j->second.end(); ++k) {
+
+          /* this polygon is on our layer if 
+           * - the polygon's layer is the current layer exactly,
+           * - or the polygon's layer is MDEF for all metal layers,
+           * - or the polygon's layer is ADEF for all plane layers. 
+           */
+          bool on_this_layer = (k->layer_name == l->layer_name)
+            ||((k->layer_name == "MDEF") && ((l->layer_type == Hyp2Mat::LAYER_SIGNAL) || (l->layer_type == Hyp2Mat::LAYER_PLANE)))
+            ||((k->layer_name == "ADEF") && (l->layer_type == Hyp2Mat::LAYER_PLANE));
+          if (!on_this_layer) continue;
+
+          /* copy vertices */
+          Hyp2Mat::FloatPolygon poly;
+          for (HypFile::PointList::iterator v = k->vertex.begin(); v != k->vertex.end(); ++v)
+            poly.push_back(Hyp2Mat::FloatPoint(v->x, v->y));
+
+          /* fix orientation */
+          if (IsClockwise(poly) != k->positive) Reverse(poly);
+
+          /* add the polygon to the copper on this layer */
+          Hyp2Mat::FloatPoly edge;
+          edge.poly = poly;
+          edge.is_hole = !k->positive;
+          edge.nesting_level = 0;
+          l->metal.push_back(edge);
+          }
         }
       }
     }
   return;
 }
 
+
 /*
  * copy vias
  */
 
-void HyperLynx::CopyVias(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets)
+void HyperLynx::CopyVias(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets, Hyp2Mat::Bounds bounds)
 {
+  Hyp2Mat::Bounds crop_bounds = AdjustBounds(pcb, bounds);
 
   for (HypFile::NetList::iterator i = hyp_file.net.begin(); i != hyp_file.net.end(); ++i) {
 
@@ -240,9 +353,19 @@ void HyperLynx::CopyVias(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<
       v.z0 = j->z0;
       v.z1 = j->z1;
       v.radius = j->radius;
+
+      /* cropping */
+      if ((v.x > crop_bounds.x_max) || (v.x < crop_bounds.x_min) || (v.y > crop_bounds.y_max) || (v.y < crop_bounds.y_min)) continue;
+      if ((v.z0 > crop_bounds.z_max) && (v.z1 > crop_bounds.z_max)) continue;
+      if ((v.z0 < crop_bounds.z_min) && (v.z1 < crop_bounds.z_min)) continue;
+      if (v.z1 > crop_bounds.z_max) v.z1 = crop_bounds.z_max;
+      if (v.z0 < crop_bounds.z_min) v.z0 = crop_bounds.z_min;
+
+      /* add to list of vias */
       pcb.via.push_back(v);
       } 
-  }
+    }
+
   return;
 }
 
@@ -323,8 +446,8 @@ void HyperLynx::CopyPins(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<
 void HyperLynx::CopyPin(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, HypFile::Pin& pin, HypFile::Padstack& padstack)
 {
   Hyp2Mat::Pin new_pin;
-  new_pin.x = pin.x;
-  new_pin.y = pin.y;
+  new_pin.x = Hyp2Mat::Polygon::AlignToGrid(pin.x);
+  new_pin.y = Hyp2Mat::Polygon::AlignToGrid(pin.y);
   new_pin.ref = pin.pin_reference;
 
   HypFile::Pad pad;
@@ -373,16 +496,81 @@ void HyperLynx::CopyPin(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, HypFile::Pin&
 
   /* convert pad to polygon, and copy pad shape */
   HypFile::Polygon pad_poly = hyp_file.pad2poly(new_pin.x, new_pin.y, pad);
-  new_pin.metal.width = 0;
-  new_pin.metal.is_hole = false;
-  new_pin.metal.vertex.clear();
+  new_pin.metal.clear();
   for (HypFile::PointList::iterator j = pad_poly.vertex.begin(); j != pad_poly.vertex.end(); ++j)
-      new_pin.metal.vertex.push_back(Hyp2Mat::Point(j->x, j->y));
+      new_pin.metal.push_back(Hyp2Mat::FloatPoint(Hyp2Mat::Polygon::AlignToGrid(j->x), Hyp2Mat::Polygon::AlignToGrid(j->y)));
   
   /* add pin to pcb */
   pcb.pin.push_back(new_pin);
     
   return;
+}
+
+/*
+ * Implement Trace-to-Plane separation
+ * return a list of holes, which are to be subtracted from the original polygon
+ */
+
+HypFile::PolygonList HyperLynx::PlaneSeparation(HypFile::Hyp& hyp_file, HypFile::Layer& layer, HypFile::Net& net, HypFile::Polygon& poly)
+{
+  HypFile::PolygonList result;
+
+  result.clear();
+
+  /*
+   * Determine plane separation to use. 
+   * Plane separation is specified 
+   * - at board level, in the PLANE_SEP statement
+   * - at layer level, in the STACKUP statement
+   * - at net level, in the NET statement
+   * - for individual copper, in the SEG and ARC statements
+   */
+   
+  double plane_separation;
+  plane_separation = hyp_file.board.plane_separation;
+  if (layer.plane_separation >= 0) plane_separation = layer.plane_separation;
+  if (net.plane_separation >= 0) plane_separation = net.plane_separation;
+  if (poly.plane_separation >= 0) plane_separation = poly.plane_separation;
+
+  /*
+   * Only polygons of type PLANE implement trace-to-plane separation; POUR and COPPER polygons don't.
+   */
+
+  if (poly.polygon_type != POLYGON_TYPE_PLANE) return result;
+
+  for (HypFile::NetList::iterator i = hyp_file.net.begin(); i != hyp_file.net.end(); ++i) {
+    /* discard polygons of the same net */
+    if (i->net_name == net.net_name) continue; 
+
+    /*
+     * Find polygons that are on the same layer, but of different nets.
+     */
+
+    for (HypFile::PolygonMap::iterator j =  i->metal.begin(); j != i->metal.end(); ++j) {
+      for (HypFile::PolygonList::iterator k = j->second.begin(); k != j->second.end(); ++k) {
+          /* this polygon is on our layer if 
+           * - the polygon's layer is the current layer exactly,
+           * - or the polygon's layer is MDEF for all metal layers,
+           * - or the polygon's layer is ADEF for all plane layers. 
+           */
+          bool on_this_layer = (k->layer_name == layer.layer_name)
+            ||((k->layer_name == "MDEF") && ((layer.layer_type == HypFile::LAYER_SIGNAL) || (layer.layer_type == HypFile::LAYER_PLANE)))
+            ||((k->layer_name == "ADEF") && (layer.layer_type == HypFile::LAYER_PLANE));
+          if (!on_this_layer) continue;
+          /*
+           * Expand this polygon by an additional 'plane_separation', and subtract from original polygon
+           */
+          //if (!k->positive) continue; // XXX? Omit ?
+          HypFile::Polygon cutout = *k;
+          cutout.width += plane_separation;
+          cutout.positive = !cutout.positive;  /* make into hole */
+          result.push_back(cutout);
+        }
+      }
+    }
+
+  return result;
+
 }
 
 /*

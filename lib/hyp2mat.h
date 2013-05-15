@@ -44,39 +44,29 @@ namespace Hyp2Mat {
 
   std::string version();
 
-  /* a two-dimensional point */
-
-  class Point {
-    public:
-      double x;
-      double y;
-      Point(double x_val = 0, double y_val = 0): x(x_val), y(y_val) {};
-      bool operator==(const Point &right) const { return ((x == right.x) && ( y == right.y)); };
-      bool operator!=(const Point &right) const { return ((x != right.x) || ( y != right.y)); };
-  };
-    
-  typedef std::vector<Point> PointList;
-
- /* a polygon edge. Can be an outside edge (border) or an inside edge (hole) */
-
-  class Edge {
-    public:
-      Edge();
-      PointList vertex; /* represents a closed polygon */
-      double width; /* edge width of polygon */
-      bool is_hole;
-      bool is_clockwise();
-      void reverse(); /* reverse vertex order */
-      int nesting_level; /* set by PCB::Simplify() */
+  /* polygon types */
+  
+  struct FloatPoint {
+    double x;
+    double y;
+    FloatPoint(double x_val = 0, double y_val = 0): x(x_val), y(y_val) {};
+    bool operator==(const FloatPoint &right) const { return ((x == right.x) && ( y == right.y)); };
+    bool operator!=(const FloatPoint &right) const { return ((x != right.x) || ( y != right.y)); };
     };
- 
-  /* a polygon has one or more edges. a polygon is drawn by adding the positive edges, and subtracting the holes. */ 
-
-  typedef std::vector<Edge> Polygon;
-
-  typedef std::vector<Polygon> PolygonList;
-
-  /* a pin has a reference and an outline */ 
+  
+  typedef std::vector<FloatPoint> FloatPolygon;
+  
+  struct FloatPoly {
+    FloatPolygon poly;
+    bool is_hole;
+    int nesting_level; /* hole within polygon within hole within ... */
+    };
+  
+  typedef std::vector<FloatPoly> FloatPolygons;
+  
+  /*
+   * a pin has a reference and an outline 
+   */ 
 
   class Pin {
     public:
@@ -87,10 +77,14 @@ namespace Hyp2Mat {
       double z0; /* bottom of copper layer */
       double z1; /* top of copper layer */
       std::string layer_name;
-      Edge metal; /* pad outline */
+      FloatPolygon metal; /* pad outline */
     };
   
   typedef std::vector<Pin> PinList;
+
+  /*
+   * Layers 
+   */
 
   /* a polygon on a signal layer is presence of copper. 
      a polygon on a plane layer is absence of copper.
@@ -104,7 +98,7 @@ namespace Hyp2Mat {
       std::string layer_name; /* informational only */
       std::string material_name; /* informational only */
       layer_enum layer_type;    
-      PolygonList metal;
+      FloatPolygons metal;
       double thickness(); /* layer thickness */
       double z0; /* vertical position of bottom of layer */
       double z1; /* vertical position of top of layer */
@@ -117,6 +111,10 @@ namespace Hyp2Mat {
     };
   
   typedef std::vector<Layer> LayerList;
+
+  /*
+   * a via is a cylindrical, conductive hole. 
+   */
   
   class Via {
     public:
@@ -128,6 +126,10 @@ namespace Hyp2Mat {
     };
   
   typedef std::vector<Via> ViaList;
+
+  /*
+   * Devices
+   */
 
   enum device_value_enum { DEVICE_VALUE_FLOAT, DEVICE_VALUE_STRING, DEVICE_VALUE_NONE };
 
@@ -145,48 +147,45 @@ namespace Hyp2Mat {
   typedef std::vector<Device> DeviceList;
 
   /* board dimensions */
-  struct Bounds {
-    double x_min;
-    double x_max;
-    double y_min;
-    double y_max;
-    double z_min;
-    double z_max;
+  class Bounds {
+    public:
+      Bounds();
+      double x_min;
+      double x_max;
+      double y_min;
+      double y_max;
+      double z_min;
+      double z_max;
     };
 
   /* 
-   * class PCB respresents a pcb board.
-   *
-   * PCB::Simplify does polygon arithmetic. Simplify() joins overlapping and adjoining copper, 
-   * and sets nesting level: 0 for outer edge; 1 for inner edge; 2 for outer edge of embedded hole, ...
-   * If desired, the board is also cropped to a 3d region.
+   * class PCB represents a pcb board.
    */
 
   class PCB {
     public:
       PCB();
-      PolygonList board; /* board outline */
+      FloatPolygons board; /* board outline */
       LayerList stackup;
       ViaList via;
       double via_plating_thickness;
       DeviceList device;
       PinList pin;
 
-      void ReadHyperLynx(std::string filename, std::vector<std::string> nets = std::vector<std::string>(), double arc_precision = 0);
+      void ReadHyperLynx(std::string filename, std::vector<std::string> layers = std::vector<std::string>(), std::vector<std::string> nets = std::vector<std::string>(), bool raw = false);
       void SetEpsilonR(double epsilon_r); /* set dielectric epsilon r. overrides value in Hyperlynx file. */
+      void SetGrid(double new_grid); /* set resolution of x and y coordinates */
+      void SetArcPrecision(double new_arc_precision); /* set maximum difference between perfect circle arc and polygonal approximation */
       Bounds GetBounds(); /* gets board extension in x,y and z */
-      /*
-       * Parameters to Simplify:
-       * grid: resolution of x and y coordinates.
-       * arc_precision: maximum difference between a circle arc and its polygonal approximation. 
-       * bounds: crop board bounds.
-       */
-      void Simplify(double grid, double arc_precision); /* join adjacent and overlapping copper */
-      void Simplify(double grid, double arc_precision, Bounds bounds); /* Simplifies and crops board */
+      void SetBounds(Bounds new_bounds); /* crops board in x,y and z */
       void PrintSummary();
       void WritePDF(std::string filename, double hue = -1, double saturation = -1, double brightness = -1);
       void WriteCSXCAD(std::string filename);
       unsigned int debug; /* setting debug to 0 switches debugging off */
+    private:
+      Bounds _bounds;
+      double _arc_precision;
+      bool _raw;
   };
 
 }

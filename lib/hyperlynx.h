@@ -27,17 +27,20 @@
 
 #include "hyp2mat.h"
 #include "hypfile.h"
+#include "polygon.h"
 
 class HyperLynx {
 public:
-  void Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::string> nets, double arc_precision);
+  void Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::string> layers, std::vector<std::string> nets, bool raw, double arc_precision, Hyp2Mat::Bounds bounds);
 
 private:
   bool LoadHypFile(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::string filename, double arc_precision);
-  void CopyBoard(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file);
-  void CopyStackUp(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file);
-  void CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets);
-  void CopyVias(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets);
+  void CopyBoard(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds);
+  void CopyStackUp(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds);
+  void CopyRawPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> layers, std::vector<std::string> nets);
+  void CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> layers, std::vector<std::string> nets, Hyp2Mat::Bounds bounds);
+  HypFile::PolygonList PlaneSeparation(HypFile::Hyp& hyp_file, HypFile::Layer& layer, HypFile::Net& net, HypFile::Polygon& poly);
+  void CopyVias(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets, Hyp2Mat::Bounds bounds);
   void CopyViaPlating(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file);
   void CopyDevices(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file);
   void CopyPins(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets);

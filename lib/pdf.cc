@@ -124,34 +124,33 @@ void PDF::draw_caption(HPDF_Page page, HPDF_Font font, std::string txt)
  * Export copper polygon as pdf
  */
 
-void PDF::draw(HPDF_Page page, Polygon& poly)
+void PDF::draw(HPDF_Page page, FloatPolygon& poly)
 {
   double old_px, old_py;
 
-  for (Polygon::iterator i = poly.begin(); i != poly.end(); ++i) {
+  /* pdf requires outer edge of polygon to be clockwise; holes to be counterclockwise */
+#if XXXX
+  bool edge_is_clockwise = edge.is_clockwise();
+  if ((edge.is_hole && edge_is_clockwise) || (!edge.is_hole && !edge_is_clockwise))
+    std::reverse(edge.vertex.begin(), edge.vertex.end()); 
+#endif
 
-    Edge edge = *i;
-    /* pdf requires outer edge of polygon to be clockwise; holes to be counterclockwise */
-    bool edge_is_clockwise = edge.is_clockwise();
-    if ((edge.is_hole && edge_is_clockwise) || (!edge.is_hole && !edge_is_clockwise))
-      std::reverse(edge.vertex.begin(), edge.vertex.end()); 
     
-    bool firstpoint = true;
-    for (PointList::iterator j = edge.vertex.begin(); j != edge.vertex.end(); ++j) {
-      double px = j->x * m_to_points - x_min + margin;
-      double py = j->y * m_to_points - y_min + margin;
-      if (firstpoint) {
-        HPDF_Page_MoveTo(page, px, py);
-        firstpoint = false;
-        }
-      else {
-        if ((px != old_px) || (py != old_py))
-          HPDF_Page_LineTo(page, px, py);
-        }
-      old_px = px; old_py = py;
+  bool firstpoint = true;
+  for (FloatPolygon::iterator i = poly.begin(); i != poly.end(); ++i) {
+    double px = i->x * m_to_points - x_min + margin;
+    double py = i->y * m_to_points - y_min + margin;
+    if (firstpoint) {
+      HPDF_Page_MoveTo(page, px, py);
+      firstpoint = false;
       }
-    HPDF_Page_ClosePath (page);
+    else {
+      if ((px != old_px) || (py != old_py))
+        HPDF_Page_LineTo(page, px, py);
+      }
+    old_px = px; old_py = py;
     }
+  HPDF_Page_ClosePath (page);
   return;
 }
 
@@ -159,10 +158,10 @@ void PDF::draw(HPDF_Page page, Polygon& poly)
  * Export all polygons of a copper layer as pdf. May contain holes.
  */
 
-void PDF::draw(HPDF_Page page, PolygonList& polylist)
+void PDF::draw(HPDF_Page page, FloatPolygons& polygons)
 {
-  for (PolygonList::iterator i = polylist.begin(); i != polylist.end(); ++i)
-    draw(page, *i);
+  for (FloatPolygons::iterator i = polygons.begin(); i != polygons.end(); ++i)
+    draw(page, i->poly);
 }
 
 /*

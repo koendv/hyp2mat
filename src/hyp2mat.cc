@@ -41,6 +41,12 @@ int main(int argc, char **argv)
     if (cmdline_parser (argc, argv, &args_info) != 0)
       exit(1);
   
+    /* set layers to import */
+    std::vector<std::string> layers;
+    if (args_info.layer_given && args_info.layer_arg)
+      for (unsigned int i = 0; i < args_info.layer_given; ++i)
+        layers.push_back(args_info.layer_arg[i]);
+      
     /* set nets to import */
     std::vector<std::string> nets;
     if (args_info.net_given && args_info.net_arg)
@@ -58,9 +64,11 @@ int main(int argc, char **argv)
       exit(1);
       }
       
+    /* raw processing */
+    bool raw_flag = args_info.raw_flag; 
+
+    /* output file */
     std::string output_file = args_info.output_arg;
-    double grid = args_info.grid_arg;
-    double arc_precision = args_info.arc_precision_arg;
 
     /*
      * Process hyperlynx file
@@ -69,27 +77,35 @@ int main(int argc, char **argv)
     /* set debug level */
     pcb.debug = args_info.debug_given;
 
-    /* load hyperlynx file */
-    pcb.ReadHyperLynx(input_file, nets, arc_precision);
-  
-    /* optionally set epsilon */
-    if (args_info.epsilonr_given)
-      pcb.SetEpsilonR(args_info.epsilonr_arg);
+    /* optionally set grid */
+    if (args_info.grid_given)
+      pcb.SetGrid(args_info.grid_arg);
  
-    /* crop model */
-    Bounds bounds = pcb.GetBounds();
+    /* optionally set arc precision */
+    if (args_info.arc_precision_given)
+      pcb.SetArcPrecision(args_info.arc_precision_arg);
+ 
+    /* optionally crop */
+    Bounds bounds;
     if (args_info.xmin_given) bounds.x_min = args_info.xmin_arg;
     if (args_info.xmax_given) bounds.x_max = args_info.xmax_arg;
     if (args_info.ymin_given) bounds.y_min = args_info.ymin_arg;
     if (args_info.ymax_given) bounds.y_max = args_info.ymax_arg;
     if (args_info.zmin_given) bounds.z_min = args_info.zmin_arg;
     if (args_info.zmax_given) bounds.z_max = args_info.zmax_arg;
+    if (args_info.xmin_given || args_info.xmax_given || 
+        args_info.ymin_given || args_info.ymax_given ||
+        args_info.zmin_given || args_info.zmax_given )
+      pcb.SetBounds(bounds);
 
-    /* join overlapping copper etc. */
-    if (!args_info.raw_flag) 
-      pcb.Simplify(grid, arc_precision, bounds);
-
-    /* print layer summary */
+    /* load hyperlynx file */
+    pcb.ReadHyperLynx(input_file, layers, nets, raw_flag);
+  
+    /* optionally set epsilon */
+    if (args_info.epsilonr_given)
+      pcb.SetEpsilonR(args_info.epsilonr_arg);
+ 
+    /* optionally print layer summary */
     if (args_info.verbose_given)
       pcb.PrintSummary();
  
