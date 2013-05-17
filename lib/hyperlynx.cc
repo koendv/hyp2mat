@@ -209,9 +209,7 @@ void HyperLynx::CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vec
       /* iterate over all Hyperlynx polygon id's */
       for (HypFile::PolygonMap::iterator j =  i->metal.begin(); j != i->metal.end(); ++j) {
 
-        /* The Hyperlynx poligon id is non-negative.
-           If polygon_id is positive or zero, join all Hyperlynx polygons with this id in a single Hyp2Mat polygon 
-           If polygon id is negative (e.g. -1) emit a Hyp2Mat polygon for every Hyperlynx polygon */
+        /* Join all Hyperlynx polygons/polyvoids with the same id in a single Hyp2Mat polygon */
 
         Hyp2Mat::Polygon poly;
         double width = 0;
@@ -233,18 +231,6 @@ void HyperLynx::CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vec
           for (HypFile::PointList::iterator v = k->vertex.begin(); v != k->vertex.end(); ++v)
             edge.push_back(Hyp2Mat::FloatPoint(v->x, v->y));
 
-          /* A negative polygon id (e.g. -1) indicates a freestanding edge. emit a Hyp2Mat polygon for every Hyperlynx polygon with id -1 */
-          if (k->id < 0) {
-            Hyp2Mat::Polygon poly;
-            if (k->positive) poly.AddEdge(edge);
-            else poly.AddHole(edge);
-            width = k->width;
-            poly.Simplify();
-            poly.Offset(width/2);
-            layer_metal.Union(poly);
-            continue; 
-            }
-
           if (k->positive) poly.AddEdge(edge);
           else poly.AddHole(edge);
 
@@ -259,12 +245,39 @@ void HyperLynx::CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vec
         layer_metal.Union(poly);
         }
       }
+
+    /* Invert Plane Layers */
+    if (l->layer_type == Hyp2Mat::LAYER_PLANE) 
+      layer_metal = InvertPolygon(layer_metal, crop_bounds);
+
     /* Crop */
     layer_metal = CropPolygon(layer_metal, crop_bounds);
+
     /* calculate layer */
     l->metal = layer_metal.Result();
+
     }
   return;
+}
+
+/*
+ * Invert Polygon
+ */
+
+Hyp2Mat::Polygon HyperLynx::InvertPolygon (Hyp2Mat::Polygon poly, Hyp2Mat::Bounds bounds)
+{
+  Hyp2Mat::Polygon result;
+  Hyp2Mat::FloatPolygon bounding_poly;
+
+  bounding_poly.push_back(Hyp2Mat::FloatPoint(bounds.x_min, bounds.y_min));
+  bounding_poly.push_back(Hyp2Mat::FloatPoint(bounds.x_max, bounds.y_min));
+  bounding_poly.push_back(Hyp2Mat::FloatPoint(bounds.x_max, bounds.y_max));
+  bounding_poly.push_back(Hyp2Mat::FloatPoint(bounds.x_min, bounds.y_max));
+  result.AddEdge(bounding_poly);
+
+  result.Difference(poly);
+
+  return result;
 }
 
 /*

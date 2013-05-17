@@ -406,6 +406,22 @@ void HypFile::Hyp::add_polygon(Polygon poly)
   /* set net name of polygon to current net */
   poly.net_name = net.back().net_name;
 
+  /* The polygon id is a positive number if the polygon has been assigned a polygon id. 
+     If the polygon has not been assigned a polygon id, the id is -1. 
+     An polygon which has not been assigned a polygon id has a single, outer edge, no holes. 
+     (the polygon does not have an id a POLYVOID could refer to).
+
+     If a polygon has id -1, assign the polygon an arbitrary negative id, different from -1.  
+     Make sure all polygons of the same net do not clash/have different ids.  */
+
+  if (poly.id < 0) {
+    int new_id = 0;
+    if (!net.empty() && !net.back().metal.empty())
+      new_id = net.back().metal.begin()->first - 1; /* new id is one less than the smallest existing id */
+    if (new_id >= -1) new_id = -2; /* does not clash with an assigned id (positive) or the default (-1) */
+    poly.id = new_id;
+    }
+
   /* check if polygons with this id already exist */
   PolygonMap::iterator i = net.back().metal.find(poly.id);
   if (i == net.back().metal.end()) {

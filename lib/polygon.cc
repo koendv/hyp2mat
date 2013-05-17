@@ -77,14 +77,22 @@ void Polygon::AddHole(FloatPolygon hole)
 void Polygon::_AddEdge(FloatPolygon edge, bool orientation)
 {
 
+  /* trivial case */
   if (edge.empty()) return;
 
+  /* convert edge to Clipper polygon */
   ClipperLib::Polygon poly = _convert(edge);
 
-//XXX  if (Orientation(poly) != orientation) ClipperLib::ReversePolygon(poly);
-  if (Orientation(poly) != orientation) ClipperLib::ReversePolygon(poly);
+  /* orient edge clockwise */
+  if (!Orientation(poly)) ClipperLib::ReversePolygon(poly);
 
-  _subject.push_back(poly);
+  /* Create argument */
+  Polygon q;
+  q._subject.push_back(poly);
+
+  /* Add to polygon */
+  if (orientation) Union(q); /* add outer edges */
+  else Difference(q); /* subtract holes */
  
   return;
 }
@@ -164,7 +172,7 @@ void Polygon::Offset(double delta)
 }
 
 /*
- * Expand the polygon by a distance
+ * Remove self-intersections
  */
 
 void Polygon::Simplify()

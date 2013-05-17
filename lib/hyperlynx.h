@@ -39,6 +39,7 @@ private:
   void CopyStackUp(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds);
   void CopyRawPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> layers, std::vector<std::string> nets);
   void CopyPolygons(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> layers, std::vector<std::string> nets, Hyp2Mat::Bounds bounds);
+  Hyp2Mat::Polygon InvertPolygon(Hyp2Mat::Polygon poly, Hyp2Mat::Bounds bounds);
   HypFile::PolygonList PlaneSeparation(HypFile::Hyp& hyp_file, HypFile::Layer& layer, HypFile::Net& net, HypFile::Polygon& poly);
   void CopyVias(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets, Hyp2Mat::Bounds bounds);
   void CopyViaPlating(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file);
