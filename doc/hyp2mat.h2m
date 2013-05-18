@@ -30,16 +30,19 @@ If only a small region of the board needs to be simulated the
 .BR --xmin
 .BR --xmax
 .BR --ymin 
-and
 .BR --ymax 
+.BR --zmin 
+and
+.BR --zmax 
 options can be used to crop the board to a smaller region. 
 
 If not all layers of the board need to be simulated, the 
-.BR --zmin 
-and 
-.BR --zmax 
-options may be used to remove layers.
+.BR --layers 
+option may be used to specify layers of interest.
 
+If not all nets of the board need to be simulated, the 
+.BR --nets 
+option may be used to specify nets of interest.
 The option 
 .BR --net=? 
 lists all available nets.
