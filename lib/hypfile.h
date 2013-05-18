@@ -201,6 +201,7 @@ namespace HypFile {
   
   struct Board {
     PolygonList edge;
+    PolygonList segments;
     AttributeList attribute;
     double plane_separation;
     };

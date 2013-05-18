@@ -197,60 +197,53 @@ void HypFile::Hyp::add_perimeter_polygon(Polygon new_segment)
     return;
     }
 
-  // if new segment is closed, append new segment as perimeter polygon.
-  if (new_segment.vertex.front() == new_segment.vertex.back()) {
-    new_segment.positive = false;
-    board.edge.push_back(new_segment);
-    // only first polygon of board perimeter is positive, rest are holes.
-    board.edge.front().positive = true;
-    return;
-    }
+  /* add new segment to list of PERIMETER_SEGMENT and PERIMETER_ARC segments */
+  board.segments.push_back(new_segment);
 
-  // loop over list of perimeter polygons, see if new segment is good match
-  for (PolygonList::iterator i = board.edge.begin(); i != board.edge.end(); ++i) {
+  /* re-calculate board edge 
+   * loop over the list of segments, trying to re-construct the 
+   * board edge piece by piece.  */
 
-    // perimeter polygon is closed. 
-    // don't append.
-    if (i->vertex.front() == i->vertex.back()) 
-      continue;
+  board.edge.clear();
+  PolygonList segs = board.segments;
+  Polygon current_edge;
 
-    // first point of new segment is last point of perimeter polygon. 
-    // append new segment to perimeter polygon
-    if (i->vertex.back() == new_segment.vertex.front()) {
-      i->vertex.insert(i->vertex.end(), ++new_segment.vertex.begin(), new_segment.vertex.end());
-      return;
-      }
+  bool found = false;
+  do {
+    found = false;
+    /* find segment to add to existing edge */
+    for (PolygonList::iterator i = segs.begin(); i != segs.end(); ++i) {
 
-    // last point of new segment is last point of perimeter polygon. 
-    // append new segment back-to-front to perimeter polygon
-    if (i->vertex.back() == new_segment.vertex.back()) {
-      // append new segment to back of last polygon
-      i->vertex.insert(i->vertex.end(), ++new_segment.vertex.rbegin(), new_segment.vertex.rend());
-      return;
-      }
+      if (current_edge.vertex.empty() || (i->vertex.front() == current_edge.vertex.back())) {
+        /* first point of segment is last point of current edge: add segment to edge */
+        found = true;
+        current_edge.vertex.insert(current_edge.vertex.end(), i->vertex.begin(), i->vertex.end());
+        }
+      else if (i->vertex.back() == current_edge.vertex.back()) {
+        /* last point of segment is last point of current edge: add segment to edge back to front */
+        found = true;
+        current_edge.vertex.insert(current_edge.vertex.end(), i->vertex.rbegin(), i->vertex.rend());
+        };
 
-    // first point of new segment is first point of perimeter polygon. 
-    // insert new segment at beginning of perimeter polygon
-    if (i->vertex.front() == new_segment.vertex.front()) {
-      i->vertex.insert(i->vertex.begin(), new_segment.vertex.rbegin(), --new_segment.vertex.rend());
-      return;
-      }
+      if (found) {        
+        /* erase added segment from list of unused segments */
+        segs.erase(i);
+        /* check if current edge is closed */
+        if (current_edge.vertex.front() == current_edge.vertex.back()) {
+          /* store old edge, begin new one */
+          current_edge.positive = false;
+          board.edge.push_back(current_edge);
+          current_edge.vertex.clear();
+          }    
+        break;
+        }
 
-    // last point of new segment is first point of perimeter polygon. 
-    // insert new segment back-to-front at beginning of perimeter polygon
-    if (i->vertex.front() == new_segment.vertex.back()) {
-      // append new segment to back of last polygon
-      i->vertex.insert(i->vertex.begin(), new_segment.vertex.begin(), --new_segment.vertex.end());
-      return;
-      }
+      } 
+    }  while (found);
 
-    }
-
-  // no match found. append new segment as new perimeter polygon.
-  new_segment.positive = false;
-  board.edge.push_back(new_segment);
-  // only first polygon of board perimeter is positive, rest are holes.
-  board.edge.front().positive = true; 
+  /* only first polygon of board perimeter is positive, rest are holes. */
+  if (!board.edge.empty()) board.edge.front().positive = true;
+  
   return;
 
 }
