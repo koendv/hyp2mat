@@ -70,7 +70,7 @@ Draw arcs with an accuracy of 0.1 mm or better:
 hyp2mat -o pcb.pdf --arc-precision 1E-4 pcb.hyp
 
 [NOTES]
-Common causes of errors are unquoted strings, and unassigned component values.
+Common causes of syntax errors are unquoted strings, and unassigned component values.
 
 .SS Unquoted strings
 .IP "Error:"
