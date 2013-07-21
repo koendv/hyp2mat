@@ -53,7 +53,9 @@ pad1c=(pad1_start+pad1_stop)/2;
 pad2c=(pad2_start+pad2_stop)/2;
 v=pad2c-pad1c;
 theta=atan2(v(2), v(1)); % theta between -pi and pi.
-vertical=(abs(theta) > pi/4) && (abs(theta) < 3*pi/4); % true if component has vertical orientation
+delta=pi/12; % allow 15 degree play 
+vertical=abs((abs(theta) - pi/2)) < delta % true if component has vertical orientation 
+horizontal=(abs(theta) < delta) || ((pi - abs(theta)) < delta) % true if component has horizontal orientation 
 
 % layout component
 if (vertical)
@@ -62,12 +64,15 @@ if (vertical)
   comp_start  = [pad1_start(1), (pad1_start(2)+pad1_stop(2))/2, pad1_start(3)];
   comp_stop   = [pad2_stop(1), (pad2_start(2)+pad2_stop(2))/2, pad2_stop(3)];
   direction = 1;
-else
+elseif (horizontal)
   % layout component in x-direction
   comp_height = abs(pad1_stop(1) - pad1_start(1));
   comp_start  = [(pad1_start(1)+pad1_stop(1))/2, pad1_start(2), pad1_start(3)];
   comp_stop   = [(pad2_start(1)+pad2_stop(1))/2, pad2_stop(2), pad2_stop(3)];
   direction = 0;
+else
+  % arbitrary angles not implemented yet
+  error ('component orientation has to be 0 or 90 degrees');
 end
 
 % Component position has to be 'top' or 'bottom'. 
