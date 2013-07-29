@@ -1,5 +1,5 @@
 % [side, start, stop, centre ] = GetHyperLynxPort(CSX, port_ref)
-% Obtain coordinates and material of HyperLynx pin or pad.
+% Obtain coordinates of HyperLynx pin or pad.
 %
 % CSX:          CSX-object created by ImportHyperLynx()
 % port_ref:     port reference from HyperLynx file.
