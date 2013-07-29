@@ -126,7 +126,7 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
 
   % conversion
   if isunix
-    cmd = [ 'hyp2mat --verbose --output-format csxcad --output pcb.m ' cmdargs ' ''' filename '''' ];
+    cmd = [ 'export LD_LIBRARY_PATH=; hyp2mat --verbose --output-format csxcad --output pcb.m ' cmdargs ' ''' filename '''' ];
   elseif ispc
     m_filename = mfilename('fullpath');
     dir = fileparts( m_filename );
