@@ -1,6 +1,7 @@
 #!/bin/sh -x
 #
 # Script to build win32 binary - run in MinGW.
+# Requires libhpdf.
 #
 HYPDIR=~/hyp2mat
 BUILDDIR=~/build-w32
