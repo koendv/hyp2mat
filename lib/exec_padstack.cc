@@ -128,4 +128,59 @@ bool HypFile::Hyp::exec_padstack_element(parse_param& h)
   return false;
 }
 
+/*
+ * Note: * MDEF and ADEF layer names have special meaning.
+ * MDEF specified the default pad for signal or plane layers. 
+ * ADEF specifies the default anti-pad (non-conducting hole in the copper) for plane layers.
+ * MDEF and ADEF only apply to layers which have no explicit pad or anti-pad in the padstack.
+ */
+
+bool HypFile::Hyp::exec_padstack_end(parse_param& h)
+{
+  if (trace_hyp) {
+    cerr << "padstack_element:";
+    cerr << endl;
+    };
+
+  PadList new_pads;
+
+  /* 
+   * Loop through stackup. 
+   * Calculate new padstack, where all MDEF and ADEF pads have been expanded into one or more metal layers.
+   */
+
+  for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l) {
+    /* Loop through pad list */
+    bool layer_has_pad = false;
+    for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p) {
+      if (l->layer_name == p->layer_name) {
+        new_pads.push_back(*p);
+        layer_has_pad = true;
+        }
+      }
+    /* If a signal layer has no pad, add MDEF pad */
+    if (!layer_has_pad && (l->layer_type == LAYER_SIGNAL)) 
+      for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
+        if (p->layer_name == "MDEF") {
+          Pad new_pad = *p;
+          new_pad.layer_name = l->layer_name; /* change MDEF into current layer name */
+          new_pads.push_back(new_pad);
+          }
+      
+    /* If a plane layer has no pad, add MDEF or ADEF pad */
+    if (!layer_has_pad && (l->layer_type == LAYER_PLANE)) 
+      for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
+        if ((p->layer_name == "MDEF") || (p->layer_name == "ADEF")) {
+          Pad new_pad = *p;
+          new_pad.layer_name = l->layer_name; /* change ADEF into current layer name */
+          new_pads.push_back(new_pad);
+          }
+    }
+
+  /* put new padstack in place. */
+  
+  padstack.back().pads = new_pads;
+ 
+}
+
 /* not truncated */

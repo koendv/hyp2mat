@@ -2601,6 +2601,13 @@ yyreduce:
     { h.padstack_name = yylval.strval; h.padstack_name_set = true; }
     break;
 
+  case 137:
+
+/* Line 1806 of yacc.c  */
+#line 390 "parse.y"
+    { if (hyp->exec_padstack_end(h)) YYERROR; }
+    break;
+
   case 138:
 
 /* Line 1806 of yacc.c  */
@@ -3276,7 +3283,7 @@ yyreduce:
 
 
 /* Line 1806 of yacc.c  */
-#line 3280 "parse.c"
+#line 3287 "parse.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

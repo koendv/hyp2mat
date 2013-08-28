@@ -21,6 +21,7 @@ pkgconfigdir=$(datarootdir)/pkgconfig
 libhyp2mat_la_SOURCES=\
   clipper.cpp \
   clipper.hpp \
+  copper.cc \
   crop.h \
   crop.cc \
   csxcad.cc \

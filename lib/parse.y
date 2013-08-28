@@ -387,7 +387,7 @@ conversion
   /* padstack */
 
 padstack
-  : '{' PADSTACK { new_record(); } '=' STRING { h.padstack_name = yylval.strval; h.padstack_name_set = true; } drill_size '}' ;
+  : '{' PADSTACK { new_record(); } '=' STRING { h.padstack_name = yylval.strval; h.padstack_name_set = true; } drill_size '}' { if (hyp->exec_padstack_end(h)) YYERROR; } ;
 
 drill_size 
   : ',' FLOAT { h.drill_size = yylval.floatval; h.drill_size_set = true; } padstack_list

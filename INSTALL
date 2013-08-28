@@ -10,8 +10,7 @@ If you wish to install not only the executable, but also the hyp2mat library, in
 Default is building the static libhyp2mat.a library only.
 If you wish to build not only the static library, but also the shared libhyp2mat.so library, add the "--enable-shared" flag, e.g. "configure --enable-library --enable-shared"
 
-Development was done using g++, make, bison, flex, gengetopt
-Documentation was created using help2man, groff, ps2pdf
+The following packages are necessary for development: g++, libtool, make, bison, flex, gengetopt, help2man, groff, ps2pdf.
 
 On Linux ubuntu, with libhpdf installed in /usr/lib:
   ./configure

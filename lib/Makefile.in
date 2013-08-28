@@ -105,8 +105,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgconfigdir)" \
 	"$(DESTDIR)$(includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 libhyp2mat_la_LIBADD =
-am_libhyp2mat_la_OBJECTS = clipper.lo crop.lo csxcad.lo draw.lo \
-	exec_board.lo exec_devices.lo exec_end.lo exec_net.lo \
+am_libhyp2mat_la_OBJECTS = clipper.lo copper.lo crop.lo csxcad.lo \
+	draw.lo exec_board.lo exec_devices.lo exec_end.lo exec_net.lo \
 	exec_netclass.lo exec_padstack.lo exec_polygon.lo \
 	exec_stackup.lo exec_supplies.lo hyperlynx.lo hypfile.lo \
 	misc.lo palette.lo parse.lo polygon.lo pcb.lo pdf.lo scan.lo
@@ -296,6 +296,7 @@ pkgconfigdir = $(datarootdir)/pkgconfig
 libhyp2mat_la_SOURCES = \
   clipper.cpp \
   clipper.hpp \
+  copper.cc \
   crop.h \
   crop.cc \
   csxcad.cc \
@@ -416,6 +417,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clipper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/copper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/csxcad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/draw.Plo@am__quote@
