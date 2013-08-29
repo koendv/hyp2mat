@@ -162,7 +162,7 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
         }
       }
     /* If a signal or plane layer has no pad, add MDEF pad if specified */
-    if (!layer_has_pad && ((l->layer_type == LAYER_SIGNAL) || (l->layer_type == LAYER_PLANE)) 
+    if (!layer_has_pad && ((l->layer_type == LAYER_SIGNAL) || (l->layer_type == LAYER_PLANE)) )
       for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
         if (p->layer_name == "MDEF") {
           Pad new_pad = *p;
