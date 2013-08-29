@@ -88,18 +88,19 @@ void Hyp2Mat::CropVias(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds)
  * Remove all layers which are out of bounds.
  */
 
-void Hyp2Mat::CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds)
+void Hyp2Mat::CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds& bounds)
 {
-  Hyp2Mat::Bounds crop_bounds = AdjustBounds(pcb, bounds);
-
   Hyp2Mat::Layer new_layer;
   Hyp2Mat::LayerList new_stackup;
+
+  bounds = AdjustBounds(pcb, bounds);
+
   for (Hyp2Mat::LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l) {
-    if ((l->z0 > crop_bounds.z_max) && (l->z1 > crop_bounds.z_max)) continue;
-    if ((l->z0 < crop_bounds.z_min) && (l->z1 < crop_bounds.z_min)) continue;
+    if ((l->z0 > bounds.z_max) && (l->z1 > bounds.z_max)) continue;
+    if ((l->z0 < bounds.z_min) && (l->z1 < bounds.z_min)) continue;
     new_layer = *l;
-    if (new_layer.z1 > crop_bounds.z_max) new_layer.z1 = crop_bounds.z_max;
-    if (new_layer.z0 < crop_bounds.z_min) new_layer.z0 = crop_bounds.z_min;
+    if (new_layer.z1 > bounds.z_max) new_layer.z1 = bounds.z_max;
+    if (new_layer.z0 < bounds.z_min) new_layer.z0 = bounds.z_min;
     new_stackup.push_back(new_layer);
     }
   pcb.stackup = new_stackup;

@@ -28,7 +28,7 @@ namespace Hyp2Mat {
   Hyp2Mat::Bounds AdjustBounds(Hyp2Mat::PCB& pcb, Bounds bounds);
   Hyp2Mat::Polygon CropPolygon (Hyp2Mat::Polygon poly, Hyp2Mat::Bounds bounds);
   void CropVias(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds);
-  void CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds bounds);
+  void CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds& bounds);
   }
 
 #endif

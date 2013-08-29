@@ -54,12 +54,14 @@ void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::
    * Copy hyperlynx file data from hyp_file to pcb
    */
   Hyp2Mat::Polygon board;
+  Hyp2Mat::Bounds saved_bounds = bounds;
   CopyBoard(pcb, hyp_file, board, bounds); /* copy board outline */
 
   CopyStackUp(pcb, hyp_file, bounds, board, layers, nets, raw); /* copy layer stackup */
   CopyVias(pcb, hyp_file, bounds, nets); /* copy layer stackup */
   CopyDevices(pcb, hyp_file); /* copy device info */
   CopyPins(pcb, hyp_file, nets); /* copy pin references */
+  CropLayers(pcb, saved_bounds); /* trim board in z direction */
 
   /* 
    * Check whether to print all net names 

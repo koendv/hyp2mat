@@ -131,8 +131,9 @@ bool HypFile::Hyp::exec_padstack_element(parse_param& h)
 /*
  * Note: * MDEF and ADEF layer names have special meaning.
  * MDEF specified the default pad for signal or plane layers. 
+ * If a signal or plane layer has no metal pad, and an MDEF default pad is specified, the MDEF pad is applied to the layer.
  * ADEF specifies the default anti-pad (non-conducting hole in the copper) for plane layers.
- * MDEF and ADEF only apply to layers which have no explicit pad or anti-pad in the padstack.
+ * If a plane layer has no anti-pad, and an ADEF default pad is specified, the ADEF pad is applied to the layer.
  */
 
 bool HypFile::Hyp::exec_padstack_end(parse_param& h)
@@ -152,14 +153,16 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
   for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l) {
     /* Loop through pad list */
     bool layer_has_pad = false;
+    bool layer_has_antipad = false;
     for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p) {
       if (l->layer_name == p->layer_name) {
         new_pads.push_back(*p);
-        layer_has_pad = true;
+        layer_has_pad = layer_has_pad || (p->pad_type == PAD_TYPE_METAL);
+        layer_has_antipad = layer_has_antipad || (p->pad_type == PAD_TYPE_ANTIPAD);
         }
       }
-    /* If a signal layer has no pad, add MDEF pad */
-    if (!layer_has_pad && (l->layer_type == LAYER_SIGNAL)) 
+    /* If a signal or plane layer has no pad, add MDEF pad if specified */
+    if (!layer_has_pad && ((l->layer_type == LAYER_SIGNAL) || (l->layer_type == LAYER_PLANE)) 
       for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
         if (p->layer_name == "MDEF") {
           Pad new_pad = *p;
@@ -167,8 +170,8 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
           new_pads.push_back(new_pad);
           }
       
-    /* If a plane layer has no pad, add MDEF or ADEF pad */
-    if (!layer_has_pad && (l->layer_type == LAYER_PLANE)) 
+    /* If a plane layer has no antipad, add ADEF pad if specified */
+    if (!layer_has_antipad && (l->layer_type == LAYER_PLANE)) 
       for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
         if ((p->layer_name == "MDEF") || (p->layer_name == "ADEF")) {
           Pad new_pad = *p;
