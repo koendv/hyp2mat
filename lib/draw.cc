@@ -39,7 +39,7 @@ Polygon::Polygon()
   vertex.clear();
   polygon_type = POLYGON_TYPE_COPPER;
   id = -1;
-  positive = true;
+  positive = true; /* is a polygon, not a hole */
   width = 0.0;
   plane_separation = -1.0; /* negative if not set */
   left_plane_separation = -1.0; /* negative if not set */
@@ -174,12 +174,9 @@ Polygon HypFile::Hyp::pad2poly(double pad_x, double pad_y, Pad pad)
   Polygon pad_poly;
   pad_poly.width = 0;
   pad_poly.layer_name = pad.layer_name;
-  pad_poly.positive = pad.pad_type != PAD_TYPE_ANTIPAD;  // XXX and what about thermals?
-
-  /* pad is positive on signal layers, negative on plane layers */
-  for (LayerList::iterator j = stackup.begin(); j != stackup.end(); ++j)
-    if ((j->layer_name == pad.layer_name) && (j->layer_type == LAYER_PLANE))
-      pad_poly.positive = !pad_poly.positive;
+  pad_poly.positive = true;
+  if (pad.pad_type == PAD_TYPE_ANTIPAD) pad_poly.polygon_type = POLYGON_TYPE_ANTIPAD;
+  else pad_poly.polygon_type = POLYGON_TYPE_PAD;
 
   double sx = pad.pad_sx;
   double sy = pad.pad_sy;

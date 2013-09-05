@@ -53,6 +53,7 @@ namespace Hyp2Mat {
   
       /* Clipper polygon operations */
       void _Execute(ClipperLib::ClipType op, Polygon clip);
+      ClipperLib::PolyFillType _filltype;
   
       /* convert Clipper to Hyp2Mat */
       void _AddToPolygonList(ClipperLib::PolyNode& polynode, FloatPolygons& polygons, int level);

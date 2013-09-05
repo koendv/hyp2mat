@@ -255,8 +255,19 @@ bool HypFile::Hyp::exec_curve(parse_param& h)
   /* 'CURVE' draws arc counterclockwise */
   Polygon arc = arc2poly(h.x1, h.y1, h.x2, h.y2, h.xc, h.yc, h.r, false); 
 
-  /* add arc to current polygon */
-  current_polygon.vertex.insert(current_polygon.vertex.end(), arc.vertex.begin(), arc.vertex.end());
+  /* calculate distance between polygon end vertex and arc begin and arc end */
+  double endvertex_x = current_polygon.vertex.back().x;
+  double endvertex_y = current_polygon.vertex.back().y;
+  double dist1 =  (endvertex_x - h.x1) * (endvertex_x - h.x1) + (endvertex_y - h.y1) * (endvertex_y - h.y1);
+  double dist2 =  (endvertex_x - h.x2) * (endvertex_x - h.x2) + (endvertex_y - h.y2) * (endvertex_y - h.y2);
+
+  /* add arc to current polygon. begin with point closest to end vertex. */
+  if (dist1 <= dist2)
+    /* add arc from (x1, y1) to (x2, y2) */
+    current_polygon.vertex.insert(current_polygon.vertex.end(), arc.vertex.begin(), arc.vertex.end());
+  else
+    /* add arc from (x2, y2) to (x1, y1) */
+    current_polygon.vertex.insert(current_polygon.vertex.end(), arc.vertex.rbegin(), arc.vertex.rend());
 
   return false;
 }

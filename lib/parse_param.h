@@ -33,7 +33,7 @@
 
   enum pin_function_enum { PIN_SIM_IN, PIN_SIM_OUT, PIN_SIM_BOTH };
 
-  enum polygon_type_enum { POLYGON_TYPE_POUR, POLYGON_TYPE_PLANE, POLYGON_TYPE_COPPER };
+  enum polygon_type_enum { POLYGON_TYPE_POUR, POLYGON_TYPE_PLANE, POLYGON_TYPE_COPPER, POLYGON_TYPE_PAD, POLYGON_TYPE_ANTIPAD };
 
   struct parse_param {
     double vers;   /* version of the hyp file format */

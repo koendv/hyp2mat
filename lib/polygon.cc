@@ -31,6 +31,7 @@ double Polygon::_arc_precision = 0.0;
 
 Polygon::Polygon()
 {
+  _filltype = ClipperLib::pftNonZero; // Use edge orientation to determine whether or not polygon edge is a hole.
 }
 
 void Polygon::SetGrid(double new_grid)
@@ -84,15 +85,10 @@ void Polygon::_AddEdge(FloatPolygon edge, bool orientation)
   ClipperLib::Polygon poly = _convert(edge);
 
   /* orient edge clockwise */
-  if (!Orientation(poly)) ClipperLib::ReversePolygon(poly);
-
-  /* Create argument */
-  Polygon q;
-  q._subject.push_back(poly);
+  if (!Orientation(poly) == orientation) ClipperLib::ReversePolygon(poly);
 
   /* Add to polygon */
-  if (orientation) Union(q); /* add outer edges */
-  else Difference(q); /* subtract holes */
+  _subject.push_back(poly);
  
   return;
 }
@@ -178,7 +174,7 @@ void Polygon::Offset(double delta)
 void Polygon::Simplify()
 {
   ClipperLib::Polygons result;
-  ClipperLib::SimplifyPolygons(_subject, result, ClipperLib::pftNonZero);
+  ClipperLib::SimplifyPolygons(_subject, result, _filltype);
   _subject = result;
 
 }
@@ -215,7 +211,7 @@ void Polygon::_Execute(ClipperLib::ClipType op, Polygon clip)
   clipper.AddPolygons(_subject, ClipperLib::ptSubject); 
   clipper.AddPolygons(clip._subject, ClipperLib::ptClip); 
 
-  clipper.Execute(op, result, ClipperLib::pftNonZero, ClipperLib::pftNonZero);
+  clipper.Execute(op, result, _filltype, _filltype);
   _subject = result;
 
   return;
@@ -232,7 +228,7 @@ FloatPolygons Polygon::Result()
 
   /* convert to PolyTree */
   clipper.AddPolygons(_subject, ClipperLib::ptSubject);
-  clipper.Execute(ClipperLib::ctUnion, polytree, ClipperLib::pftNonZero, ClipperLib::pftNonZero);
+  clipper.Execute(ClipperLib::ctUnion, polytree, _filltype, _filltype);
 
   /* recursively descend polytree, converting nodes */
   FloatPolygons result;
