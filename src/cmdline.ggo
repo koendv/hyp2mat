@@ -21,6 +21,7 @@ option "zmin" z "Crop pcb. Set lower bound of z coordinate." double optional
 option "zmax" Z "Crop pcb. Set upper bound of z coordinate." double optional 
 option "grid" g "Set output grid size." double default="10e-6" optional 
 option "arc-precision" p "Set maximum difference between perfect arc and polygonal approximation." default="0" double optional 
+option "clearance" c "Set trace-to-plane clearance." default="0" double optional 
 section "PDF output options"
 option "hue" - "Set PDF color hue. Range 0.0 to 1.0" double default="0" optional
 option "saturation" - "Set PDF color saturation. Range 0.0 to 1.0" double default="0.6" optional

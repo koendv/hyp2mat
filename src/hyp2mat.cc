@@ -85,6 +85,10 @@ int main(int argc, char **argv)
     if (args_info.arc_precision_given)
       pcb.SetArcPrecision(args_info.arc_precision_arg);
  
+    /* optionally set trace-to-plane clearance */
+    if (args_info.clearance_given)
+      pcb.SetClearance(args_info.clearance_arg);
+ 
     /* optionally crop */
     Bounds bounds;
     if (args_info.xmin_given) bounds.x_min = args_info.xmin_arg;

@@ -14,6 +14,7 @@
 % zmax           Crop pcb. Set higher bound of z coordinate.
 % grid           Set output grid size.  (default=`10e-6' = 1 um)
 % arc-precision  Set maximum difference between perfect arc and polygonal approximation.
+% clearance      Set trace-to-plane clearance.
 %
 % ImportHyperLynx needs read and write access to the current directory.
 %
@@ -120,6 +121,10 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
     if (strcmpi(varargin{vn}, 'arc-precision'))
       vn = vn + 1;
       cmdargs = [ cmdargs ' --arc-precision ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'clearance'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --clearance ' num2str(varargin{vn}) ];
     end
     vn = vn + 1;
   end

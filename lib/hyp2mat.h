@@ -176,6 +176,7 @@ namespace Hyp2Mat {
       void SetEpsilonR(double epsilon_r); /* set dielectric epsilon r. overrides value in Hyperlynx file. */
       void SetGrid(double new_grid); /* set resolution of x and y coordinates */
       void SetArcPrecision(double new_arc_precision); /* set maximum difference between perfect circle arc and polygonal approximation */
+      void SetClearance(double new_clearance); /* set trace-to-plane clearance */
       Bounds GetBounds(); /* gets board extension in x,y and z */
       void SetBounds(Bounds new_bounds); /* crops board in x,y and z */
       void PrintSummary();
@@ -185,6 +186,7 @@ namespace Hyp2Mat {
     private:
       Bounds _bounds;
       double _arc_precision;
+      double _clearance;
       bool _raw;
   };
 

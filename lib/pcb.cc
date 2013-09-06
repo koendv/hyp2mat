@@ -35,6 +35,7 @@ PCB::PCB()
   debug = 0;
   via_plating_thickness = 0;
   _arc_precision = 0;
+  _clearance = -1.0;
 }
 
 /*
@@ -47,7 +48,7 @@ void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, 
   Polygon::SetArcPrecision(_arc_precision);
 
   HyperLynx hyperlynx;
-  hyperlynx.Read(filename, *this, layers, nets, raw, _arc_precision, _bounds);
+  hyperlynx.Read(filename, *this, layers, nets, raw, _arc_precision, _clearance, _bounds);
 }
 
 /*
@@ -124,6 +125,16 @@ void PCB::SetGrid(double new_grid)
 void PCB::SetArcPrecision(double new_arc_precision)
 {
   if (new_arc_precision >= 0.0) _arc_precision = new_arc_precision;
+  return;
+}
+
+/*
+ * set track to plane clearance 
+ */
+
+void PCB::SetClearance(double new_clearance)
+{
+  if (new_clearance >= 0.0) _clearance = new_clearance;
   return;
 }
 

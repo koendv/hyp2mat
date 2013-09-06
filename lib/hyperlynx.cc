@@ -38,7 +38,7 @@
  * Read a pcb in hyperlynx format
  */
 
-void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::string> layers, std::vector<std::string> nets, bool raw, double arc_precision, Hyp2Mat::Bounds bounds)
+void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::string> layers, std::vector<std::string> nets, bool raw, double arc_precision, double clearance, Hyp2Mat::Bounds bounds)
 {
   HypFile::Hyp hyp_file;
 
@@ -55,6 +55,7 @@ void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::
    */
   Hyp2Mat::Polygon board;
   Hyp2Mat::Bounds saved_bounds = bounds;
+  HyperLynx::_clearance = clearance;
   CopyBoard(pcb, hyp_file, board, bounds); /* copy board outline */
 
   CopyStackUp(pcb, hyp_file, bounds, board, layers, nets, raw); /* copy layer stackup */

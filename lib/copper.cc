@@ -106,11 +106,13 @@ void HyperLynx::CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bo
 
 Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds, Hyp2Mat::Polygon& board, Hyp2Mat::Layer layer, HypFile::Layer& hyp_layer, std::vector<std::string> net_names, double plane_separation, Hyp2Mat::FloatPolygons& raw_polygons)
 {
-  std::vector<Hyp2Mat::Polygon> net_pour;
-  std::vector<Hyp2Mat::Polygon> net_plane;
-  std::vector<Hyp2Mat::Polygon> net_copper;
-  std::vector<Hyp2Mat::Polygon> net_pads;
-  std::vector<Hyp2Mat::Polygon> net_antipads;
+
+  /* vectors of different polygon types. element [i] belongs to net hyp_file.net[i].net_name */
+  std::vector<Hyp2Mat::Polygon> net_pour;      /* POLYGON T=POUR  and ordinary line and arc segments */
+  std::vector<Hyp2Mat::Polygon> net_plane;     /* POLYGON T=PLANE */
+  std::vector<Hyp2Mat::Polygon> net_copper;    /* POLYGON T=COPPER */
+  std::vector<Hyp2Mat::Polygon> net_pads;      /* pads */
+  std::vector<Hyp2Mat::Polygon> net_antipads;  /* anti-pads */
   std::vector<bool> net_wanted;
 
   HypFile::NetList::size_type net_size =  hyp_file.net.size();
@@ -335,6 +337,9 @@ Hyp2Mat::Polygon HyperLynx::CopyPolygon(HypFile::PolygonList metal, double plane
 
   /* polygon plane separation */
   if (metal.begin()->plane_separation >= 0) plane_separation = metal.begin()->plane_separation;
+  /* board-level override from SetClearance method / --clearance command-line parameter */
+  if (HyperLynx::_clearance >= 0) plane_separation = HyperLynx::_clearance;
+  /* apply plane separation */
   if (metal.begin()->polygon_type == POLYGON_TYPE_PLANE) PlaneSeparation(poly, other_nets, plane_separation);
 
   return poly;

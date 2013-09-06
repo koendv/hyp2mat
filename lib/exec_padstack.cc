@@ -79,8 +79,10 @@ bool HypFile::Hyp::exec_padstack_element(parse_param& h)
 
   p.layer_name = h.layer_name;
 
-  p.pad_type = PAD_TYPE_METAL;
+  /* pad type */
   if (h.pad_type_set) p.pad_type = h.pad_type;
+  else if (p.layer_name == "ADEF") p.pad_type = PAD_TYPE_ANTIPAD;
+  else p.pad_type = PAD_TYPE_METAL;
 
   if (h.pad_shape == 0) 
     p.pad_shape = PAD_SHAPE_OVAL;
@@ -153,12 +155,10 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
   for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l) {
     /* Loop through pad list */
     bool layer_has_pad = false;
-    bool layer_has_antipad = false;
     for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p) {
       if (l->layer_name == p->layer_name) {
         new_pads.push_back(*p);
-        layer_has_pad = layer_has_pad || (p->pad_type == PAD_TYPE_METAL);
-        layer_has_antipad = layer_has_antipad || (p->pad_type == PAD_TYPE_ANTIPAD);
+        layer_has_pad = true;
         }
       }
     /* If a signal or plane layer has no pad, add MDEF pad if specified */
@@ -170,10 +170,10 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
           new_pads.push_back(new_pad);
           }
       
-    /* If a plane layer has no antipad, add ADEF pad if specified */
-    if (!layer_has_antipad && (l->layer_type == LAYER_PLANE)) 
+    /* If a plane layer has no pad, add ADEF pad if specified */
+    if (!layer_has_pad && (l->layer_type == LAYER_PLANE)) 
       for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
-        if ((p->layer_name == "MDEF") || (p->layer_name == "ADEF")) {
+        if (p->layer_name == "ADEF") {
           Pad new_pad = *p;
           new_pad.layer_name = l->layer_name; /* change ADEF into current layer name */
           new_pads.push_back(new_pad);
