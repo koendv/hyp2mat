@@ -102,13 +102,13 @@ int main(int argc, char **argv)
         args_info.zmin_given || args_info.zmax_given )
       pcb.SetBounds(bounds);
 
-    /* load hyperlynx file */
-    pcb.ReadHyperLynx(input_file, layers, nets, raw_flag);
-  
     /* optionally set epsilon */
     if (args_info.epsilonr_given)
       pcb.SetEpsilonR(args_info.epsilonr_arg);
  
+    /* load hyperlynx file */
+    pcb.ReadHyperLynx(input_file, layers, nets, raw_flag);
+  
     /* optionally print layer summary */
     if (args_info.verbose_given)
       pcb.PrintSummary();

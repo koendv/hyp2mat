@@ -184,9 +184,11 @@ namespace Hyp2Mat {
       void WriteCSXCAD(std::string filename);
       unsigned int debug; /* setting debug to 0 switches debugging off */
     private:
+      void _ChangeEpsilonR();
       Bounds _bounds;
       double _arc_precision;
       double _clearance;
+      double _epsilon_r;
       bool _raw;
   };
 

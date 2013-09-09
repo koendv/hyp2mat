@@ -36,6 +36,7 @@ PCB::PCB()
   via_plating_thickness = 0;
   _arc_precision = 0;
   _clearance = -1.0;
+  _epsilon_r = -1.0;
 }
 
 /*
@@ -45,10 +46,15 @@ PCB::PCB()
 void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, std::vector<std::string> nets, bool raw)
 {
 
+  /* set accuracy with which circle arcs are converted to polygons */
   Polygon::SetArcPrecision(_arc_precision);
 
   HyperLynx hyperlynx;
   hyperlynx.Read(filename, *this, layers, nets, raw, _arc_precision, _clearance, _bounds);
+
+  /* Epsilon_r override */
+  if (_epsilon_r >= 0.0) _ChangeEpsilonR();
+
 }
 
 /*
@@ -76,14 +82,25 @@ void PCB::WritePDF (std::string filename, double hue, double saturation, double 
  * Set dielectric epsilon r. Overrides value in Hyperlynx file. 
  */
 
-void PCB::SetEpsilonR(double epsilon_r) 
+void PCB::SetEpsilonR(double new_epsilon_r) 
+{
+  /* save the new value of epsilon r. run before loading hyperlynx file. */
+  if (new_epsilon_r >= 0.0) _epsilon_r = new_epsilon_r;
+  return;
+}
+
+/*
+ * Modify the value of epsilon r. Run after loading hyperlynx file. */
+ */
+
+void PCB::_ChangeEpsilonR() 
 {
 
   /* set all layers to epsilon_r, except outer copper layers, which we assume are in air (er = 1) */
 
   /* iterate over all layers, setting epsilon */
   for (LayerList::iterator i = stackup.begin(); i != stackup.end(); ++i) {
-    i->epsilon_r = epsilon_r;
+    i->epsilon_r = _epsilon_r;
 
     /* check for outer copper layer */ 
     if (i->layer_type == LAYER_DIELECTRIC)
