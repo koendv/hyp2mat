@@ -48,6 +48,9 @@ HypFile::Hyp::Hyp()
   fr4_loss_tangent = 0.020;
   conformal_epsilon_r = 3.3; /* dielectric constant of conformal layer */
   board.plane_separation = -1.0; /* distance between PLANE polygon and copper of different nets; -1 if not set */
+
+  warn_plane_layers = false;
+  warn_plane_polygons = false;
 }
 
 /*

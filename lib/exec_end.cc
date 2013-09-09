@@ -33,6 +33,9 @@ bool HypFile::Hyp::exec_end(parse_param& h)
 {
   if (trace_hyp) cerr << "end" << endl;
 
+  if (warn_plane_layers) error("Board contains PLANE layers. Use SIGNAL layers for better accuracy.");
+  if (warn_plane_polygons) error("Board contains PLANE polygons. Use POUR or COPPER polygons for better accuracy.");
+
   return false;
 }
 

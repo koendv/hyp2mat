@@ -219,6 +219,8 @@ namespace HypFile {
       bool save (const std::string& filename); // write to file
       
       void error(const std::string& m);
+      bool warn_plane_layers;
+      bool warn_plane_polygons;
   
       Board board;
       LayerList stackup; 

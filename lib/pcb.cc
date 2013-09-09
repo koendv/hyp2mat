@@ -90,7 +90,7 @@ void PCB::SetEpsilonR(double new_epsilon_r)
 }
 
 /*
- * Modify the value of epsilon r. Run after loading hyperlynx file. */
+ * Modify the value of epsilon r. Run after loading hyperlynx file.
  */
 
 void PCB::_ChangeEpsilonR() 
