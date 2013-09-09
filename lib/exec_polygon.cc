@@ -63,7 +63,7 @@ bool HypFile::Hyp::exec_polygon_begin(parse_param& h)
     }
 
   /* PLANE polygons are less accurate than POUR or COPPER */
-  warn_plane_polygons = true;
+  if (h.polygon_type == POLYGON_TYPE_PLANE) warn_plane_polygons = true;
 
   h.width *= unit;
   h.x *= unit;

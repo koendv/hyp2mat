@@ -88,9 +88,9 @@ struct gengetopt_args_info
   double arc_precision_arg;	/**< @brief Set maximum difference between perfect arc and polygonal approximation. (default='0').  */
   char * arc_precision_orig;	/**< @brief Set maximum difference between perfect arc and polygonal approximation. original value given at command line.  */
   const char *arc_precision_help; /**< @brief Set maximum difference between perfect arc and polygonal approximation. help description.  */
-  double clearance_arg;	/**< @brief Set trace-to-plane clearance. (default='0').  */
-  char * clearance_orig;	/**< @brief Set trace-to-plane clearance. original value given at command line.  */
-  const char *clearance_help; /**< @brief Set trace-to-plane clearance. help description.  */
+  double clearance_arg;	/**< @brief Set default trace-to-plane clearance. (default='0').  */
+  char * clearance_orig;	/**< @brief Set default trace-to-plane clearance. original value given at command line.  */
+  const char *clearance_help; /**< @brief Set default trace-to-plane clearance. help description.  */
   double hue_arg;	/**< @brief Set PDF color hue. Range 0.0 to 1.0 (default='0').  */
   char * hue_orig;	/**< @brief Set PDF color hue. Range 0.0 to 1.0 original value given at command line.  */
   const char *hue_help; /**< @brief Set PDF color hue. Range 0.0 to 1.0 help description.  */

@@ -82,6 +82,10 @@ void HyperLynx::CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bo
 
     /* Use default plane separation if layer plane separation is not set. layer plane separation is -1.0 if not set */
     double plane_separation = hyp_file.board.plane_separation;
+
+    /* board-level override from SetClearance method / --clearance command-line parameter */
+    if (HyperLynx::_clearance >= 0) plane_separation = HyperLynx::_clearance;
+
     if (hyp_layer.plane_separation >= 0) plane_separation = hyp_layer.plane_separation;
 
     /* copy layer copper */
@@ -133,7 +137,7 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file
     net_wanted[i] = net_names.empty() || (std::find(net_names.begin(), net_names.end(), hyp_file.net[i].net_name) != net_names.end());
     }
 
-  /* first iteration. calculate all copper except plane polygons */
+  /* first iteration. calculate all copper, but don't take plane separation into account yet. */
   for (int i = 0; i < hyp_file.net.size(); ++i) {
 
     /* skip unwanted nets */
@@ -141,13 +145,14 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file
 
     /* copy anti-metal of this net */
     Hyp2Mat::Polygon empty_poly;
-    net_pour[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_POUR, plane_separation, empty_poly, raw_polygons); 
-    net_copper[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_COPPER, plane_separation, empty_poly, raw_polygons); 
-    net_pads[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_PAD, plane_separation, empty_poly, raw_polygons); 
-    net_antipads[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_ANTIPAD, plane_separation, empty_poly, raw_polygons); 
+    net_pour[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_POUR, -1.0, empty_poly, raw_polygons); 
+    net_copper[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_COPPER, -1.0, empty_poly, raw_polygons); 
+    net_plane[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_PLANE, -1.0, empty_poly, raw_polygons); 
+    net_pads[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_PAD, -1.0, empty_poly, raw_polygons); 
+    net_antipads[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_ANTIPAD, -1.0, empty_poly, raw_polygons); 
     }
 
-  /* second iteration. calculate all plane polygons. */
+  /* second iteration. calculate all plane polygons, taking plane separation into account. */
   for (int i = 0; i < hyp_file.net.size(); ++i) {
 
     /* skip unwanted nets */
@@ -163,13 +168,15 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file
     for (int j = 0; j < hyp_file.net.size(); ++j)
       if (j != i) {
         other_copper.Union(net_pour[j]);
+        other_copper.Union(net_plane[j]);
         other_copper.Union(net_copper[j]);
         other_copper.Union(net_pads[j]);
         other_antipads.Union(net_antipads[j]);
         }
 
     /* calculate plane polygons of this net */
-    net_plane[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_PLANE, plane_separation, other_copper, raw_polygons); 
+    Hyp2Mat::FloatPolygons dummy;
+    net_plane[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_PLANE, plane_separation, other_copper, dummy); 
     /* Subtract other nets' antipads */
     net_plane[i].Difference(other_antipads);
     }
@@ -337,8 +344,6 @@ Hyp2Mat::Polygon HyperLynx::CopyPolygon(HypFile::PolygonList metal, double plane
 
   /* polygon plane separation */
   if (metal.begin()->plane_separation >= 0) plane_separation = metal.begin()->plane_separation;
-  /* board-level override from SetClearance method / --clearance command-line parameter */
-  if (HyperLynx::_clearance >= 0) plane_separation = HyperLynx::_clearance;
   /* apply plane separation */
   if (metal.begin()->polygon_type == POLYGON_TYPE_PLANE) PlaneSeparation(poly, other_nets, plane_separation);
 

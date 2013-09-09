@@ -50,7 +50,7 @@ const char *gengetopt_args_info_help[] = {
   "  -Z, --zmax=DOUBLE           Crop pcb. Set upper bound of z coordinate.",
   "  -g, --grid=DOUBLE           Set output grid size.  (default=`10e-6')",
   "  -p, --arc-precision=DOUBLE  Set maximum difference between perfect arc and\n                                polygonal approximation.  (default=`0')",
-  "  -c, --clearance=DOUBLE      Set trace-to-plane clearance.  (default=`0')",
+  "  -c, --clearance=DOUBLE      Set default trace-to-plane clearance.\n                                (default=`0')",
   "\nPDF output options:",
   "      --hue=DOUBLE            Set PDF color hue. Range 0.0 to 1.0\n                                (default=`0')",
   "      --saturation=DOUBLE     Set PDF color saturation. Range 0.0 to 1.0\n                                (default=`0.6')",
@@ -1224,7 +1224,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'c':	/* Set trace-to-plane clearance..  */
+        case 'c':	/* Set default trace-to-plane clearance..  */
         
         
           if (update_arg( (void *)&(args_info->clearance_arg), 
