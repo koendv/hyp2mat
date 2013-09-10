@@ -67,9 +67,13 @@ hyp2mat -o pcb.pdf --raw pcb.hyp
 .ni 
 
 Draw arcs with an accuracy of 0.1 mm or better:
+.nf 
 hyp2mat -o pcb.pdf --arc-precision 1E-4 pcb.hyp
+.ni 
 
 [NOTES]
+Board outlines and copper polygons should not be self-intersecting.
+
 Common causes of syntax errors are unquoted strings, and unassigned component values.
 
 .SS Unquoted strings

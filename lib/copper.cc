@@ -163,84 +163,48 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file
 
     /* calculate other nets' copper.
        We need to calculate other net's copper because plane polygons have to keep a clearance 'plane_separation' from other nets. */
+
     Hyp2Mat::Polygon other_copper;
-    Hyp2Mat::Polygon other_antipads;
     for (int j = 0; j < hyp_file.net.size(); ++j)
       if (j != i) {
         other_copper.Union(net_pour[j]);
         other_copper.Union(net_plane[j]);
         other_copper.Union(net_copper[j]);
         other_copper.Union(net_pads[j]);
+        }
+
+    /* calculate other nets' antipads. plane polygons have holes where antipads are. */
+
+    Hyp2Mat::Polygon other_antipads;
+    for (int j = 0; j < hyp_file.net.size(); ++j)
+      if (j != i) {
         other_antipads.Union(net_antipads[j]);
         }
 
     /* calculate plane polygons of this net */
     Hyp2Mat::FloatPolygons dummy;
     net_plane[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_PLANE, plane_separation, other_copper, dummy); 
+
     /* Subtract other nets' antipads */
     net_plane[i].Difference(other_antipads);
     }
    
-  /* calculate copper on this layer */ 
+  /* sum all copper on this layer */ 
   Hyp2Mat::Polygon layer_copper;
 
-  /* sum all copper on signal layers */
-  if (layer.layer_type == Hyp2Mat::LAYER_SIGNAL)
-    for (int i = 0; i < hyp_file.net.size(); ++i) {
+  for (int i = 0; i < hyp_file.net.size(); ++i) {
 
-      /* skip unwanted nets */
-      if (!net_wanted[i]) continue;
-      Hyp2Mat::Polygon this_net_copper;
-      this_net_copper.Union(net_pour[i]);
-      this_net_copper.Union(net_plane[i]);
-      this_net_copper.Union(net_copper[i]);
-      this_net_copper.Union(net_pads[i]);
+    /* skip unwanted nets */
+    if (!net_wanted[i]) continue;
 
-      layer_copper.Union(this_net_copper);
-      }
+    Hyp2Mat::Polygon this_net_copper;
+    this_net_copper.Union(net_pour[i]);
+    this_net_copper.Union(net_plane[i]);
+    this_net_copper.Union(net_copper[i]);
+    this_net_copper.Union(net_pads[i]);
 
-  /* subtract all copper on plane layers */
-  if (layer.layer_type == Hyp2Mat::LAYER_PLANE) {
-    layer_copper = board; /* default on plane layers is 100% copper */
-    Hyp2Mat::Polygon clearance;
-
-    for (int i = 0; i < hyp_file.net.size(); ++i) {
-
-      /* skip unwanted nets */
-      if (!net_wanted[i]) continue;
-      if (layer.layer_name == hyp_file.net[i].net_name) continue;
-
-      clearance.Union(net_pour[i]);
-      clearance.Union(net_plane[i]);
-      clearance.Union(net_copper[i]);
-      clearance.Union(net_pads[i]);
-      clearance.Union(net_antipads[i]);
-      }
-
-    PlaneSeparation(layer_copper, clearance, plane_separation);
-
-    for (int i = 0; i < hyp_file.net.size(); ++i) {
-
-      /* skip unwanted nets */
-      if (!net_wanted[i]) continue;
-      if (layer.layer_name != hyp_file.net[i].net_name) continue;
-
-      layer_copper.Difference(net_pour[i]);
-      layer_copper.Difference(net_plane[i]);
-      layer_copper.Difference(net_copper[i]);
-      layer_copper.Union(net_pads[i]);
-      }
-
-    /* add pads */
-    for (int i = 0; i < hyp_file.net.size(); ++i) {
-
-      /* skip unwanted nets */
-      if (!net_wanted[i]) continue;
-
-      layer_copper.Union(net_pads[i]);
-      }
+    layer_copper.Union(this_net_copper);
     }
-
 
   /*
    * Crop to board size 

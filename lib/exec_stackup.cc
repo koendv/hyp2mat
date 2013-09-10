@@ -103,9 +103,6 @@ bool HypFile::Hyp::exec_plane(parse_param& h)
     cerr << "plane:";
   trace_layer(h);
 
-  /* PLANE layers are less accurate than SIGNAL layers */
-  warn_plane_layers = true;
-
   add_metal_layer(h);
 
   stackup.back().layer_type = LAYER_PLANE;
