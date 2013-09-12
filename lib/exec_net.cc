@@ -40,31 +40,6 @@ bool HypFile::Hyp::exec_net(parse_param& h)
   n.plane_separation = -1.0;
   net.push_back(n);
 
-  /* 
-   * If the net name is the same name as a plane layer, 
-   * create the default copper of the plane layer.
-   */
-
-  for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l)
-    if ((l->layer_type == LAYER_PLANE) && (l->layer_name == n.net_name)) {
-
-      /* create default copper on plane layer */
-      Polygon default_copper;
-      default_copper.vertex = board.edge.front().vertex; /* board outline */
-      default_copper.polygon_type = POLYGON_TYPE_PLANE;
-      default_copper.net_name = n.net_name;
-      default_copper.id = -1;
-      default_copper.positive = false; /* will be inverted by add_polygon as we're the default net of a plane layer */
-      default_copper.width = 0.0;
-      default_copper.plane_separation = -1.0;
-      default_copper.left_plane_separation = -1.0;
-      default_copper.layer_name = n.net_name;
-
-      add_polygon(default_copper);
-
-      break;
-      }
-
   return false;
 }
 
@@ -427,18 +402,17 @@ bool HypFile::Hyp::exec_net_attribute(parse_param& h)
 void HypFile::Hyp::add_polygon(Polygon poly)
 {
   if (poly.vertex.empty()) return;
+  add_polygon_to_net(net.back(), poly);
+}
 
-  /* set net name of polygon to current net */
-  poly.net_name = net.back().net_name;
+/* 
+ * Add polygon poly to net pnet 
+ */
 
-  /* check whether this is the default net of a plane layer */
-  bool default_net_plane_layer = false;
-  if (poly.net_name == poly.layer_name) 
-    for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l)
-      if ((l->layer_type == LAYER_PLANE) && (l->layer_name == poly.net_name)) {
-        default_net_plane_layer = true;
-        break;
-        }
+void HypFile::Hyp::add_polygon_to_net(Net& pnet, Polygon poly) {
+
+  /* set net name of polygon to net */
+  poly.net_name = pnet.net_name;
 
   /* The polygon id is a positive number if the polygon has been assigned a polygon id. 
    * If the polygon has not been assigned a polygon id, the id is -1. 
@@ -446,34 +420,27 @@ void HypFile::Hyp::add_polygon(Polygon poly)
    * (the polygon does not have an id a POLYVOID could refer to).
    */
 
-  if (default_net_plane_layer && (poly.id < 0)) {
-    /*
-     * Subtract freestanding copper segments from the default copper created on plane layers.
-     */
-    poly.id = -999; /* make default copper easier to recognize in dumps */
-    poly.positive = !poly.positive; /* we draw things in negative on plane layers. */
-    }
-
-  else if (poly.id < 0) {
+  if (poly.id < 0) {
     /*
      * If a polygon has id -1, assign the polygon an arbitrary negative id, different from -1.  
      * Make sure all polygons of the same net do not clash/have different ids.
      */
     int new_id = 0;
-    if (!net.empty() && !net.back().metal.empty())
-      new_id = net.back().metal.begin()->first - 1; /* new id is one less than the smallest existing id */
+    if (!pnet.metal.empty())
+      new_id = pnet.metal.begin()->first - 1; /* new id is one less than the smallest existing id */
     if (new_id >= -1) new_id = -2; /* does not clash with an assigned id (positive) or the default (-1) */
     poly.id = new_id;
     }
 
   /* check if polygons with this id already exist */
-  PolygonMap::iterator i = net.back().metal.find(poly.id);
-  if (i == net.back().metal.end()) {
+  PolygonMap::iterator i = pnet.metal.find(poly.id);
+  if (i == pnet.metal.end()) {
     PolygonList empty_list;
-    net.back().metal[poly.id] = empty_list;
+    pnet.metal[poly.id] = empty_list;
     }
 
-  net.back().metal[poly.id].push_back(poly);
+  /* add polygon to net */
+  pnet.metal[poly.id].push_back(poly);
 
   return;
 }

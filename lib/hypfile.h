@@ -313,10 +313,14 @@ namespace HypFile {
       void add_perimeter_polygon(Polygon poly); 
       /* Add a polygon to the current net */
       void add_polygon(Polygon poly); 
+      /* Add a polygon to a current net */
+      void add_polygon_to_net(Net& pnet, Polygon poly); 
       /* Add a pad at coordinates x, y  */
       void add_pad(double x, double y, Pad pad); 
       /* Add a via at coordinates x, y  */
       void add_via(double x, double y, std::string layer0_name, std::string layer1_name, double radius); 
+      /* Flood plane layers with copper */
+      void flood_plane_layers();
   
     };
 

@@ -198,9 +198,12 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file
     if (!net_wanted[i]) continue;
 
     Hyp2Mat::Polygon this_net_copper;
+    if (layer.layer_type != Hyp2Mat::LAYER_PLANE) {
+      /* on plane layers, these are the small copper segments used to split planes */
+      this_net_copper.Union(net_copper[i]);
+      }
     this_net_copper.Union(net_pour[i]);
     this_net_copper.Union(net_plane[i]);
-    this_net_copper.Union(net_copper[i]);
     this_net_copper.Union(net_pads[i]);
 
     layer_copper.Union(this_net_copper);

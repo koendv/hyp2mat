@@ -155,12 +155,24 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
   for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l) {
     /* Loop through pad list */
     bool layer_has_pad = false;
+    bool layer_has_antipad = false;
     for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p) {
       if (l->layer_name == p->layer_name) {
         new_pads.push_back(*p);
-        layer_has_pad = true;
+        layer_has_pad = layer_has_pad || (p->pad_type == PAD_TYPE_METAL);
+        layer_has_antipad = layer_has_antipad || (p->pad_type == PAD_TYPE_ANTIPAD);
         }
       }
+      
+    /* If a plane layer has no antipad, add ADEF pad if specified */
+    if (!layer_has_antipad && (l->layer_type == LAYER_PLANE)) 
+      for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
+        if (p->layer_name == "ADEF") {
+          Pad new_pad = *p;
+          new_pad.layer_name = l->layer_name; /* change ADEF into current layer name */
+          new_pads.push_back(new_pad);
+          }
+
     /* If a signal or plane layer has no pad, add MDEF pad if specified */
     if (!layer_has_pad && ((l->layer_type == LAYER_SIGNAL) || (l->layer_type == LAYER_PLANE)) )
       for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
@@ -168,16 +180,38 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
           Pad new_pad = *p;
           new_pad.layer_name = l->layer_name; /* change MDEF into current layer name */
           new_pads.push_back(new_pad);
+          layer_has_pad = true;
           }
-      
-    /* If a plane layer has no pad, add ADEF pad if specified */
-    if (!layer_has_pad && (l->layer_type == LAYER_PLANE)) 
-      for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
-        if (p->layer_name == "ADEF") {
-          Pad new_pad = *p;
-          new_pad.layer_name = l->layer_name; /* change ADEF into current layer name */
-          new_pads.push_back(new_pad);
+
+    /* If a signal or plane layer has no pad, and no MDEF pad, copy an existing pad */
+    bool is_through_hole_pad = (padstack.back().drill_size > 0);
+    if (!layer_has_pad && is_through_hole_pad && ((l->layer_type == LAYER_SIGNAL) || (l->layer_type == LAYER_PLANE)) ) {
+      Pad new_pad;
+      bool pad_found = false;
+      for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p) {
+        if (p->pad_type != PAD_TYPE_METAL) continue;
+        if (!pad_found) {
+          /* if all padstack pads are equal, create a pad on this layer which is like the others */
+          new_pad = *p;
+          new_pad.layer_name = l->layer_name;
+          pad_found = true;
           }
+        else {
+          /* if padstack pads are different, create a circular pad with a diameter equal to the smallest pad dimension */
+          if ((p->pad_shape != new_pad.pad_shape) || (p->pad_sx != new_pad.pad_sx) 
+            || (p->pad_sy != new_pad.pad_sy) || (p->pad_angle != new_pad.pad_angle)) 
+            new_pad.pad_shape = PAD_SHAPE_OVAL;
+            if (new_pad.pad_sx < p->pad_sx) new_pad.pad_sx = p->pad_sx;
+            if (new_pad.pad_sx < p->pad_sy) new_pad.pad_sx = p->pad_sy;
+            if (new_pad.pad_sx < new_pad.pad_sy) new_pad.pad_sx = new_pad.pad_sy;
+            new_pad.pad_sy = new_pad.pad_sx;
+            new_pad.pad_angle = 0;
+          }
+        }
+      /* add newly created pad to padstack */
+      if (pad_found) new_pads.push_back(new_pad);
+      }
+
     }
 
   /* put new padstack in place. */

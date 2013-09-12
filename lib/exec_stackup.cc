@@ -379,4 +379,50 @@ bool HypFile::Hyp::calc_layer_epsilon()
   return false;
 }
 
+/*
+ * Fill plane layers with copper 
+ */
+
+void HypFile::Hyp::flood_plane_layers()
+{
+
+  for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l) {
+   
+    /* Plane layers only */
+    if (l->layer_type != LAYER_PLANE) continue;
+
+    /* create default copper on plane layer */
+    Polygon default_copper;
+    default_copper.vertex = board.edge.front().vertex; /* polygon is board outline */
+    default_copper.polygon_type = POLYGON_TYPE_PLANE;
+    default_copper.net_name = l->layer_name;
+    default_copper.id = -1;
+    default_copper.positive = true;
+    default_copper.width = 0.0;
+    default_copper.plane_separation = -1.0;
+    default_copper.left_plane_separation = -1.0;
+    default_copper.layer_name = l->layer_name;
+
+    /* Look up net with same name as layer */
+    NetList::iterator n;
+    for (n = net.begin(); n != net.end(); ++n)
+      if (n->net_name == l->layer_name) {
+        add_polygon_to_net(*n, default_copper);
+        break;
+        }
+
+    /* Net with same name as layer not found. Create net */
+    if (n == net.end()) {
+      Net plane_net;
+      plane_net.net_name = l->layer_name;
+      plane_net.plane_separation = -1.0;
+      net.push_back(plane_net);
+      add_polygon_to_net(net.back(), default_copper);
+      }
+
+    }
+
+  return;
+}
+
 /* not truncated */

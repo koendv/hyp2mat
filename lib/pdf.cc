@@ -129,15 +129,10 @@ void PDF::draw(HPDF_Page page, FloatPolygon& poly)
   double old_px, old_py;
 
   /* pdf requires outer edge of polygon to be clockwise; holes to be counterclockwise */
-#if XXXX
-  bool edge_is_clockwise = edge.is_clockwise();
-  if ((edge.is_hole && edge_is_clockwise) || (!edge.is_hole && !edge_is_clockwise))
-    std::reverse(edge.vertex.begin(), edge.vertex.end()); 
-#endif
-
     
   bool firstpoint = true;
   for (FloatPolygon::iterator i = poly.begin(); i != poly.end(); ++i) {
+
     double px = i->x * m_to_points - x_min + margin;
     double py = i->y * m_to_points - y_min + margin;
     if (firstpoint) {
