@@ -130,12 +130,16 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
   end
 
   % conversion
+  m_filename = mfilename('fullpath');
+  dir = fileparts( m_filename );
   if isunix
-    cmd = [ 'export LD_LIBRARY_PATH=; hyp2mat --verbose --output-format csxcad --output pcb.m ' cmdargs ' ''' filename '''' ];
+    hyp2mat_binary = searchBinary('hyp2mat', ...
+        {[dir filesep '..' filesep 'src' filesep], ...  % try development path
+         [dir filesep '..' filesep '..' filesep '..' filesep 'bin' filesep]}); % try default install path
+    cmd = [ 'export LD_LIBRARY_PATH=; ' hyp2mat_binary ' --verbose --output-format csxcad --output pcb.m ' cmdargs ' ''' filename '''' ];
   elseif ispc
-    m_filename = mfilename('fullpath');
-    dir = fileparts( m_filename );
-    cmd = [ '"' dir '\..\hyp2mat.exe" --verbose --output-format csxcad --output pcb.m ' cmdargs ' "' filename '"' ];
+    hyp2mat_binary = searchBinary('hyp2mat.exe', {[dir filesep '..' filesep]});
+    cmd = [ '"' hyp2mat_binary '" --verbose --output-format csxcad --output pcb.m ' cmdargs ' "' filename '"' ];
   else
     error('hyp2mat:ImportHyperLynx','unknown/unsupported operating system...');
   end
