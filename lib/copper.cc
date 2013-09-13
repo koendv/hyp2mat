@@ -48,6 +48,8 @@ using namespace Hyp2Mat;
  * The name of the PLANE layer is the name of the net of the default copper. 
  * E.g. a layer called VCC has a default of being 100% copper, connected to VCC.
  * "PLANE" layers may have a "plane separation" clearance between the default copper and other nets.
+ *
+ * This code is still a bit rough around the edges.
  */
 
 /*
