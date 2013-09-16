@@ -771,6 +771,8 @@ uninstall-am: uninstall-includeHEADERS uninstall-libLTLIBRARIES \
 
 BUILT_SOURCES: parse.c parse.h
 
+CLEANFILES: parse.c parse.h scan.c
+
 #not truncated
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

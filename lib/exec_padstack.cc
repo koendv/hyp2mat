@@ -217,6 +217,8 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
   /* put new padstack in place. */
   
   padstack.back().pads = new_pads;
+
+  return false;
  
 }
 

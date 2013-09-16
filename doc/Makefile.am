@@ -39,4 +39,6 @@ endif
 
 EXTRA_DIST=hyp2mat.h2m hyp2mat.pdf
 
+CLEANFILES=hyp2mat.1 hyp2mat.pdf
+
 #not truncated

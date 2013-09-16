@@ -58,4 +58,6 @@ EXTRA_DIST=clipper.txt parse.h
 
 BUILT_SOURCES: parse.c parse.h
 
+CLEANFILES: parse.c parse.h scan.c
+
 #not truncated

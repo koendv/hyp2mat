@@ -18,4 +18,6 @@ cmdline.c cmdline.h: cmdline.ggo
 
 BUILT_SOURCES=cmdline.c cmdline.h
 
+CLEANFILES=cmdline.c cmdline.h
+
 #not truncated

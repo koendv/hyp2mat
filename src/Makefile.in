@@ -240,6 +240,7 @@ hyp2mat_SOURCES = hyp2mat.cc cmdline.ggo cmdline.c cmdline.h
 hyp2mat_LDADD = $(top_builddir)/lib/libhyp2mat.la
 INCLUDES = -I$(top_srcdir)/lib
 BUILT_SOURCES = cmdline.c cmdline.h
+CLEANFILES = cmdline.c cmdline.h
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -510,6 +511,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
