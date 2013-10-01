@@ -46,18 +46,18 @@ libhyp2mat_la_SOURCES=\
   palette.h \
   parse_param.h \
   parser.h \
-  parse.y \
+  parse.yy \
   polygon.h \
   polygon.cc \
   pcb.cc \
   pdf.cc \
   pdf.h \
-  scan.l
+  scan.ll
 
 EXTRA_DIST=clipper.txt parse.h
 
-BUILT_SOURCES: parse.c parse.h
+BUILT_SOURCES=parse.cc parse.h scan.cc
 
-CLEANFILES: parse.c parse.h scan.c
+CLEANFILES=parse.cc parse.h scan.cc
 
 #not truncated

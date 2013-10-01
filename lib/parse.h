@@ -33,7 +33,7 @@
 /* "%code requires" blocks.  */
 
 /* Line 2068 of yacc.c  */
-#line 21 "parse.y"
+#line 21 "parse.yy"
 
 #include "hypfile.h"
 
@@ -262,7 +262,7 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 30 "parse.y"
+#line 30 "parse.yy"
 
     int boolval;
     int intval;

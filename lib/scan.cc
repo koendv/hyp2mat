@@ -1,5 +1,5 @@
 
-#line 3 "scan.c"
+#line 3 "scan.cc"
 
 #define  YY_INT_ALIGNED short int
 
@@ -1536,7 +1536,7 @@ goto find_rule; \
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "scan.l"
+#line 1 "scan.ll"
 /*
  * hyp2mat - convert hyperlynx files to matlab scripts
  * Copyright 2012 Koen De Vleeschauwer.
@@ -1556,7 +1556,7 @@ char *yytext;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#line 25 "scan.l"
+#line 25 "scan.ll"
 #include <stdlib.h>
 #include "parse.h"
 #include "parser.h"
@@ -1607,7 +1607,7 @@ int section = -1;
 */
 /* an unquoted string */
 /* a string enclosed in double quotes " */
-#line 1611 "scan.c"
+#line 1611 "scan.cc"
 
 #define INITIAL 0
 #define STATE_STRING 1
@@ -1862,11 +1862,11 @@ YY_DECL
 	register int yy_act;
     
 /* %% [7.0] user's declarations go here */
-#line 116 "scan.l"
+#line 116 "scan.ll"
 
 
  /* When in STATE_COMMENT skip all comment until next right brace */
-#line 1870 "scan.c"
+#line 1870 "scan.cc"
 
 	if ( !(yy_init) )
 		{
@@ -2004,7 +2004,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 120 "scan.l"
+#line 120 "scan.ll"
 { BEGIN INITIAL; /* skip all comment until next right brace */ }
 	YY_BREAK
 
@@ -2013,7 +2013,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 125 "scan.l"
+#line 125 "scan.ll"
 { BEGIN INITIAL; /* skip all comment until next end-of-line */ }
 	YY_BREAK
 
@@ -2022,18 +2022,18 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 132 "scan.l"
+#line 132 "scan.ll"
 { /* skip comments */ }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 134 "scan.l"
+#line 134 "scan.ll"
 { /* skip whitespace */ }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 136 "scan.l"
+#line 136 "scan.ll"
 { /* skip newlines */ }
 	YY_BREAK
 
@@ -2043,238 +2043,238 @@ YY_RULE_SETUP
 /* Sections */
 case 6:
 YY_RULE_SETUP
-#line 146 "scan.l"
+#line 146 "scan.ll"
 {section = BOARD_FILE; return BOARD_FILE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 147 "scan.l"
+#line 147 "scan.ll"
 {section = VERSION; return VERSION;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 148 "scan.l"
+#line 148 "scan.ll"
 {section = DATA_MODE; return DATA_MODE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 149 "scan.l"
+#line 149 "scan.ll"
 {section = UNITS; return UNITS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 150 "scan.l"
+#line 150 "scan.ll"
 {section = PLANE_SEP; return PLANE_SEP;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 151 "scan.l"
+#line 151 "scan.ll"
 {section = BOARD; BEGIN STATE_COMMENT_EOL; return BOARD;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 152 "scan.l"
+#line 152 "scan.ll"
 {section = STACKUP; BEGIN STATE_COMMENT_EOL; return STACKUP;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 153 "scan.l"
+#line 153 "scan.ll"
 {section = DEVICES; BEGIN STATE_COMMENT_EOL; return DEVICES;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 154 "scan.l"
+#line 154 "scan.ll"
 {section = SUPPLIES; BEGIN STATE_COMMENT_EOL; return SUPPLIES;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 155 "scan.l"
+#line 155 "scan.ll"
 {section = PADSTACK; BEGIN STATE_STRING; return PADSTACK;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 156 "scan.l"
+#line 156 "scan.ll"
 {section = NET; BEGIN STATE_STRING; return NET;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 157 "scan.l"
+#line 157 "scan.ll"
 {section = NET_CLASS; return NET_CLASS;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 158 "scan.l"
+#line 158 "scan.ll"
 {section = END; return END;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 159 "scan.l"
+#line 159 "scan.ll"
 {section = KEY; return KEY;}
 	YY_BREAK
 /* Keywords */
 case 20:
 YY_RULE_SETUP
-#line 163 "scan.l"
+#line 163 "scan.ll"
 {return A;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 164 "scan.l"
+#line 164 "scan.ll"
 {return ARC;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 165 "scan.l"
+#line 165 "scan.ll"
 {return COPPER;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 166 "scan.l"
+#line 166 "scan.ll"
 {return CURVE;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 167 "scan.l"
+#line 167 "scan.ll"
 {if (section == DATA_MODE) BEGIN STATE_COMMENT; return DETAILED;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 168 "scan.l"
+#line 168 "scan.ll"
 {return DIELECTRIC;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 169 "scan.l"
+#line 169 "scan.ll"
 {return ENGLISH;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 170 "scan.l"
+#line 170 "scan.ll"
 {if (section == UNITS) BEGIN STATE_COMMENT; return LENGTH;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 171 "scan.l"
+#line 171 "scan.ll"
 {return LINE;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 172 "scan.l"
+#line 172 "scan.ll"
 {return METRIC;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 173 "scan.l"
+#line 173 "scan.ll"
 {return M;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 174 "scan.l"
+#line 174 "scan.ll"
 {return N;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 175 "scan.l"
+#line 175 "scan.ll"
 {return OPTIONS;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 176 "scan.l"
+#line 176 "scan.ll"
 {return PAD;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 177 "scan.l"
+#line 177 "scan.ll"
 {return PERIMETER_ARC;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 178 "scan.l"
+#line 178 "scan.ll"
 {return PERIMETER_SEGMENT;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 179 "scan.l"
+#line 179 "scan.ll"
 {return PIN;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 180 "scan.l"
+#line 180 "scan.ll"
 {return PLANE;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 181 "scan.l"
+#line 181 "scan.ll"
 {return POLYGON;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 182 "scan.l"
+#line 182 "scan.ll"
 {return POLYLINE;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 183 "scan.l"
+#line 183 "scan.ll"
 {return POLYVOID;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 184 "scan.l"
+#line 184 "scan.ll"
 {return POUR;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 185 "scan.l"
+#line 185 "scan.ll"
 {return S;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 186 "scan.l"
+#line 186 "scan.ll"
 {return T;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 187 "scan.l"
+#line 187 "scan.ll"
 {return SEG;}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 188 "scan.l"
+#line 188 "scan.ll"
 {return SIGNAL;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 189 "scan.l"
+#line 189 "scan.ll"
 {if (section == DATA_MODE) BEGIN STATE_COMMENT; return SIMPLIFIED; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 190 "scan.l"
+#line 190 "scan.ll"
 {return SIM_BOTH;}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 191 "scan.l"
+#line 191 "scan.ll"
 {return SIM_IN;}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 192 "scan.l"
+#line 192 "scan.ll"
 {return SIM_OUT;}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 193 "scan.l"
+#line 193 "scan.ll"
 {return USEG;}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 194 "scan.l"
+#line 194 "scan.ll"
 {return VIA;}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 195 "scan.l"
+#line 195 "scan.ll"
 {if (section == UNITS) BEGIN STATE_COMMENT; return WEIGHT;}
 	YY_BREAK
 /* Assignments */
@@ -2283,7 +2283,7 @@ case 53:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 199 "scan.l"
+#line 199 "scan.ll"
 {return A;}
 	YY_BREAK
 case 54:
@@ -2291,7 +2291,7 @@ case 54:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 200 "scan.l"
+#line 200 "scan.ll"
 {return A1;}
 	YY_BREAK
 case 55:
@@ -2299,7 +2299,7 @@ case 55:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 201 "scan.l"
+#line 201 "scan.ll"
 {return A2;}
 	YY_BREAK
 case 56:
@@ -2307,7 +2307,7 @@ case 56:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 202 "scan.l"
+#line 202 "scan.ll"
 {return BR;}
 	YY_BREAK
 case 57:
@@ -2315,7 +2315,7 @@ case 57:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 203 "scan.l"
+#line 203 "scan.ll"
 {return C;}
 	YY_BREAK
 case 58:
@@ -2323,7 +2323,7 @@ case 58:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 204 "scan.l"
+#line 204 "scan.ll"
 {return C_QM;}
 	YY_BREAK
 case 59:
@@ -2331,7 +2331,7 @@ case 59:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 205 "scan.l"
+#line 205 "scan.ll"
 {return CO_QM;}
 	YY_BREAK
 case 60:
@@ -2339,7 +2339,7 @@ case 60:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 206 "scan.l"
+#line 206 "scan.ll"
 {return D;}
 	YY_BREAK
 case 61:
@@ -2347,7 +2347,7 @@ case 61:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 207 "scan.l"
+#line 207 "scan.ll"
 {return ER;}
 	YY_BREAK
 case 62:
@@ -2355,7 +2355,7 @@ case 62:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 208 "scan.l"
+#line 208 "scan.ll"
 {return F;}
 	YY_BREAK
 case 63:
@@ -2363,7 +2363,7 @@ case 63:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 209 "scan.l"
+#line 209 "scan.ll"
 {BEGIN STATE_POSINT; return ID;}
 	YY_BREAK
 case 64:
@@ -2371,7 +2371,7 @@ case 64:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 210 "scan.l"
+#line 210 "scan.ll"
 {BEGIN STATE_STRING; return L;}
 	YY_BREAK
 case 65:
@@ -2379,7 +2379,7 @@ case 65:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 211 "scan.l"
+#line 211 "scan.ll"
 {BEGIN STATE_STRING; return L1;}
 	YY_BREAK
 case 66:
@@ -2387,7 +2387,7 @@ case 66:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 212 "scan.l"
+#line 212 "scan.ll"
 {BEGIN STATE_STRING; return L2;}
 	YY_BREAK
 case 67:
@@ -2395,7 +2395,7 @@ case 67:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 213 "scan.l"
+#line 213 "scan.ll"
 {return LPS;}
 	YY_BREAK
 case 68:
@@ -2403,7 +2403,7 @@ case 68:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 214 "scan.l"
+#line 214 "scan.ll"
 {return LT;}
 	YY_BREAK
 case 69:
@@ -2411,7 +2411,7 @@ case 69:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 215 "scan.l"
+#line 215 "scan.ll"
 {BEGIN STATE_STRING; return M;}
 	YY_BREAK
 case 70:
@@ -2419,7 +2419,7 @@ case 70:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 216 "scan.l"
+#line 216 "scan.ll"
 {BEGIN STATE_STRING; return N;}
 	YY_BREAK
 case 71:
@@ -2427,7 +2427,7 @@ case 71:
 (yy_c_buf_p) = yy_cp = yy_bp + 4;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 217 "scan.l"
+#line 217 "scan.ll"
 {BEGIN STATE_STRING; return NAME;}
 	YY_BREAK
 /* P is used as "plating thickness" in "stackup/signal" and as "padstack" in "net/via" */
@@ -2436,7 +2436,7 @@ case 72:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 219 "scan.l"
+#line 219 "scan.ll"
 {if (section == NET) BEGIN STATE_STRING; return P;}
 	YY_BREAK
 case 73:
@@ -2444,7 +2444,7 @@ case 73:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 220 "scan.l"
+#line 220 "scan.ll"
 {BEGIN STATE_STRING; return PKG;}
 	YY_BREAK
 case 74:
@@ -2452,7 +2452,7 @@ case 74:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 221 "scan.l"
+#line 221 "scan.ll"
 {return PR_QM;}
 	YY_BREAK
 case 75:
@@ -2460,7 +2460,7 @@ case 75:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 222 "scan.l"
+#line 222 "scan.ll"
 {return PS;}
 	YY_BREAK
 case 76:
@@ -2468,7 +2468,7 @@ case 76:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 223 "scan.l"
+#line 223 "scan.ll"
 {return R;}
 	YY_BREAK
 case 77:
@@ -2476,7 +2476,7 @@ case 77:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 224 "scan.l"
+#line 224 "scan.ll"
 {BEGIN STATE_STRING; return REF;}
 	YY_BREAK
 case 78:
@@ -2484,7 +2484,7 @@ case 78:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 225 "scan.l"
+#line 225 "scan.ll"
 {BEGIN STATE_STRING; return S;}
 	YY_BREAK
 case 79:
@@ -2492,7 +2492,7 @@ case 79:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 226 "scan.l"
+#line 226 "scan.ll"
 {return SX;}
 	YY_BREAK
 case 80:
@@ -2500,7 +2500,7 @@ case 80:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 227 "scan.l"
+#line 227 "scan.ll"
 {return SY;}
 	YY_BREAK
 case 81:
@@ -2508,7 +2508,7 @@ case 81:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 228 "scan.l"
+#line 228 "scan.ll"
 {BEGIN STATE_STRING; return S1;}
 	YY_BREAK
 case 82:
@@ -2516,7 +2516,7 @@ case 82:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 229 "scan.l"
+#line 229 "scan.ll"
 {return S1X;}
 	YY_BREAK
 case 83:
@@ -2524,7 +2524,7 @@ case 83:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 230 "scan.l"
+#line 230 "scan.ll"
 {return S1Y;}
 	YY_BREAK
 case 84:
@@ -2532,7 +2532,7 @@ case 84:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 231 "scan.l"
+#line 231 "scan.ll"
 {BEGIN STATE_STRING; return S2;}
 	YY_BREAK
 case 85:
@@ -2540,7 +2540,7 @@ case 85:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 232 "scan.l"
+#line 232 "scan.ll"
 {return S2X;}
 	YY_BREAK
 case 86:
@@ -2548,7 +2548,7 @@ case 86:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 233 "scan.l"
+#line 233 "scan.ll"
 {return S2Y;}
 	YY_BREAK
 case 87:
@@ -2556,7 +2556,7 @@ case 87:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 234 "scan.l"
+#line 234 "scan.ll"
 {return T;}
 	YY_BREAK
 case 88:
@@ -2564,7 +2564,7 @@ case 88:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 235 "scan.l"
+#line 235 "scan.ll"
 {return TC;}
 	YY_BREAK
 case 89:
@@ -2572,7 +2572,7 @@ case 89:
 (yy_c_buf_p) = yy_cp = yy_bp + 17;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 236 "scan.l"
+#line 236 "scan.ll"
 {return USE_DIE_FOR_METAL;}
 	YY_BREAK
 case 90:
@@ -2580,7 +2580,7 @@ case 90:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 237 "scan.l"
+#line 237 "scan.ll"
 {BEGIN STATE_STRING; return V;}
 	YY_BREAK
 case 91:
@@ -2588,7 +2588,7 @@ case 91:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 238 "scan.l"
+#line 238 "scan.ll"
 {return V_QM;}
 	YY_BREAK
 case 92:
@@ -2596,7 +2596,7 @@ case 92:
 (yy_c_buf_p) = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 239 "scan.l"
+#line 239 "scan.ll"
 {return VAL;}
 	YY_BREAK
 case 93:
@@ -2604,7 +2604,7 @@ case 93:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 240 "scan.l"
+#line 240 "scan.ll"
 {return W;}
 	YY_BREAK
 case 94:
@@ -2612,7 +2612,7 @@ case 94:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 241 "scan.l"
+#line 241 "scan.ll"
 {return X;}
 	YY_BREAK
 case 95:
@@ -2620,7 +2620,7 @@ case 95:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 242 "scan.l"
+#line 242 "scan.ll"
 {return X1;}
 	YY_BREAK
 case 96:
@@ -2628,7 +2628,7 @@ case 96:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 243 "scan.l"
+#line 243 "scan.ll"
 {return X2;}
 	YY_BREAK
 case 97:
@@ -2636,7 +2636,7 @@ case 97:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 244 "scan.l"
+#line 244 "scan.ll"
 {return XC;}
 	YY_BREAK
 case 98:
@@ -2644,7 +2644,7 @@ case 98:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 245 "scan.l"
+#line 245 "scan.ll"
 {return Y;}
 	YY_BREAK
 case 99:
@@ -2652,7 +2652,7 @@ case 99:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 246 "scan.l"
+#line 246 "scan.ll"
 {return Y1;}
 	YY_BREAK
 case 100:
@@ -2660,7 +2660,7 @@ case 100:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 247 "scan.l"
+#line 247 "scan.ll"
 {return Y2;}
 	YY_BREAK
 case 101:
@@ -2668,7 +2668,7 @@ case 101:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 248 "scan.l"
+#line 248 "scan.ll"
 {return YC;}
 	YY_BREAK
 case 102:
@@ -2676,7 +2676,7 @@ case 102:
 (yy_c_buf_p) = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 249 "scan.l"
+#line 249 "scan.ll"
 {return Z;}
 	YY_BREAK
 case 103:
@@ -2684,7 +2684,7 @@ case 103:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 250 "scan.l"
+#line 250 "scan.ll"
 {return ZL;}
 	YY_BREAK
 case 104:
@@ -2692,7 +2692,7 @@ case 104:
 (yy_c_buf_p) = yy_cp = yy_bp + 4;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 251 "scan.l"
+#line 251 "scan.ll"
 {return ZLEN;}
 	YY_BREAK
 case 105:
@@ -2700,113 +2700,113 @@ case 105:
 (yy_c_buf_p) = yy_cp = yy_bp + 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 252 "scan.l"
+#line 252 "scan.ll"
 {return ZW;}
 	YY_BREAK
 /* Booleans */
 case 106:
 YY_RULE_SETUP
-#line 256 "scan.l"
+#line 256 "scan.ll"
 {yylval.boolval = 1; return BOOL; }
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 257 "scan.l"
+#line 257 "scan.ll"
 {yylval.boolval = 0; return BOOL; }
 	YY_BREAK
 /* Floats */
 /* ordinary floating point numbers */
 case 108:
 YY_RULE_SETUP
-#line 262 "scan.l"
+#line 262 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL); return FLOAT;}
 	YY_BREAK
 /* floating point numbers with suffix, e,g. pF, nH */
 case 109:
 YY_RULE_SETUP
-#line 265 "scan.l"
+#line 265 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e24; return FLOAT;}
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 266 "scan.l"
+#line 266 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e21; return FLOAT;}
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 267 "scan.l"
+#line 267 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e18; return FLOAT;}
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 268 "scan.l"
+#line 268 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e15; return FLOAT;}
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 269 "scan.l"
+#line 269 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e12; return FLOAT;}
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 270 "scan.l"
+#line 270 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e9; return FLOAT;}
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 271 "scan.l"
+#line 271 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e6; return FLOAT;}
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 272 "scan.l"
+#line 272 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e3; return FLOAT;}
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 273 "scan.l"
+#line 273 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e-3; return FLOAT;}
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 274 "scan.l"
+#line 274 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e-6; return FLOAT;}
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 275 "scan.l"
+#line 275 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e-9; return FLOAT;}
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 276 "scan.l"
+#line 276 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e-12; return FLOAT;}
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 277 "scan.l"
+#line 277 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e-15; return FLOAT;}
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 278 "scan.l"
+#line 278 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e-18; return FLOAT;}
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 279 "scan.l"
+#line 279 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e-21; return FLOAT;}
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 280 "scan.l"
+#line 280 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL) * 1e-24; return FLOAT;}
 	YY_BREAK
 /* floating point numbers in VERSION and PLANE_SEP have no suffix and are followed by optional comments */
 
 case 125:
 YY_RULE_SETUP
-#line 284 "scan.l"
+#line 284 "scan.ll"
 {yylval.floatval = strtod(yytext, NULL); BEGIN STATE_COMMENT; return FLOAT;}
 	YY_BREAK
 
@@ -2814,7 +2814,7 @@ YY_RULE_SETUP
 
 case 126:
 YY_RULE_SETUP
-#line 289 "scan.l"
+#line 289 "scan.ll"
 { BEGIN INITIAL; yylval.intval = atoi(yytext); return POSINT; }
 	YY_BREAK
 
@@ -2828,46 +2828,46 @@ YY_RULE_SETUP
 
 case 127:
 YY_RULE_SETUP
-#line 301 "scan.l"
+#line 301 "scan.ll"
 { yyless(0); BEGIN INITIAL; yylval.strval = strdup(""); return STRING; } /* emit empty string and reprocess */
 	YY_BREAK
 
 
 case 128:
 YY_RULE_SETUP
-#line 306 "scan.l"
+#line 306 "scan.ll"
 {return '{';}
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 308 "scan.l"
+#line 308 "scan.ll"
 {BEGIN STATE_COMMENT_EOL; return '}';}
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
-#line 310 "scan.l"
+#line 310 "scan.ll"
 {if (section == PADSTACK) BEGIN STATE_STRING; return '(';}
 	YY_BREAK
 /* allow for comment after the closing bracket ) */
 case 131:
 YY_RULE_SETUP
-#line 313 "scan.l"
+#line 313 "scan.ll"
 {BEGIN STATE_COMMENT_EOL; return ')';}
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
-#line 315 "scan.l"
+#line 315 "scan.ll"
 {return ',';}
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 317 "scan.l"
+#line 317 "scan.ll"
 {if ((section == VERSION) || (section == PLANE_SEP)) BEGIN STATE_FLOAT; return '=';}
 	YY_BREAK
 /* string */
 case 134:
 YY_RULE_SETUP
-#line 320 "scan.l"
+#line 320 "scan.ll"
 { 
                         /*
                          * Commas are not allowed in strings in the padstack section
@@ -2887,7 +2887,7 @@ YY_RULE_SETUP
 /* string in double quotes */
 case 135:
 YY_RULE_SETUP
-#line 337 "scan.l"
+#line 337 "scan.ll"
 {BEGIN INITIAL; yylval.strval = strunquote(yytext); return STRING;}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -2896,22 +2896,22 @@ case YY_STATE_EOF(STATE_POSINT):
 case YY_STATE_EOF(STATE_FLOAT):
 case YY_STATE_EOF(STATE_COMMENT):
 case YY_STATE_EOF(STATE_COMMENT_EOL):
-#line 339 "scan.l"
+#line 339 "scan.ll"
 {yyterminate();}
 	YY_BREAK
 /* have bison catch all unrecognized characters with parse errors */
 case 136:
 YY_RULE_SETUP
-#line 342 "scan.l"
+#line 342 "scan.ll"
 {return yytext[0];}
 	YY_BREAK
 
 case 137:
 YY_RULE_SETUP
-#line 346 "scan.l"
+#line 346 "scan.ll"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 2915 "scan.c"
+#line 2915 "scan.cc"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -4031,7 +4031,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 346 "scan.l"
+#line 346 "scan.ll"
 
 
 

@@ -67,7 +67,7 @@
 
 
 /* Line 268 of yacc.c  */
-#line 71 "parse.c"
+#line 71 "parse.cc"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -90,14 +90,14 @@
 /* "%code requires" blocks.  */
 
 /* Line 288 of yacc.c  */
-#line 21 "parse.y"
+#line 21 "parse.yy"
 
 #include "hypfile.h"
 
 
 
 /* Line 288 of yacc.c  */
-#line 101 "parse.c"
+#line 101 "parse.cc"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -319,7 +319,7 @@ typedef union YYSTYPE
 {
 
 /* Line 293 of yacc.c  */
-#line 30 "parse.y"
+#line 30 "parse.yy"
 
     int boolval;
     int intval;
@@ -329,7 +329,7 @@ typedef union YYSTYPE
 
 
 /* Line 293 of yacc.c  */
-#line 333 "parse.c"
+#line 333 "parse.cc"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -340,7 +340,7 @@ typedef union YYSTYPE
 /* Copy the second part of user declarations.  */
 
 /* Line 343 of yacc.c  */
-#line 37 "parse.y"
+#line 37 "parse.yy"
 
 #include <cstdlib>
 #include <cstdarg>
@@ -365,7 +365,7 @@ parse_param h;
 
 
 /* Line 343 of yacc.c  */
-#line 369 "parse.c"
+#line 369 "parse.cc"
 
 #ifdef short
 # undef short
@@ -2233,1057 +2233,1057 @@ yyreduce:
         case 19:
 
 /* Line 1806 of yacc.c  */
-#line 153 "parse.y"
+#line 153 "parse.yy"
     { if (hyp->exec_board_file(h)) YYERROR; }
     break;
 
   case 21:
 
 /* Line 1806 of yacc.c  */
-#line 158 "parse.y"
+#line 158 "parse.yy"
     { h.vers = yylval.floatval; }
     break;
 
   case 22:
 
 /* Line 1806 of yacc.c  */
-#line 158 "parse.y"
+#line 158 "parse.yy"
     { if (hyp->exec_version(h)) YYERROR; }
     break;
 
   case 23:
 
 /* Line 1806 of yacc.c  */
-#line 163 "parse.y"
+#line 163 "parse.yy"
     { if (hyp->exec_data_mode(h)) YYERROR; }
     break;
 
   case 24:
 
 /* Line 1806 of yacc.c  */
-#line 166 "parse.y"
+#line 166 "parse.yy"
     { h.detailed = false; }
     break;
 
   case 25:
 
 /* Line 1806 of yacc.c  */
-#line 167 "parse.y"
+#line 167 "parse.yy"
     { h.detailed = true; }
     break;
 
   case 26:
 
 /* Line 1806 of yacc.c  */
-#line 172 "parse.y"
+#line 172 "parse.yy"
     { if (hyp->exec_units(h)) YYERROR; }
     break;
 
   case 27:
 
 /* Line 1806 of yacc.c  */
-#line 175 "parse.y"
+#line 175 "parse.yy"
     { h.unit_system_english = true; }
     break;
 
   case 28:
 
 /* Line 1806 of yacc.c  */
-#line 176 "parse.y"
+#line 176 "parse.yy"
     { h.unit_system_english = false; }
     break;
 
   case 29:
 
 /* Line 1806 of yacc.c  */
-#line 179 "parse.y"
+#line 179 "parse.yy"
     { h.metal_thickness_weight = true; }
     break;
 
   case 30:
 
 /* Line 1806 of yacc.c  */
-#line 180 "parse.y"
+#line 180 "parse.yy"
     { h.metal_thickness_weight = false; }
     break;
 
   case 31:
 
 /* Line 1806 of yacc.c  */
-#line 184 "parse.y"
+#line 184 "parse.yy"
     { h.default_plane_separation = yylval.floatval; }
     break;
 
   case 32:
 
 /* Line 1806 of yacc.c  */
-#line 184 "parse.y"
+#line 184 "parse.yy"
     { if (hyp->exec_plane_sep(h)) YYERROR; }
     break;
 
   case 40:
 
 /* Line 1806 of yacc.c  */
-#line 202 "parse.y"
+#line 202 "parse.yy"
     { if (hyp->exec_perimeter_segment(h)) YYERROR; }
     break;
 
   case 41:
 
 /* Line 1806 of yacc.c  */
-#line 205 "parse.y"
+#line 205 "parse.yy"
     { if (hyp->exec_perimeter_arc(h)) YYERROR; }
     break;
 
   case 42:
 
 /* Line 1806 of yacc.c  */
-#line 208 "parse.y"
+#line 208 "parse.yy"
     { h.name = yylval.strval; }
     break;
 
   case 43:
 
 /* Line 1806 of yacc.c  */
-#line 208 "parse.y"
+#line 208 "parse.yy"
     { h.value = yylval.strval; }
     break;
 
   case 44:
 
 /* Line 1806 of yacc.c  */
-#line 208 "parse.y"
+#line 208 "parse.yy"
     { if (hyp->exec_board_attribute(h)) YYERROR; }
     break;
 
   case 53:
 
 /* Line 1806 of yacc.c  */
-#line 227 "parse.y"
+#line 227 "parse.yy"
     { if (hyp->exec_options(h)) YYERROR; }
     break;
 
   case 54:
 
 /* Line 1806 of yacc.c  */
-#line 230 "parse.y"
+#line 230 "parse.yy"
     { h.use_die_for_metal = yylval.boolval; }
     break;
 
   case 57:
 
 /* Line 1806 of yacc.c  */
-#line 235 "parse.y"
+#line 235 "parse.yy"
     { new_record(); }
     break;
 
   case 58:
 
 /* Line 1806 of yacc.c  */
-#line 235 "parse.y"
+#line 235 "parse.yy"
     { if (hyp->exec_signal(h)) YYERROR; }
     break;
 
   case 63:
 
 /* Line 1806 of yacc.c  */
-#line 244 "parse.y"
+#line 244 "parse.yy"
     { h.bulk_resistivity = yylval.floatval; h.bulk_resistivity_set = true; }
     break;
 
   case 71:
 
 /* Line 1806 of yacc.c  */
-#line 254 "parse.y"
+#line 254 "parse.yy"
     { new_record(); }
     break;
 
   case 72:
 
 /* Line 1806 of yacc.c  */
-#line 254 "parse.y"
+#line 254 "parse.yy"
     { if (hyp->exec_dielectric(h)) YYERROR; }
     break;
 
   case 76:
 
 /* Line 1806 of yacc.c  */
-#line 262 "parse.y"
+#line 262 "parse.yy"
     { h.epsilon_r = yylval.floatval; h.epsilon_r_set = true; }
     break;
 
   case 83:
 
 /* Line 1806 of yacc.c  */
-#line 272 "parse.y"
+#line 272 "parse.yy"
     { new_record(); }
     break;
 
   case 84:
 
 /* Line 1806 of yacc.c  */
-#line 272 "parse.y"
+#line 272 "parse.yy"
     { if (hyp->exec_plane(h)) YYERROR; }
     break;
 
   case 88:
 
 /* Line 1806 of yacc.c  */
-#line 280 "parse.y"
+#line 280 "parse.yy"
     { h.bulk_resistivity = yylval.floatval; h.bulk_resistivity_set = true; }
     break;
 
   case 96:
 
 /* Line 1806 of yacc.c  */
-#line 290 "parse.y"
+#line 290 "parse.yy"
     { h.thickness = yylval.floatval; h.thickness_set = true; }
     break;
 
   case 97:
 
 /* Line 1806 of yacc.c  */
-#line 293 "parse.y"
+#line 293 "parse.yy"
     { h.plating_thickness = yylval.floatval; h.plating_thickness_set = true; }
     break;
 
   case 98:
 
 /* Line 1806 of yacc.c  */
-#line 296 "parse.y"
+#line 296 "parse.yy"
     { h.bulk_resistivity = yylval.floatval; h.bulk_resistivity_set = true; }
     break;
 
   case 99:
 
 /* Line 1806 of yacc.c  */
-#line 299 "parse.y"
+#line 299 "parse.yy"
     { h.temperature_coefficient = yylval.floatval; h.temperature_coefficient_set = true; }
     break;
 
   case 100:
 
 /* Line 1806 of yacc.c  */
-#line 302 "parse.y"
+#line 302 "parse.yy"
     { h.epsilon_r = yylval.floatval; h.epsilon_r_set = true; }
     break;
 
   case 101:
 
 /* Line 1806 of yacc.c  */
-#line 305 "parse.y"
+#line 305 "parse.yy"
     { h.loss_tangent = yylval.floatval; h.loss_tangent_set = true; }
     break;
 
   case 102:
 
 /* Line 1806 of yacc.c  */
-#line 308 "parse.y"
+#line 308 "parse.yy"
     { h.layer_name = yylval.strval; h.layer_name_set = true; }
     break;
 
   case 103:
 
 /* Line 1806 of yacc.c  */
-#line 311 "parse.y"
+#line 311 "parse.yy"
     { h.material_name = yylval.strval; h.material_name_set = true; }
     break;
 
   case 104:
 
 /* Line 1806 of yacc.c  */
-#line 314 "parse.y"
+#line 314 "parse.yy"
     { h.plane_separation = yylval.floatval; h.plane_separation_set = true; }
     break;
 
   case 105:
 
 /* Line 1806 of yacc.c  */
-#line 317 "parse.y"
+#line 317 "parse.yy"
     { h.conformal = yylval.boolval; h.conformal_set = true; }
     break;
 
   case 106:
 
 /* Line 1806 of yacc.c  */
-#line 320 "parse.y"
+#line 320 "parse.yy"
     { h.prepreg = yylval.boolval; h.prepreg_set = true; }
     break;
 
   case 111:
 
 /* Line 1806 of yacc.c  */
-#line 333 "parse.y"
+#line 333 "parse.yy"
     { new_record(); }
     break;
 
   case 112:
 
 /* Line 1806 of yacc.c  */
-#line 333 "parse.y"
+#line 333 "parse.yy"
     { h.device_type = yylval.strval; }
     break;
 
   case 113:
 
 /* Line 1806 of yacc.c  */
-#line 333 "parse.y"
+#line 333 "parse.yy"
     { h.ref = yylval.strval; }
     break;
 
   case 114:
 
 /* Line 1806 of yacc.c  */
-#line 333 "parse.y"
+#line 333 "parse.yy"
     { if (hyp->exec_devices(h)) YYERROR; }
     break;
 
   case 122:
 
 /* Line 1806 of yacc.c  */
-#line 352 "parse.y"
+#line 352 "parse.yy"
     { h.name = yylval.strval; h.name_set = true; }
     break;
 
   case 125:
 
 /* Line 1806 of yacc.c  */
-#line 360 "parse.y"
+#line 360 "parse.yy"
     { h.value_float = yylval.floatval; h.value_float_set = true; }
     break;
 
   case 126:
 
 /* Line 1806 of yacc.c  */
-#line 363 "parse.y"
+#line 363 "parse.yy"
     { h.value_string = yylval.strval; h.value_string_set = true; }
     break;
 
   case 127:
 
 /* Line 1806 of yacc.c  */
-#line 366 "parse.y"
+#line 366 "parse.yy"
     { h.package = yylval.strval; h.package_set = true; }
     break;
 
   case 131:
 
 /* Line 1806 of yacc.c  */
-#line 378 "parse.y"
+#line 378 "parse.yy"
     { if (hyp->exec_supplies(h)) YYERROR; }
     break;
 
   case 133:
 
 /* Line 1806 of yacc.c  */
-#line 382 "parse.y"
+#line 382 "parse.yy"
     { h.voltage_specified = yylval.boolval; }
     break;
 
   case 134:
 
 /* Line 1806 of yacc.c  */
-#line 385 "parse.y"
+#line 385 "parse.yy"
     { h.conversion = yylval.boolval; }
     break;
 
   case 135:
 
 /* Line 1806 of yacc.c  */
-#line 390 "parse.y"
+#line 390 "parse.yy"
     { new_record(); }
     break;
 
   case 136:
 
 /* Line 1806 of yacc.c  */
-#line 390 "parse.y"
+#line 390 "parse.yy"
     { h.padstack_name = yylval.strval; h.padstack_name_set = true; }
     break;
 
   case 137:
 
 /* Line 1806 of yacc.c  */
-#line 390 "parse.y"
+#line 390 "parse.yy"
     { if (hyp->exec_padstack_end(h)) YYERROR; }
     break;
 
   case 138:
 
 /* Line 1806 of yacc.c  */
-#line 393 "parse.y"
+#line 393 "parse.yy"
     { h.drill_size = yylval.floatval; h.drill_size_set = true; }
     break;
 
   case 144:
 
 /* Line 1806 of yacc.c  */
-#line 402 "parse.y"
+#line 402 "parse.yy"
     { h.layer_name = yylval.strval; h.layer_name_set = true; }
     break;
 
   case 145:
 
 /* Line 1806 of yacc.c  */
-#line 402 "parse.y"
+#line 402 "parse.yy"
     { if (hyp->exec_padstack_element(h)) YYERROR; new_record(); }
     break;
 
   case 147:
 
 /* Line 1806 of yacc.c  */
-#line 406 "parse.y"
+#line 406 "parse.yy"
     { h.pad_shape = yylval.floatval; }
     break;
 
   case 149:
 
 /* Line 1806 of yacc.c  */
-#line 407 "parse.y"
+#line 407 "parse.yy"
     { h.pad_shape = -1; }
     break;
 
   case 150:
 
 /* Line 1806 of yacc.c  */
-#line 411 "parse.y"
+#line 411 "parse.yy"
     { h.pad_sx = yylval.floatval; }
     break;
 
   case 151:
 
 /* Line 1806 of yacc.c  */
-#line 411 "parse.y"
+#line 411 "parse.yy"
     { h.pad_sy = yylval.floatval; }
     break;
 
   case 152:
 
 /* Line 1806 of yacc.c  */
-#line 411 "parse.y"
+#line 411 "parse.yy"
     { h.pad_angle = yylval.floatval; }
     break;
 
   case 154:
 
 /* Line 1806 of yacc.c  */
-#line 415 "parse.y"
+#line 415 "parse.yy"
     { h.pad_type = PAD_TYPE_METAL; h.pad_type_set = true; }
     break;
 
   case 155:
 
 /* Line 1806 of yacc.c  */
-#line 416 "parse.y"
+#line 416 "parse.yy"
     { h.pad_type = PAD_TYPE_ANTIPAD; h.pad_type_set = true; }
     break;
 
   case 156:
 
 /* Line 1806 of yacc.c  */
-#line 417 "parse.y"
+#line 417 "parse.yy"
     { h.thermal_clear_shape = yylval.floatval; }
     break;
 
   case 157:
 
 /* Line 1806 of yacc.c  */
-#line 418 "parse.y"
+#line 418 "parse.yy"
     { h.thermal_clear_sx = yylval.floatval; }
     break;
 
   case 158:
 
 /* Line 1806 of yacc.c  */
-#line 419 "parse.y"
+#line 419 "parse.yy"
     { h.thermal_clear_sy = yylval.floatval; }
     break;
 
   case 159:
 
 /* Line 1806 of yacc.c  */
-#line 420 "parse.y"
+#line 420 "parse.yy"
     { h.thermal_clear_angle = yylval.floatval; }
     break;
 
   case 160:
 
 /* Line 1806 of yacc.c  */
-#line 421 "parse.y"
+#line 421 "parse.yy"
     { h.pad_type = PAD_TYPE_THERMAL_RELIEF; h.pad_type_set = true; }
     break;
 
   case 161:
 
 /* Line 1806 of yacc.c  */
-#line 427 "parse.y"
+#line 427 "parse.yy"
     { h.net_name = yylval.strval; if (hyp->exec_net(h)) YYERROR; }
     break;
 
   case 163:
 
 /* Line 1806 of yacc.c  */
-#line 430 "parse.y"
+#line 430 "parse.yy"
     { if (hyp->exec_net_plane_separation(h)) YYERROR; }
     break;
 
   case 180:
 
 /* Line 1806 of yacc.c  */
-#line 453 "parse.y"
+#line 453 "parse.yy"
     { new_record(); }
     break;
 
   case 181:
 
 /* Line 1806 of yacc.c  */
-#line 453 "parse.y"
+#line 453 "parse.yy"
     { if (hyp->exec_seg(h)) YYERROR; }
     break;
 
   case 182:
 
 /* Line 1806 of yacc.c  */
-#line 456 "parse.y"
+#line 456 "parse.yy"
     { new_record(); }
     break;
 
   case 183:
 
 /* Line 1806 of yacc.c  */
-#line 456 "parse.y"
+#line 456 "parse.yy"
     { if (hyp->exec_arc(h)) YYERROR; }
     break;
 
   case 188:
 
 /* Line 1806 of yacc.c  */
-#line 469 "parse.y"
+#line 469 "parse.yy"
     { h.width = yylval.floatval; h.width_set = true; }
     break;
 
   case 189:
 
 /* Line 1806 of yacc.c  */
-#line 472 "parse.y"
+#line 472 "parse.yy"
     { h.left_plane_separation = yylval.floatval; h.left_plane_separation_set = true; }
     break;
 
   case 190:
 
 /* Line 1806 of yacc.c  */
-#line 475 "parse.y"
+#line 475 "parse.yy"
     { new_record(); }
     break;
 
   case 194:
 
 /* Line 1806 of yacc.c  */
-#line 484 "parse.y"
+#line 484 "parse.yy"
     { if (hyp->exec_via(h)) YYERROR; }
     break;
 
   case 200:
 
 /* Line 1806 of yacc.c  */
-#line 501 "parse.y"
+#line 501 "parse.yy"
     { h.padstack_name = yylval.strval; h.padstack_name_set = true; }
     break;
 
   case 201:
 
 /* Line 1806 of yacc.c  */
-#line 504 "parse.y"
+#line 504 "parse.yy"
     { h.layer1_name = yylval.strval; h.layer1_name_set = true; }
     break;
 
   case 202:
 
 /* Line 1806 of yacc.c  */
-#line 507 "parse.y"
+#line 507 "parse.yy"
     { h.layer2_name = yylval.strval; h.layer2_name_set = true; }
     break;
 
   case 203:
 
 /* Line 1806 of yacc.c  */
-#line 510 "parse.y"
+#line 510 "parse.yy"
     { h.drill_size = yylval.floatval; }
     break;
 
   case 204:
 
 /* Line 1806 of yacc.c  */
-#line 513 "parse.y"
+#line 513 "parse.yy"
     { h.pad1_shape = yylval.strval; }
     break;
 
   case 205:
 
 /* Line 1806 of yacc.c  */
-#line 514 "parse.y"
+#line 514 "parse.yy"
     { h.pad1_sx = yylval.floatval; }
     break;
 
   case 206:
 
 /* Line 1806 of yacc.c  */
-#line 515 "parse.y"
+#line 515 "parse.yy"
     { h.pad1_sy = yylval.floatval; }
     break;
 
   case 207:
 
 /* Line 1806 of yacc.c  */
-#line 516 "parse.y"
+#line 516 "parse.yy"
     { h.pad1_angle = yylval.floatval; }
     break;
 
   case 208:
 
 /* Line 1806 of yacc.c  */
-#line 517 "parse.y"
+#line 517 "parse.yy"
     { h.pad2_shape = yylval.strval; }
     break;
 
   case 209:
 
 /* Line 1806 of yacc.c  */
-#line 518 "parse.y"
+#line 518 "parse.yy"
     { h.pad2_sx = yylval.floatval; }
     break;
 
   case 210:
 
 /* Line 1806 of yacc.c  */
-#line 519 "parse.y"
+#line 519 "parse.yy"
     { h.pad2_sy = yylval.floatval; }
     break;
 
   case 211:
 
 /* Line 1806 of yacc.c  */
-#line 520 "parse.y"
+#line 520 "parse.yy"
     { h.pad2_angle  = yylval.floatval; }
     break;
 
   case 212:
 
 /* Line 1806 of yacc.c  */
-#line 521 "parse.y"
+#line 521 "parse.yy"
     { if (hyp->exec_via_v1(h)) YYERROR; }
     break;
 
   case 213:
 
 /* Line 1806 of yacc.c  */
-#line 525 "parse.y"
+#line 525 "parse.yy"
     { new_record(); }
     break;
 
   case 214:
 
 /* Line 1806 of yacc.c  */
-#line 525 "parse.y"
+#line 525 "parse.yy"
     { if (hyp->exec_pin(h)) YYERROR; }
     break;
 
   case 219:
 
 /* Line 1806 of yacc.c  */
-#line 538 "parse.y"
+#line 538 "parse.yy"
     { h.pin_reference = yylval.strval; h.pin_reference_set = true; }
     break;
 
   case 220:
 
 /* Line 1806 of yacc.c  */
-#line 541 "parse.y"
+#line 541 "parse.yy"
     { h.pin_function = PIN_SIM_OUT; h.pin_function_set = true; }
     break;
 
   case 221:
 
 /* Line 1806 of yacc.c  */
-#line 542 "parse.y"
+#line 542 "parse.yy"
     { h.pin_function = PIN_SIM_IN; h.pin_function_set = true; }
     break;
 
   case 222:
 
 /* Line 1806 of yacc.c  */
-#line 543 "parse.y"
+#line 543 "parse.yy"
     { h.pin_function = PIN_SIM_BOTH; h.pin_function_set = true; }
     break;
 
   case 223:
 
 /* Line 1806 of yacc.c  */
-#line 547 "parse.y"
+#line 547 "parse.yy"
     { new_record(); }
     break;
 
   case 224:
 
 /* Line 1806 of yacc.c  */
-#line 550 "parse.y"
+#line 550 "parse.yy"
     { h.pad1_shape = yylval.strval; }
     break;
 
   case 225:
 
 /* Line 1806 of yacc.c  */
-#line 551 "parse.y"
+#line 551 "parse.yy"
     { h.pad1_sx = yylval.floatval; }
     break;
 
   case 226:
 
 /* Line 1806 of yacc.c  */
-#line 552 "parse.y"
+#line 552 "parse.yy"
     { h.pad1_sy = yylval.floatval; }
     break;
 
   case 227:
 
 /* Line 1806 of yacc.c  */
-#line 553 "parse.y"
+#line 553 "parse.yy"
     { h.pad1_angle = yylval.floatval; }
     break;
 
   case 228:
 
 /* Line 1806 of yacc.c  */
-#line 554 "parse.y"
+#line 554 "parse.yy"
     { if (hyp->exec_pad(h)) YYERROR; }
     break;
 
   case 229:
 
 /* Line 1806 of yacc.c  */
-#line 558 "parse.y"
+#line 558 "parse.yy"
     { new_record(); }
     break;
 
   case 230:
 
 /* Line 1806 of yacc.c  */
-#line 558 "parse.y"
+#line 558 "parse.yy"
     { if (hyp->exec_useg(h)) YYERROR; }
     break;
 
   case 233:
 
 /* Line 1806 of yacc.c  */
-#line 566 "parse.y"
+#line 566 "parse.yy"
     { h.zlayer_name = yylval.strval; h.zlayer_name_set = true; }
     break;
 
   case 234:
 
 /* Line 1806 of yacc.c  */
-#line 567 "parse.y"
+#line 567 "parse.yy"
     { h.width = yylval.floatval; }
     break;
 
   case 235:
 
 /* Line 1806 of yacc.c  */
-#line 568 "parse.y"
+#line 568 "parse.yy"
     { h.length = yylval.floatval; }
     break;
 
   case 237:
 
 /* Line 1806 of yacc.c  */
-#line 573 "parse.y"
+#line 573 "parse.yy"
     { h.impedance = yylval.floatval; h.impedance_set = true; }
     break;
 
   case 238:
 
 /* Line 1806 of yacc.c  */
-#line 574 "parse.y"
+#line 574 "parse.yy"
     { h.delay = yylval.floatval; }
     break;
 
   case 240:
 
 /* Line 1806 of yacc.c  */
-#line 578 "parse.y"
+#line 578 "parse.yy"
     { h.resistance = yylval.floatval; h.resistance_set = true;}
     break;
 
   case 243:
 
 /* Line 1806 of yacc.c  */
-#line 584 "parse.y"
+#line 584 "parse.yy"
     { new_record(); }
     break;
 
   case 244:
 
 /* Line 1806 of yacc.c  */
-#line 584 "parse.y"
+#line 584 "parse.yy"
     { if (hyp->exec_polygon_begin(h)) YYERROR; }
     break;
 
   case 245:
 
 /* Line 1806 of yacc.c  */
-#line 585 "parse.y"
+#line 585 "parse.yy"
     { if (hyp->exec_polygon_end(h)) YYERROR; }
     break;
 
   case 252:
 
 /* Line 1806 of yacc.c  */
-#line 600 "parse.y"
+#line 600 "parse.yy"
     { h.id = yylval.intval; h.id_set = true; }
     break;
 
   case 253:
 
 /* Line 1806 of yacc.c  */
-#line 604 "parse.y"
+#line 604 "parse.yy"
     { h.polygon_type = POLYGON_TYPE_POUR; h.polygon_type_set = true; }
     break;
 
   case 254:
 
 /* Line 1806 of yacc.c  */
-#line 605 "parse.y"
+#line 605 "parse.yy"
     { h.polygon_type = POLYGON_TYPE_PLANE; h.polygon_type_set = true; }
     break;
 
   case 255:
 
 /* Line 1806 of yacc.c  */
-#line 606 "parse.y"
+#line 606 "parse.yy"
     { h.polygon_type = POLYGON_TYPE_COPPER; h.polygon_type_set = true; }
     break;
 
   case 256:
 
 /* Line 1806 of yacc.c  */
-#line 610 "parse.y"
+#line 610 "parse.yy"
     { new_record(); }
     break;
 
   case 257:
 
 /* Line 1806 of yacc.c  */
-#line 610 "parse.y"
+#line 610 "parse.yy"
     { if (hyp->exec_polyvoid_begin(h)) YYERROR; }
     break;
 
   case 258:
 
 /* Line 1806 of yacc.c  */
-#line 611 "parse.y"
+#line 611 "parse.yy"
     { if (hyp->exec_polyvoid_end(h)) YYERROR; }
     break;
 
   case 259:
 
 /* Line 1806 of yacc.c  */
-#line 614 "parse.y"
+#line 614 "parse.yy"
     { new_record(); }
     break;
 
   case 260:
 
 /* Line 1806 of yacc.c  */
-#line 614 "parse.y"
+#line 614 "parse.yy"
     { if (hyp->exec_polyline_begin(h)) YYERROR; }
     break;
 
   case 261:
 
 /* Line 1806 of yacc.c  */
-#line 615 "parse.y"
+#line 615 "parse.yy"
     { if (hyp->exec_polyline_end(h)) YYERROR; }
     break;
 
   case 267:
 
 /* Line 1806 of yacc.c  */
-#line 629 "parse.y"
+#line 629 "parse.yy"
     { new_record(); }
     break;
 
   case 268:
 
 /* Line 1806 of yacc.c  */
-#line 629 "parse.y"
+#line 629 "parse.yy"
     { if (hyp->exec_line(h)) YYERROR; }
     break;
 
   case 269:
 
 /* Line 1806 of yacc.c  */
-#line 632 "parse.y"
+#line 632 "parse.yy"
     { new_record(); }
     break;
 
   case 270:
 
 /* Line 1806 of yacc.c  */
-#line 632 "parse.y"
+#line 632 "parse.yy"
     { if (hyp->exec_curve(h)) YYERROR; }
     break;
 
   case 271:
 
 /* Line 1806 of yacc.c  */
-#line 635 "parse.y"
+#line 635 "parse.yy"
     { h.name = yylval.strval; }
     break;
 
   case 272:
 
 /* Line 1806 of yacc.c  */
-#line 635 "parse.y"
+#line 635 "parse.yy"
     { h.value = yylval.strval; }
     break;
 
   case 273:
 
 /* Line 1806 of yacc.c  */
-#line 635 "parse.y"
+#line 635 "parse.yy"
     { if (hyp->exec_net_attribute(h)) YYERROR; }
     break;
 
   case 274:
 
 /* Line 1806 of yacc.c  */
-#line 640 "parse.y"
+#line 640 "parse.yy"
     { h.net_class_name = yylval.strval; if (hyp->exec_net_class(h)) YYERROR; }
     break;
 
   case 283:
 
 /* Line 1806 of yacc.c  */
-#line 659 "parse.y"
+#line 659 "parse.yy"
     { h.net_name = yylval.strval; }
     break;
 
   case 284:
 
 /* Line 1806 of yacc.c  */
-#line 659 "parse.y"
+#line 659 "parse.yy"
     { if (hyp->exec_net_class_element(h)) YYERROR; }
     break;
 
   case 285:
 
 /* Line 1806 of yacc.c  */
-#line 662 "parse.y"
+#line 662 "parse.yy"
     { h.name = yylval.strval; }
     break;
 
   case 286:
 
 /* Line 1806 of yacc.c  */
-#line 662 "parse.y"
+#line 662 "parse.yy"
     { h.value = yylval.strval; }
     break;
 
   case 287:
 
 /* Line 1806 of yacc.c  */
-#line 662 "parse.y"
+#line 662 "parse.yy"
     { if (hyp->exec_net_class_attribute(h)) YYERROR; }
     break;
 
   case 288:
 
 /* Line 1806 of yacc.c  */
-#line 667 "parse.y"
+#line 667 "parse.yy"
     { if (hyp->exec_end(h)) YYERROR; }
     break;
 
   case 289:
 
 /* Line 1806 of yacc.c  */
-#line 672 "parse.y"
+#line 672 "parse.yy"
     { h.key = yylval.strval; }
     break;
 
   case 290:
 
 /* Line 1806 of yacc.c  */
-#line 672 "parse.y"
+#line 672 "parse.yy"
     { if (hyp->exec_key(h)) YYERROR; }
     break;
 
   case 291:
 
 /* Line 1806 of yacc.c  */
-#line 677 "parse.y"
+#line 677 "parse.yy"
     { h.x = yylval.floatval; }
     break;
 
   case 292:
 
 /* Line 1806 of yacc.c  */
-#line 677 "parse.y"
+#line 677 "parse.yy"
     { h.y = yylval.floatval; }
     break;
 
   case 293:
 
 /* Line 1806 of yacc.c  */
-#line 680 "parse.y"
+#line 680 "parse.yy"
     { h.x1 = yylval.floatval; }
     break;
 
   case 294:
 
 /* Line 1806 of yacc.c  */
-#line 680 "parse.y"
+#line 680 "parse.yy"
     { h.y1 = yylval.floatval; }
     break;
 
   case 295:
 
 /* Line 1806 of yacc.c  */
-#line 683 "parse.y"
+#line 683 "parse.yy"
     { h.x2 = yylval.floatval; }
     break;
 
   case 296:
 
 /* Line 1806 of yacc.c  */
-#line 683 "parse.y"
+#line 683 "parse.yy"
     { h.y2 = yylval.floatval; }
     break;
 
   case 298:
 
 /* Line 1806 of yacc.c  */
-#line 689 "parse.y"
+#line 689 "parse.yy"
     { h.xc = yylval.floatval; }
     break;
 
   case 299:
 
 /* Line 1806 of yacc.c  */
-#line 689 "parse.y"
+#line 689 "parse.yy"
     { h.yc = yylval.floatval; }
     break;
 
   case 300:
 
 /* Line 1806 of yacc.c  */
-#line 689 "parse.y"
+#line 689 "parse.yy"
     { h.r = yylval.floatval; }
     break;
 
 
 
 /* Line 1806 of yacc.c  */
-#line 3287 "parse.c"
+#line 3287 "parse.cc"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3514,7 +3514,7 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 691 "parse.y"
+#line 691 "parse.yy"
 
 
 /*

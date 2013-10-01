@@ -30,10 +30,7 @@ AM_CONDITIONAL(NO_PS2PDF, test -z "$ac_cv_path_PS2PDF" )
 
 AC_LANG([C++])
 AC_PROG_CXX
-# Compile all C programs with g++.
-# Bison and flex generate C source. 
-# But because our parse.y contains C++ code, we need to compile parse.c and scan.c with g++
-AC_PROG_CC([$CXX])
+AC_PROG_CC
 AM_PROG_LEX
 AC_PROG_YACC
 AC_DISABLE_SHARED

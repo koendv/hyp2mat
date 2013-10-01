@@ -196,16 +196,16 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
           new_pad.layer_name = l->layer_name;
           pad_found = true;
           }
-        else {
+        else if ((p->pad_shape != new_pad.pad_shape) || (p->pad_sx != new_pad.pad_sx) || (p->pad_sy != new_pad.pad_sy) || (p->pad_angle != new_pad.pad_angle)) {
           /* if padstack pads are different, create a circular pad with a diameter equal to the smallest pad dimension */
-          if ((p->pad_shape != new_pad.pad_shape) || (p->pad_sx != new_pad.pad_sx) 
-            || (p->pad_sy != new_pad.pad_sy) || (p->pad_angle != new_pad.pad_angle)) 
-            new_pad.pad_shape = PAD_SHAPE_OVAL;
-            if (new_pad.pad_sx < p->pad_sx) new_pad.pad_sx = p->pad_sx;
-            if (new_pad.pad_sx < p->pad_sy) new_pad.pad_sx = p->pad_sy;
-            if (new_pad.pad_sx < new_pad.pad_sy) new_pad.pad_sx = new_pad.pad_sy;
-            new_pad.pad_sy = new_pad.pad_sx;
-            new_pad.pad_angle = 0;
+          double radius = new_pad.pad_sx;
+          if (radius > new_pad.pad_sy) radius = new_pad.pad_sy;
+          if (radius > p->pad_sx) radius = p->pad_sx;
+          if (radius > p->pad_sy) radius = p->pad_sy;
+          new_pad.pad_shape = PAD_SHAPE_OVAL;
+          new_pad.pad_sx = radius;
+          new_pad.pad_sy = radius;
+          new_pad.pad_angle = 0;
           }
         }
       /* add newly created pad to padstack */
