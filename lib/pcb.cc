@@ -49,12 +49,22 @@ void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, 
   /* set accuracy with which circle arcs are converted to polygons */
   Polygon::SetArcPrecision(_arc_precision);
 
+  /* read hyperlynx file */
   HyperLynx hyperlynx;
-  hyperlynx.Read(filename, *this, layers, nets, raw, _arc_precision, _clearance, _bounds);
+
+  hyperlynx.layers = layers;
+  hyperlynx.nets = nets;
+  hyperlynx.raw = raw;
+  hyperlynx.arc_precision = _arc_precision;
+  hyperlynx.clearance = _clearance;
+  hyperlynx.bounds = _bounds;
+
+  hyperlynx.Read(filename, *this);
 
   /* Epsilon_r override */
   if (_epsilon_r >= 0.0) _ChangeEpsilonR();
 
+  return;
 }
 
 /*

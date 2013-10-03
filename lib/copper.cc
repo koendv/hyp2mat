@@ -41,7 +41,7 @@ using namespace Hyp2Mat;
  *  - first, all copper polygons which are not of type "PLANE" are computed.
  *  - second, all copper polygon of type "PLANE" are computed. 
  *  - finally, the clearance is computed as follows:
- *      We expand all non-PLANE polygons of other nets by a distance "plane separation" and subtract them from the "PLANE" polygon.
+ *      We expand all polygons of other nets by a distance "plane separation" and subtract them from the "PLANE" polygon.
  *
  * Two kinds of copper layers exist: "SIGNAL" and "PLANE". A "PLANE" layer is drawn in negative. 
  * On a "SIGNAL" layer the default is dielectric, and copper is drawn. On a "PLANE" layer, the default is copper, and dielectric is drawn.
@@ -53,10 +53,29 @@ using namespace Hyp2Mat;
  */
 
 /*
+ * copy layer stackup
+ */
+
+void HyperLynx::CopyStackUp(Hyp2Mat::PCB& pcb)
+{
+  /* iterate over all layers */
+  for (HypFile::LayerList::iterator l = hyp_file.stackup.begin(); l != hyp_file.stackup.end(); ++l) {
+
+    /* check if we're interested in this layer. if no layers are specified, copy all layers */
+    bool layer_wanted = layers.empty() || (std::find(layers.begin(), layers.end(), l->layer_name) != layers.end());
+
+    /* copy this layer if needed */
+    if (layer_wanted) CopyLayer(pcb, *l);
+    }
+
+  return;
+}
+
+/*
  * copy layer
  */
 
-void HyperLynx::CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds, Hyp2Mat::Polygon& board, HypFile::Layer& hyp_layer, std::vector<std::string> net_names, bool raw)
+void HyperLynx::CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Layer& hyp_layer)
 {
 
   Hyp2Mat::Layer layer;
@@ -86,13 +105,13 @@ void HyperLynx::CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bo
     double plane_separation = hyp_file.board.plane_separation;
 
     /* board-level override from SetClearance method / --clearance command-line parameter */
-    if (HyperLynx::_clearance >= 0) plane_separation = HyperLynx::_clearance;
+    if (HyperLynx::clearance >= 0) plane_separation = HyperLynx::clearance;
 
     if (hyp_layer.plane_separation >= 0) plane_separation = hyp_layer.plane_separation;
 
     /* copy layer copper */
     Hyp2Mat::FloatPolygons raw_polygons;
-    Hyp2Mat::Polygon layer_copper = CopyCopper(pcb, hyp_file, bounds, board, layer, hyp_layer, net_names, plane_separation, raw_polygons);
+    Hyp2Mat::Polygon layer_copper = CopyCopper(layer, raw_polygons, plane_separation);
    
     if (raw)
       layer.metal = raw_polygons;
@@ -110,7 +129,7 @@ void HyperLynx::CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bo
  * copy copper
  */
 
-Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds, Hyp2Mat::Polygon& board, Hyp2Mat::Layer layer, HypFile::Layer& hyp_layer, std::vector<std::string> net_names, double plane_separation, Hyp2Mat::FloatPolygons& raw_polygons)
+Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolygons& raw_polygons, double plane_separation)
 {
 
   /* vectors of different polygon types. element [i] belongs to net hyp_file.net[i].net_name */
@@ -136,7 +155,7 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file
   /* Determine which nets we need to include */
   for (int i = 0; i < hyp_file.net.size(); ++i) {
     /* check if we're interested in this net. if no nets are specified, copy all nets */
-    net_wanted[i] = net_names.empty() || (std::find(net_names.begin(), net_names.end(), hyp_file.net[i].net_name) != net_names.end());
+    net_wanted[i] = nets.empty() || (std::find(nets.begin(), nets.end(), hyp_file.net[i].net_name) != nets.end());
     }
 
   /* first iteration. calculate all copper, but don't take plane separation into account yet. */
@@ -147,11 +166,11 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file
 
     /* copy anti-metal of this net */
     Hyp2Mat::Polygon empty_poly;
-    net_pour[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_POUR, -1.0, empty_poly, raw_polygons); 
-    net_copper[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_COPPER, -1.0, empty_poly, raw_polygons); 
-    net_plane[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_PLANE, -1.0, empty_poly, raw_polygons); 
-    net_pads[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_PAD, -1.0, empty_poly, raw_polygons); 
-    net_antipads[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_ANTIPAD, -1.0, empty_poly, raw_polygons); 
+    net_pour[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_POUR, -1.0, empty_poly, raw_polygons); 
+    net_copper[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_COPPER, -1.0, empty_poly, raw_polygons); 
+    net_plane[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_PLANE, -1.0, empty_poly, raw_polygons); 
+    net_pads[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_PAD, -1.0, empty_poly, raw_polygons); 
+    net_antipads[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_ANTIPAD, -1.0, empty_poly, raw_polygons); 
     }
 
   /* second iteration. calculate all plane polygons, taking plane separation into account. */
@@ -185,7 +204,7 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file
 
     /* calculate plane polygons of this net */
     Hyp2Mat::FloatPolygons dummy;
-    net_plane[i] = CopyNet(pcb, hyp_file, board, layer, hyp_file.net[i], POLYGON_TYPE_PLANE, plane_separation, other_copper, dummy); 
+    net_plane[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_PLANE, plane_separation, other_copper, dummy); 
 
     /* Subtract other nets' antipads */
     net_plane[i].Difference(other_antipads);
@@ -242,7 +261,7 @@ bool HyperLynx::NetHasPlanePoly(HypFile::Net& hyp_net)
  * if plane is true, copy plane polygons (and subtract other_nets)
  */
 
-Hyp2Mat::Polygon HyperLynx::CopyNet(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Polygon& board, Hyp2Mat::Layer layer, HypFile::Net& hyp_net, polygon_type_enum poly_type, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons)
+Hyp2Mat::Polygon HyperLynx::CopyNet(Hyp2Mat::Layer layer, HypFile::Net& hyp_net, polygon_type_enum poly_type, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons)
 {
   Hyp2Mat::Polygon net_copper;
 

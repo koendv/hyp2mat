@@ -31,26 +31,43 @@
 
 class HyperLynx {
 public:
-  void Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::string> layers, std::vector<std::string> nets, bool raw, double arc_precision, double clearance, Hyp2Mat::Bounds bounds);
+  HyperLynx();
+  void Read (std::string filename, Hyp2Mat::PCB& pcb);
+
+  /* parameters */
+  std::vector<std::string> layers; 
+  std::vector<std::string> nets; 
+  bool raw;
+  double arc_precision;
+  double clearance;
+  Hyp2Mat::Bounds bounds;
 
 private:
-  double _clearance;
-  bool LoadHypFile(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::string filename, double arc_precision);
-  void CopyBoard(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Polygon& board, Hyp2Mat::Bounds& bounds);
-  void CopyStackUp(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds, Hyp2Mat::Polygon& board, std::vector<std::string> layer_names, std::vector<std::string> net_names, bool raw);
-  void CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds, Hyp2Mat::Polygon& board, HypFile::Layer& hyp_layer, std::vector<std::string> net_names, bool raw);
-  Hyp2Mat::Polygon CopyCopper(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds, Hyp2Mat::Polygon& board, Hyp2Mat::Layer layer, HypFile::Layer& hyp_layer, std::vector<std::string> net_names, double plane_separation, Hyp2Mat::FloatPolygons& raw_polygons);
-  Hyp2Mat::Polygon CopyNet(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Polygon& board, Hyp2Mat::Layer layer, HypFile::Net& hyp_net, polygon_type_enum poly_type, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons);
-  Hyp2Mat::Polygon CopyPolygon(HypFile::PolygonList metal, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons);
+  HypFile::Hyp hyp_file;
+  Hyp2Mat::Polygon board; /* polygon of board outline */
+  Hyp2Mat::Bounds saved_bounds; /* copy of bounds */
+
+  bool LoadHypFile(Hyp2Mat::PCB& pcb, std::string filename, double arc_precision);
+  void CopyBoard(Hyp2Mat::PCB& pcb); /* copy board outline */
+
+  void CopyStackUp(Hyp2Mat::PCB& pcb); /* copy all layers, both metal and dielectric */
+  void CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Layer& hyp_layer); /* copy a single layer */
+  Hyp2Mat::Polygon CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolygons& raw_polygons, double plane_separation);  /* copy all the copper of a layer */
+  Hyp2Mat::Polygon CopyNet(Hyp2Mat::Layer layer, HypFile::Net& hyp_net, polygon_type_enum poly_type, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons); /* copy a single net on a layer */
+
+  Hyp2Mat::Polygon CopyPolygon(HypFile::PolygonList metal, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons); /* copy a single polygon of a net on a layer */
   void PlaneSeparation(Hyp2Mat::Polygon& net_metal, Hyp2Mat::Polygon other_net_metal, double plane_separation);
   bool NetHasPlanePoly(HypFile::Net& hyp_net);
 
-  void CopyVias(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds, std::vector<std::string> nets);
-  void CopyViaPlating(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file);
-  void CopyDevices(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file);
-  void CopyPins(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets);
-  void CopyPin(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, HypFile::Pin& pin, HypFile::Padstack& padstack);
-  void PrintNets(HypFile::Hyp& hyp_file);
+  void CopyVias(Hyp2Mat::PCB& pcb);
+  void CopyViaPlating(Hyp2Mat::PCB& pcb);
+
+  void CopyDevices(Hyp2Mat::PCB& pcb);
+
+  void CopyPins(Hyp2Mat::PCB& pcb); /* copy all pins to pcb */
+  void CopyPin(Hyp2Mat::PCB& pcb, HypFile::Pin& pin, HypFile::Padstack& padstack); /* copy a single pin to pcb */
+
+  void PrintNets();
   };
 
 #endif

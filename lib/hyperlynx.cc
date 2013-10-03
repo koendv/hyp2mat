@@ -34,35 +34,41 @@
 #include "polygon.h"
 #include "crop.h"
 
+HyperLynx::HyperLynx () 
+{
+  raw = false;
+  arc_precision = 0;
+  clearance = 0;
+}
+
+
 /*
  * Read a pcb in hyperlynx format
  */
 
-void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::string> layers, std::vector<std::string> nets, bool raw, double arc_precision, double clearance, Hyp2Mat::Bounds bounds)
+void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb)
 {
-  HypFile::Hyp hyp_file;
-
   /*
    * load hyperlynx file in hyp_file 
    */
 
-  bool success = LoadHypFile(pcb, hyp_file, filename, arc_precision);
-  if (!success)
-    return;
+  bool success = LoadHypFile(pcb, filename, arc_precision);
+  if (!success) throw ("load hyp file error");
 
   /*
    * Copy hyperlynx file data from hyp_file to pcb
    */
-  Hyp2Mat::Polygon board;
-  Hyp2Mat::Bounds saved_bounds = bounds;
-  HyperLynx::_clearance = clearance;
-  CopyBoard(pcb, hyp_file, board, bounds); /* copy board outline */
+  saved_bounds = bounds;
+  CopyBoard(pcb); /* copy board outline. crop board in x, y axis */
 
-  CopyStackUp(pcb, hyp_file, bounds, board, layers, nets, raw); /* copy layer stackup */
-  CopyVias(pcb, hyp_file, bounds, nets); /* copy layer stackup */
-  CopyDevices(pcb, hyp_file); /* copy device info */
-  CopyPins(pcb, hyp_file, nets); /* copy pin references */
-  CropLayers(pcb, saved_bounds); /* trim board in z direction */
+  CopyStackUp(pcb); /* copy layer stackup */
+  CopyVias(pcb); /* copy vias */
+  CopyViaPlating(pcb); /* copy via plating thickness */
+  CopyDevices(pcb); /* copy device info */
+  CopyPins(pcb); /* copy pin references */
+
+  bounds = saved_bounds;
+  CropLayers(pcb, bounds); /* crop board in z axis */
 
   /* 
    * Check whether to print all net names 
@@ -70,7 +76,7 @@ void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::
 
   /* if one of the nets is "?", print list of all nets */
   if (std::find(nets.begin(), nets.end(), "?") != nets.end()) 
-    PrintNets(hyp_file);
+    PrintNets();
 
   return;
 }
@@ -79,7 +85,7 @@ void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb, std::vector<std::
  * Load Hyperlynx file in hyp_file
  */
 
-bool HyperLynx::LoadHypFile(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::string filename, double arc_precision)
+bool HyperLynx::LoadHypFile(Hyp2Mat::PCB& pcb, std::string filename, double arc_precision)
 {
   hyp_file.trace_scanner = (pcb.debug == 4);
   hyp_file.trace_parser = (pcb.debug == 3);
@@ -102,10 +108,10 @@ bool HyperLynx::LoadHypFile(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::stri
 }
 
 /*
- * copy board outline 
+ * copy board outline into polygon "board" and crop according to "bounds".
  */
 
-void HyperLynx::CopyBoard(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Polygon& board, Hyp2Mat::Bounds& bounds)
+void HyperLynx::CopyBoard(Hyp2Mat::PCB& pcb)
 {
   bool outer_edge = true;
 
@@ -135,29 +141,10 @@ void HyperLynx::CopyBoard(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Po
 }
 
 /*
- * copy layer stackup
- */
-
-void HyperLynx::CopyStackUp(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds, Hyp2Mat::Polygon& board, std::vector<std::string> layer_names, std::vector<std::string> net_names, bool raw)
-{
-  /* iterate over all layers */
-  for (HypFile::LayerList::iterator l = hyp_file.stackup.begin(); l != hyp_file.stackup.end(); ++l) {
-
-    /* check if we're interested in this layer. if no layers are specified, copy all layers */
-    bool layer_wanted = layer_names.empty() || (std::find(layer_names.begin(), layer_names.end(), l->layer_name) != layer_names.end());
-
-    /* copy this layer if needed */
-    if (layer_wanted) CopyLayer(pcb, hyp_file, bounds, board, *l, net_names, raw);
-    }
-
-  return;
-}
-
-/*
  * copy vias
  */
 
-void HyperLynx::CopyVias(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bounds bounds, std::vector<std::string> nets)
+void HyperLynx::CopyVias(Hyp2Mat::PCB& pcb)
 {
   for (HypFile::NetList::iterator i = hyp_file.net.begin(); i != hyp_file.net.end(); ++i) {
 
@@ -193,7 +180,7 @@ void HyperLynx::CopyVias(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, Hyp2Mat::Bou
  *  copy via plating
  */
 
-void CopyViaPlating(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file)
+void HyperLynx::CopyViaPlating(Hyp2Mat::PCB& pcb)
 {
   /* assume via plating thickness is identical to outer plating thickness */
   for (HypFile::LayerList::iterator l = hyp_file.stackup.begin(); l != hyp_file.stackup.end(); ++l) 
@@ -210,7 +197,7 @@ void CopyViaPlating(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file)
  * copy devices
  */
 
-void HyperLynx::CopyDevices(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file)
+void HyperLynx::CopyDevices(Hyp2Mat::PCB& pcb)
 {
   for (HypFile::DeviceList::iterator i = hyp_file.device.begin(); i != hyp_file.device.end(); ++i) {
     /* set up device */
@@ -239,7 +226,7 @@ void HyperLynx::CopyDevices(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file)
  * copy pins
  */
 
-void HyperLynx::CopyPins(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<std::string> nets)
+void HyperLynx::CopyPins(Hyp2Mat::PCB& pcb)
 {
   /* iterate over all pins */
   for (HypFile::NetList::iterator i = hyp_file.net.begin(); i != hyp_file.net.end(); ++i) {
@@ -253,7 +240,7 @@ void HyperLynx::CopyPins(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<
       for (HypFile::PadstackList::iterator p = hyp_file.padstack.begin(); p != hyp_file.padstack.end(); ++p)
         if (p->padstack_name == j->padstack_name)
           /* copy this pin */
-          CopyPin(pcb, hyp_file, *j, *p);
+          CopyPin(pcb, *j, *p);
     }
 
   return;
@@ -263,7 +250,7 @@ void HyperLynx::CopyPins(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, std::vector<
  * copy a single pin
  */
 
-void HyperLynx::CopyPin(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, HypFile::Pin& pin, HypFile::Padstack& padstack)
+void HyperLynx::CopyPin(Hyp2Mat::PCB& pcb, HypFile::Pin& pin, HypFile::Padstack& padstack)
 {
   Hyp2Mat::Pin new_pin;
   new_pin.x = Hyp2Mat::Polygon::AlignToGrid(pin.x);
@@ -330,7 +317,7 @@ void HyperLynx::CopyPin(Hyp2Mat::PCB& pcb, HypFile::Hyp& hyp_file, HypFile::Pin&
  * Print all available nets
  */
 
-void HyperLynx::PrintNets(HypFile::Hyp& hyp_file)
+void HyperLynx::PrintNets()
 {
   std::vector<std::string> net_names;
 
