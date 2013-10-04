@@ -53,11 +53,10 @@ private:
   void CopyStackUp(Hyp2Mat::PCB& pcb); /* copy all layers, both metal and dielectric */
   void CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Layer& hyp_layer); /* copy a single layer */
   Hyp2Mat::Polygon CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolygons& raw_polygons, double plane_separation);  /* copy all the copper of a layer */
-  Hyp2Mat::Polygon CopyNet(Hyp2Mat::Layer layer, HypFile::Net& hyp_net, polygon_type_enum poly_type, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons); /* copy a single net on a layer */
+  Hyp2Mat::Polygon CopyNet(Hyp2Mat::Layer layer, HypFile::Net& hyp_net, polygon_type_enum poly_type, Hyp2Mat::FloatPolygons& raw_polygons); /* copy a single net on a layer */
 
-  Hyp2Mat::Polygon CopyPolygon(HypFile::PolygonList metal, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons); /* copy a single polygon of a net on a layer */
+  Hyp2Mat::Polygon CopyPolygon(HypFile::PolygonList metal, Hyp2Mat::FloatPolygons& raw_polygons); /* copy a single polygon of a net on a layer */
   void PlaneSeparation(Hyp2Mat::Polygon& net_metal, Hyp2Mat::Polygon other_net_metal, double plane_separation);
-  bool NetHasPlanePoly(HypFile::Net& hyp_net);
 
   void CopyVias(Hyp2Mat::PCB& pcb);
   void CopyViaPlating(Hyp2Mat::PCB& pcb);

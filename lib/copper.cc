@@ -138,7 +138,8 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
   std::vector<Hyp2Mat::Polygon> net_copper;    /* POLYGON T=COPPER */
   std::vector<Hyp2Mat::Polygon> net_pads;      /* pads */
   std::vector<Hyp2Mat::Polygon> net_antipads;  /* anti-pads */
-  std::vector<bool> net_wanted;
+  std::vector<double> net_plane_separation;    /* plane separation */
+  std::vector<bool> net_wanted;                /* true if net needs to be included in the output */
 
   HypFile::NetList::size_type net_size =  hyp_file.net.size();
   net_pour.resize(net_size);
@@ -146,6 +147,7 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
   net_copper.resize(net_size);
   net_pads.resize(net_size);
   net_antipads.resize(net_size);
+  net_plane_separation.resize(net_size);
   net_wanted.resize(net_size);
 
   /* iterate over all nets twice.
@@ -158,6 +160,21 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
     net_wanted[i] = nets.empty() || (std::find(nets.begin(), nets.end(), hyp_file.net[i].net_name) != nets.end());
     }
 
+  /* Determine plane separation for each net */
+  for (int i = 0; i < hyp_file.net.size(); ++i) {
+    /* default is no plane separation */
+    net_plane_separation[i] = -1.0;
+
+    /* skip unwanted nets */
+    if (!net_wanted[i]) continue;
+
+    /* default plane separation for this layer */
+    net_plane_separation[i] = plane_separation; 
+
+    /* specific plane separation for this net */
+    if (hyp_file.net[i].plane_separation >= 0) net_plane_separation[i] = hyp_file.net[i].plane_separation;
+    }
+
   /* first iteration. calculate all copper, but don't take plane separation into account yet. */
   for (int i = 0; i < hyp_file.net.size(); ++i) {
 
@@ -165,49 +182,65 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
     if (!net_wanted[i]) continue;
 
     /* copy anti-metal of this net */
-    Hyp2Mat::Polygon empty_poly;
-    net_pour[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_POUR, -1.0, empty_poly, raw_polygons); 
-    net_copper[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_COPPER, -1.0, empty_poly, raw_polygons); 
-    net_plane[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_PLANE, -1.0, empty_poly, raw_polygons); 
-    net_pads[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_PAD, -1.0, empty_poly, raw_polygons); 
-    net_antipads[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_ANTIPAD, -1.0, empty_poly, raw_polygons); 
+    net_pour[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_POUR, raw_polygons); 
+    net_copper[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_COPPER, raw_polygons); 
+    net_plane[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_PLANE, raw_polygons); 
+    net_pads[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_PAD, raw_polygons); 
+    net_antipads[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_ANTIPAD, raw_polygons); 
     }
 
-  /* second iteration. calculate all plane polygons, taking plane separation into account. */
+  /* second iteration */
+//XXX fixme
+  /* subtract antipads from pour polygons. */
   for (int i = 0; i < hyp_file.net.size(); ++i) {
 
     /* skip unwanted nets */
     if (!net_wanted[i]) continue;
 
-    /* optimisation: skip nets without plane polygons. This avoids spending time calculating an empty polygon. Improves overall speed 10x */
-    if (!NetHasPlanePoly(hyp_file.net[i])) continue;
+    /* Skip nets without pour polygons. Improves speed */
+    if (net_pour[i].IsEmpty()) continue;
+
+    /* pour polygons have holes where antipads are. */
+    for (int j = 0; j < hyp_file.net.size(); ++j) { 
+      //if (j != i) net_pour[i].Difference(net_antipads[j]);
+       net_pour[i].Difference(net_antipads[j]);
+      }
+    }
+
+//end XXX fixme
+
+  /* calculate all plane polygons, taking plane separation into account. */
+  for (int i = 0; i < hyp_file.net.size(); ++i) {
+
+    /* skip unwanted nets */
+    if (!net_wanted[i]) continue;
+
+    /* Skip nets without plane polygons. This avoids spending time calculating an empty polygon. Improves overall speed */
+    if (net_plane[i].IsEmpty()) continue;
 
     /* calculate other nets' copper.
        We need to calculate other net's copper because plane polygons have to keep a clearance 'plane_separation' from other nets. */
 
-    Hyp2Mat::Polygon other_copper;
-    for (int j = 0; j < hyp_file.net.size(); ++j)
+    for (int j = 0; j < hyp_file.net.size(); ++j) {
       if (j != i) {
-        other_copper.Union(net_pour[j]);
-        other_copper.Union(net_plane[j]);
-        other_copper.Union(net_copper[j]);
-        other_copper.Union(net_pads[j]);
+        Hyp2Mat::Polygon net_j_copper;
+        net_j_copper.Union(net_pour[j]);
+        net_j_copper.Union(net_plane[j]);
+        net_j_copper.Union(net_copper[j]);
+        net_j_copper.Union(net_pads[j]);
+        //net_j_copper.Union(net_antipads[j]);
+
+        /* set plane_separation to the largest plane separation of the two nets */
+        double largest_plane_separation = net_plane_separation[i];
+        if (largest_plane_separation < net_plane_separation[j]) largest_plane_separation = net_plane_separation[j];
+
+        /* shrink plane net_plane[i] until it is a distance "largest_plane_separation" from "net_j_copper" */
+	PlaneSeparation(net_plane[i], net_j_copper, largest_plane_separation);
+        
+        /* plane polygons have holes where antipads are. */
+        net_plane[i].Difference(net_antipads[j]);
         }
-
-    /* calculate other nets' antipads. plane polygons have holes where antipads are. */
-
-    Hyp2Mat::Polygon other_antipads;
-    for (int j = 0; j < hyp_file.net.size(); ++j)
-      if (j != i) {
-        other_antipads.Union(net_antipads[j]);
-        }
-
-    /* calculate plane polygons of this net */
-    Hyp2Mat::FloatPolygons dummy;
-    net_plane[i] = CopyNet(layer, hyp_file.net[i], POLYGON_TYPE_PLANE, plane_separation, other_copper, dummy); 
-
-    /* Subtract other nets' antipads */
-    net_plane[i].Difference(other_antipads);
+      }
     }
    
   /* sum all copper on this layer */ 
@@ -219,12 +252,15 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
     if (!net_wanted[i]) continue;
 
     Hyp2Mat::Polygon this_net_copper;
-    if (layer.layer_type != Hyp2Mat::LAYER_PLANE) {
-      /* on plane layers, these are the small copper segments used to split planes */
-      this_net_copper.Union(net_copper[i]);
-      }
     this_net_copper.Union(net_pour[i]);
     this_net_copper.Union(net_plane[i]);
+
+    if (layer.layer_type != Hyp2Mat::LAYER_PLANE) 
+      this_net_copper.Union(net_copper[i]);
+    else
+      /* on plane layers, these are the small copper segments used to split planes */
+      this_net_copper.Difference(net_copper[i]);
+
     this_net_copper.Union(net_pads[i]);
 
     layer_copper.Union(this_net_copper);
@@ -240,20 +276,6 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
   return layer_copper;
 }
 
-bool HyperLynx::NetHasPlanePoly(HypFile::Net& hyp_net)
-{
-  bool has_plane_poly = false;
-
-  /* iterate over all Hyperlynx polygon id's */
-  for (HypFile::PolygonMap::iterator j =  hyp_net.metal.begin(); j != hyp_net.metal.end(); ++j) {
-    if (j->second.empty()) continue;
-    bool this_polygon_plane = j->second.begin()->polygon_type == POLYGON_TYPE_PLANE;
-    has_plane_poly = has_plane_poly || this_polygon_plane;
-    }
-
-  return has_plane_poly;
-}
-
 /*
  * copy net
  * copy all polygons of a net.
@@ -261,12 +283,9 @@ bool HyperLynx::NetHasPlanePoly(HypFile::Net& hyp_net)
  * if plane is true, copy plane polygons (and subtract other_nets)
  */
 
-Hyp2Mat::Polygon HyperLynx::CopyNet(Hyp2Mat::Layer layer, HypFile::Net& hyp_net, polygon_type_enum poly_type, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons)
+Hyp2Mat::Polygon HyperLynx::CopyNet(Hyp2Mat::Layer layer, HypFile::Net& hyp_net, polygon_type_enum poly_type, Hyp2Mat::FloatPolygons& raw_polygons)
 {
   Hyp2Mat::Polygon net_copper;
-
-  /* Use net plane separation if set. net plane separation is -1 if not set. */
-  if (hyp_net.plane_separation >= 0) plane_separation = hyp_net.plane_separation;
 
   /* iterate over all Hyperlynx polygon id's */
   for (HypFile::PolygonMap::iterator j =  hyp_net.metal.begin(); j != hyp_net.metal.end(); ++j) {
@@ -283,7 +302,7 @@ Hyp2Mat::Polygon HyperLynx::CopyNet(Hyp2Mat::Layer layer, HypFile::Net& hyp_net,
     if (j->second.begin()->polygon_type != poly_type) continue;
 
     /* Join all Hyperlynx polygons/polyvoids with the same id in a single Hyp2Mat polygon */
-    Hyp2Mat::Polygon poly_copper = CopyPolygon(j->second, plane_separation, other_nets, raw_polygons);
+    Hyp2Mat::Polygon poly_copper = CopyPolygon(j->second, raw_polygons);
     net_copper.Union(poly_copper);
     }
 
@@ -296,7 +315,7 @@ Hyp2Mat::Polygon HyperLynx::CopyNet(Hyp2Mat::Layer layer, HypFile::Net& hyp_net,
  * once added to this layers' copper for normal output.
  */
 
-Hyp2Mat::Polygon HyperLynx::CopyPolygon(HypFile::PolygonList metal, double plane_separation, Hyp2Mat::Polygon other_nets, Hyp2Mat::FloatPolygons& raw_polygons)
+Hyp2Mat::Polygon HyperLynx::CopyPolygon(HypFile::PolygonList metal, Hyp2Mat::FloatPolygons& raw_polygons)
 {
   Hyp2Mat::Polygon poly;
 
@@ -329,11 +348,6 @@ Hyp2Mat::Polygon HyperLynx::CopyPolygon(HypFile::PolygonList metal, double plane
   double width = metal.begin()->width;
   poly.Simplify();
   poly.Offset(width/2);
-
-  /* polygon plane separation */
-  if (metal.begin()->plane_separation >= 0) plane_separation = metal.begin()->plane_separation;
-  /* apply plane separation */
-  if (metal.begin()->polygon_type == POLYGON_TYPE_PLANE) PlaneSeparation(poly, other_nets, plane_separation);
 
   return poly;
 }

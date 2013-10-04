@@ -43,6 +43,7 @@ namespace Hyp2Mat {
       void Union(Polygon clip);
       void Difference(Polygon clip);
       void Xor(Polygon clip);
+      bool IsEmpty();
       FloatPolygons Result();
     private:
       /* convert Hyp2Mat to Clipper */

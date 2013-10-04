@@ -54,6 +54,15 @@ double Polygon::AlignToGrid(double x)
 }
 
 /*
+ * Return true if polygon is empty 
+ */
+
+bool Polygon::IsEmpty()
+{
+  return _subject.empty();
+}
+
+/*
  * Add an outer edge to the polygon
  */
 
