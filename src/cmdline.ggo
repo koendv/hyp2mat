@@ -27,7 +27,7 @@ option "hue" - "Set PDF color hue. Range 0.0 to 1.0" double default="0" optional
 option "saturation" - "Set PDF color saturation. Range 0.0 to 1.0" double default="0.6" optional
 option "brightness" - "Set PDF color brightness. Range 0.0 to 1.0" double default="0.9" optional
 section "Debugging options"
-option "raw" r "Raw output. Do not join adjacent or overlapping copper. Do not invert planes." flag off
+option "raw" r "Raw output. Do not join adjacent or overlapping copper." flag off
 option "debug" d "Increase debugging level. Repeat for more detailed debugging." optional multiple
 option "verbose" v "Print board summary." no
 # not truncated

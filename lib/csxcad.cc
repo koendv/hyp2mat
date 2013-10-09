@@ -184,6 +184,7 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
         double z0 = adjust_z(pcb, l->z0);
         double z1 = adjust_z(pcb, l->z1);
         /* AddLinPoly is broken on openEMS 0.0.30, use AddBox instead */
+#define USE_LINPOLY 1
 #ifdef USE_LINPOLY
         /* Use AddLinPoly */
         export_edge(i->poly);

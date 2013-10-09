@@ -100,8 +100,8 @@ struct gengetopt_args_info
   double brightness_arg;	/**< @brief Set PDF color brightness. Range 0.0 to 1.0 (default='0.9').  */
   char * brightness_orig;	/**< @brief Set PDF color brightness. Range 0.0 to 1.0 original value given at command line.  */
   const char *brightness_help; /**< @brief Set PDF color brightness. Range 0.0 to 1.0 help description.  */
-  int raw_flag;	/**< @brief Raw output. Do not join adjacent or overlapping copper. Do not invert planes. (default=off).  */
-  const char *raw_help; /**< @brief Raw output. Do not join adjacent or overlapping copper. Do not invert planes. help description.  */
+  int raw_flag;	/**< @brief Raw output. Do not join adjacent or overlapping copper. (default=off).  */
+  const char *raw_help; /**< @brief Raw output. Do not join adjacent or overlapping copper. help description.  */
   unsigned int debug_min; /**< @brief Increase debugging level. Repeat for more detailed debugging.'s minimum occurreces */
   unsigned int debug_max; /**< @brief Increase debugging level. Repeat for more detailed debugging.'s maximum occurreces */
   const char *debug_help; /**< @brief Increase debugging level. Repeat for more detailed debugging. help description.  */

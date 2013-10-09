@@ -59,16 +59,20 @@ void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb)
    * Copy hyperlynx file data from hyp_file to pcb
    */
   saved_bounds = bounds;
+  bounds = AdjustBounds(pcb, saved_bounds);
   CopyBoard(pcb); /* copy board outline. crop board in x, y axis */
 
   CopyStackUp(pcb); /* copy layer stackup */
+  bounds = AdjustBounds(pcb, saved_bounds);
   CopyVias(pcb); /* copy vias */
   CopyViaPlating(pcb); /* copy via plating thickness */
   CopyDevices(pcb); /* copy device info */
   CopyPins(pcb); /* copy pin references */
 
-  bounds = saved_bounds;
+  bounds = AdjustBounds(pcb, saved_bounds);
   CropLayers(pcb, bounds); /* crop board in z axis */
+
+  if (bounds.z_min == bounds.z_max) std::cerr << "warning: zero height board" << std::endl;
 
   /* 
    * Check whether to print all net names 

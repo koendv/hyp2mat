@@ -93,8 +93,6 @@ void Hyp2Mat::CropLayers(Hyp2Mat::PCB& pcb, Hyp2Mat::Bounds& bounds)
   Hyp2Mat::Layer new_layer;
   Hyp2Mat::LayerList new_stackup;
 
-  bounds = AdjustBounds(pcb, bounds);
-
   for (Hyp2Mat::LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l) {
     if ((l->z0 > bounds.z_max) && (l->z1 > bounds.z_max)) continue;
     if ((l->z0 < bounds.z_min) && (l->z1 < bounds.z_min)) continue;

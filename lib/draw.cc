@@ -212,7 +212,7 @@ Polygon HypFile::Hyp::pad2poly(double pad_x, double pad_y, Pad pad)
       }
     /* calculate points */
     for (int i = 0; i < segments; i++) {
-      double alpha = 2 * pi * i / segments + pi / segments;
+      double alpha = 2 * pi * i / segments;
       double x = sx / 2 / cos(pi / segments) * cos(alpha);
       double y = sy / 2 / cos(pi / segments) * sin(alpha);
       pad_poly.vertex.push_back(Point(x, y));

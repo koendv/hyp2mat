@@ -56,7 +56,7 @@ const char *gengetopt_args_info_help[] = {
   "      --saturation=DOUBLE     Set PDF color saturation. Range 0.0 to 1.0\n                                (default=`0.6')",
   "      --brightness=DOUBLE     Set PDF color brightness. Range 0.0 to 1.0\n                                (default=`0.9')",
   "\nDebugging options:",
-  "  -r, --raw                   Raw output. Do not join adjacent or overlapping\n                                copper. Do not invert planes.  (default=off)",
+  "  -r, --raw                   Raw output. Do not join adjacent or overlapping\n                                copper.  (default=off)",
   "  -d, --debug                 Increase debugging level. Repeat for more\n                                detailed debugging.",
   "  -v, --verbose               Print board summary.",
     0
@@ -1236,7 +1236,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'r':	/* Raw output. Do not join adjacent or overlapping copper. Do not invert planes..  */
+        case 'r':	/* Raw output. Do not join adjacent or overlapping copper..  */
         
         
           if (update_arg((void *)&(args_info->raw_flag), 0, &(args_info->raw_given),
