@@ -59,7 +59,6 @@ void HyperLynx::Read (std::string filename, Hyp2Mat::PCB& pcb)
    * Copy hyperlynx file data from hyp_file to pcb
    */
   saved_bounds = bounds;
-  bounds = AdjustBounds(pcb, saved_bounds);
   CopyBoard(pcb); /* copy board outline. crop board in x, y axis */
 
   CopyStackUp(pcb); /* copy layer stackup */
