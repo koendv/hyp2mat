@@ -88,6 +88,9 @@ int main(int argc, char **argv)
     /* optionally set trace-to-plane clearance */
     if (args_info.clearance_given)
       pcb.SetClearance(args_info.clearance_arg);
+
+    /* set plane layer flooding */
+    pcb.flood_plane_layers =  args_info.flood_flag;
  
     /* optionally crop */
     Bounds bounds;

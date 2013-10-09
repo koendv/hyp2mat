@@ -5,7 +5,6 @@ hyp2mat \- convert hyperlynx files to octave/matlab scripts for electromagnetic 
 .SH OPTIONS
 
 /Print board summary/
-All lengths are in meters. 
 
 Hyperlynx input files conventionally end in 
 .BR .hyp
@@ -50,6 +49,12 @@ lists all available nets.
 Circles and arcs are approximated by polygons. By default a circle is approximated by an octagon. If higher accuracy is needed, set 
 .BR --arc-precision
 to the desired precision. This will increase the number of line segments used to draw circular, oval and oblong pads, amongst others.
+
+The 
+.BR --flood
+option floods power and ground planes with copper. 
+The flooded copper respects trace-to-plane clearances.
+Copper net name is identical to layer name. 
 
 Typical use of 
 .I hyp2mat 

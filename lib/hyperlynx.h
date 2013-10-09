@@ -40,6 +40,7 @@ public:
   bool raw;
   double arc_precision;
   double clearance;
+  bool flood_plane_layers;
   Hyp2Mat::Bounds bounds;
 
 private:

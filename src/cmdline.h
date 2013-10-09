@@ -88,9 +88,11 @@ struct gengetopt_args_info
   double arc_precision_arg;	/**< @brief Set maximum difference between perfect arc and polygonal approximation. (default='0').  */
   char * arc_precision_orig;	/**< @brief Set maximum difference between perfect arc and polygonal approximation. original value given at command line.  */
   const char *arc_precision_help; /**< @brief Set maximum difference between perfect arc and polygonal approximation. help description.  */
-  double clearance_arg;	/**< @brief Set default trace-to-plane clearance. (default='0').  */
+  double clearance_arg;	/**< @brief Set default trace-to-plane clearance. (default='0.0002').  */
   char * clearance_orig;	/**< @brief Set default trace-to-plane clearance. original value given at command line.  */
   const char *clearance_help; /**< @brief Set default trace-to-plane clearance. help description.  */
+  int flood_flag;	/**< @brief Flood plane layers with copper. (default=off).  */
+  const char *flood_help; /**< @brief Flood plane layers with copper. help description.  */
   double hue_arg;	/**< @brief Set PDF color hue. Range 0.0 to 1.0 (default='0').  */
   char * hue_orig;	/**< @brief Set PDF color hue. Range 0.0 to 1.0 original value given at command line.  */
   const char *hue_help; /**< @brief Set PDF color hue. Range 0.0 to 1.0 help description.  */
@@ -123,6 +125,7 @@ struct gengetopt_args_info
   unsigned int grid_given ;	/**< @brief Whether grid was given.  */
   unsigned int arc_precision_given ;	/**< @brief Whether arc-precision was given.  */
   unsigned int clearance_given ;	/**< @brief Whether clearance was given.  */
+  unsigned int flood_given ;	/**< @brief Whether flood was given.  */
   unsigned int hue_given ;	/**< @brief Whether hue was given.  */
   unsigned int saturation_given ;	/**< @brief Whether saturation was given.  */
   unsigned int brightness_given ;	/**< @brief Whether brightness was given.  */

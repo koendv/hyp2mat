@@ -2,19 +2,20 @@
 % load Hyperlynx file 'filename' into CSX .
 %
 % Other optional arguments:
-% epsilonr       Set dielectric epsilon r. Overrides value in Hyperlynx file.
-% net            Import net. Repeat to import several nets. Default is importing all nets.
-% layer          Import layer. Repeat to import several layers. Default is importing all layers.
-% epsilonr       Set dielectric epsilon r.
-% xmin           Crop pcb. Set lower bound of x coordinate.
-% xmax           Crop pcb. Set higher bound of x coordinate.
-% ymin           Crop pcb. Set lower bound of y coordinate.
-% ymax           Crop pcb. Set higher bound of y coordinate.
-% zmin           Crop pcb. Set lower bound of z coordinate.
-% zmax           Crop pcb. Set higher bound of z coordinate.
-% grid           Set output grid size.  (default=`10e-6' = 1 um)
-% arc-precision  Set maximum difference between perfect arc and polygonal approximation.
-% clearance      Set trace-to-plane clearance.
+% epsilonr       float.  Set dielectric epsilon r. Overrides value in Hyperlynx file.
+% net            string. Import net. Repeat to import several nets. Default is importing all nets.
+% layer          string. Import layer. Repeat to import several layers. Default is importing all layers.
+% epsilonr       float.  Set dielectric epsilon r.
+% xmin           float.  Crop pcb. Set lower bound of x coordinate.
+% xmax           float.  Crop pcb. Set higher bound of x coordinate.
+% ymin           float.  Crop pcb. Set lower bound of y coordinate.
+% ymax           float.  Crop pcb. Set higher bound of y coordinate.
+% zmin           float.  Crop pcb. Set lower bound of z coordinate.
+% zmax           float.  Crop pcb. Set higher bound of z coordinate.
+% grid           float.  Set output grid size.  (default = 10e-6 = 1 um)
+% arc-precision  float.  Set maximum difference between perfect arc and polygonal approximation.
+% clearance      float.  Set trace-to-plane clearance. (default = 0.0002)
+% flood          none.   Flood power and ground layers with copper.
 %
 % ImportHyperLynx needs read and write access to the current directory.
 %
@@ -125,6 +126,9 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
     if (strcmpi(varargin{vn}, 'clearance'))
       vn = vn + 1;
       cmdargs = [ cmdargs ' --clearance ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'flood'))
+      cmdargs = [ cmdargs ' --flood ' ];
     end
     vn = vn + 1;
   end

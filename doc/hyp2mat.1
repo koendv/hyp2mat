@@ -64,7 +64,10 @@ polygonal approximation.  (default=`0')
 .TP
 \fB\-c\fR, \fB\-\-clearance\fR=\fIDOUBLE\fR
 Set default trace\-to\-plane clearance.
-(default=`0')
+(default=`0.0002')
+.TP
+\fB\-F\fR, \fB\-\-flood\fR
+Flood plane layers with copper.  (default=off)
 .SS "PDF output options:"
 .TP
 \fB\-\-hue\fR=\fIDOUBLE\fR
@@ -91,7 +94,6 @@ detailed debugging.
 \fB\-v\fR, \fB\-\-verbose\fR
 Print board summary.
 .PP
-All lengths are in meters. 
 
 Hyperlynx input files conventionally end in 
 .BR .hyp
@@ -137,9 +139,17 @@ Circles and arcs are approximated by polygons. By default a circle is approximat
 .BR --arc-precision
 to the desired precision. This will increase the number of line segments used to draw circular, oval and oblong pads, amongst others.
 
+The 
+.BR --flood
+option floods power and ground planes with copper. 
+The flooded copper respects trace-to-plane clearances.
+Copper net name is identical to layer name. 
+
 Typical use of 
 .I hyp2mat 
 is with simulation packages such as OpenEMS.
+.PP
+All lengths are in meters.
 .SH FILES
 .B /usr/share/hyp2mat/matlab/
 .br

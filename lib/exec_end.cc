@@ -34,8 +34,7 @@ bool HypFile::Hyp::exec_end(parse_param& h)
   if (trace_hyp) cerr << "end" << endl;
 
   /* Add copper on plane layers */
-  //XXX Make this a command-line option?
-  //flood_plane_layers();
+  if (flood_plane_layers) flood_plane_layers_with_copper();
 
   return false;
 }

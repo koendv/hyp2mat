@@ -383,7 +383,7 @@ bool HypFile::Hyp::calc_layer_epsilon()
  * Fill plane layers with copper 
  */
 
-void HypFile::Hyp::flood_plane_layers()
+void HypFile::Hyp::flood_plane_layers_with_copper()
 {
 
   for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l) {
@@ -395,7 +395,7 @@ void HypFile::Hyp::flood_plane_layers()
     Polygon default_copper;
     default_copper.vertex = board.edge.front().vertex; /* polygon is board outline */
     default_copper.polygon_type = POLYGON_TYPE_PLANE;
-    default_copper.net_name = l->layer_name;
+    default_copper.net_name = l->layer_name; /* flood layer VCC with copper belonging to net VCC, layer GND with copper belonging to net GND */
     default_copper.id = -1;
     default_copper.positive = true;
     default_copper.width = 0.0;

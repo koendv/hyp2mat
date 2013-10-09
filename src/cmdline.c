@@ -50,7 +50,8 @@ const char *gengetopt_args_info_help[] = {
   "  -Z, --zmax=DOUBLE           Crop pcb. Set upper bound of z coordinate.",
   "  -g, --grid=DOUBLE           Set output grid size.  (default=`10e-6')",
   "  -p, --arc-precision=DOUBLE  Set maximum difference between perfect arc and\n                                polygonal approximation.  (default=`0')",
-  "  -c, --clearance=DOUBLE      Set default trace-to-plane clearance.\n                                (default=`0')",
+  "  -c, --clearance=DOUBLE      Set default trace-to-plane clearance.\n                                (default=`0.0002')",
+  "  -F, --flood                 Flood plane layers with copper.  (default=off)",
   "\nPDF output options:",
   "      --hue=DOUBLE            Set PDF color hue. Range 0.0 to 1.0\n                                (default=`0')",
   "      --saturation=DOUBLE     Set PDF color saturation. Range 0.0 to 1.0\n                                (default=`0.6')",
@@ -59,6 +60,7 @@ const char *gengetopt_args_info_help[] = {
   "  -r, --raw                   Raw output. Do not join adjacent or overlapping\n                                copper.  (default=off)",
   "  -d, --debug                 Increase debugging level. Repeat for more\n                                detailed debugging.",
   "  -v, --verbose               Print board summary.",
+  "\nAll lengths are in meters.",
     0
 };
 
@@ -105,6 +107,7 @@ void clear_given (struct gengetopt_args_info *args_info)
   args_info->grid_given = 0 ;
   args_info->arc_precision_given = 0 ;
   args_info->clearance_given = 0 ;
+  args_info->flood_given = 0 ;
   args_info->hue_given = 0 ;
   args_info->saturation_given = 0 ;
   args_info->brightness_given = 0 ;
@@ -136,8 +139,9 @@ void clear_args (struct gengetopt_args_info *args_info)
   args_info->grid_orig = NULL;
   args_info->arc_precision_arg = 0;
   args_info->arc_precision_orig = NULL;
-  args_info->clearance_arg = 0;
+  args_info->clearance_arg = 0.0002;
   args_info->clearance_orig = NULL;
+  args_info->flood_flag = 0;
   args_info->hue_arg = 0;
   args_info->hue_orig = NULL;
   args_info->saturation_arg = 0.6;
@@ -173,14 +177,15 @@ void init_args_info(struct gengetopt_args_info *args_info)
   args_info->grid_help = gengetopt_args_info_help[14] ;
   args_info->arc_precision_help = gengetopt_args_info_help[15] ;
   args_info->clearance_help = gengetopt_args_info_help[16] ;
-  args_info->hue_help = gengetopt_args_info_help[18] ;
-  args_info->saturation_help = gengetopt_args_info_help[19] ;
-  args_info->brightness_help = gengetopt_args_info_help[20] ;
-  args_info->raw_help = gengetopt_args_info_help[22] ;
-  args_info->debug_help = gengetopt_args_info_help[23] ;
+  args_info->flood_help = gengetopt_args_info_help[17] ;
+  args_info->hue_help = gengetopt_args_info_help[19] ;
+  args_info->saturation_help = gengetopt_args_info_help[20] ;
+  args_info->brightness_help = gengetopt_args_info_help[21] ;
+  args_info->raw_help = gengetopt_args_info_help[23] ;
+  args_info->debug_help = gengetopt_args_info_help[24] ;
   args_info->debug_min = 0;
   args_info->debug_max = 0;
-  args_info->verbose_help = gengetopt_args_info_help[24] ;
+  args_info->verbose_help = gengetopt_args_info_help[25] ;
   
 }
 
@@ -445,6 +450,8 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
     write_into_file(outfile, "arc-precision", args_info->arc_precision_orig, 0);
   if (args_info->clearance_given)
     write_into_file(outfile, "clearance", args_info->clearance_orig, 0);
+  if (args_info->flood_given)
+    write_into_file(outfile, "flood", 0, 0 );
   if (args_info->hue_given)
     write_into_file(outfile, "hue", args_info->hue_orig, 0);
   if (args_info->saturation_given)
@@ -1049,6 +1056,7 @@ cmdline_parser_internal (
         { "grid",	1, NULL, 'g' },
         { "arc-precision",	1, NULL, 'p' },
         { "clearance",	1, NULL, 'c' },
+        { "flood",	0, NULL, 'F' },
         { "hue",	1, NULL, 0 },
         { "saturation",	1, NULL, 0 },
         { "brightness",	1, NULL, 0 },
@@ -1058,7 +1066,7 @@ cmdline_parser_internal (
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVo:f:n:l:e:x:X:y:Y:z:Z:g:p:c:rdv", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVo:f:n:l:e:x:X:y:Y:z:Z:g:p:c:Frdv", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -1229,9 +1237,19 @@ cmdline_parser_internal (
         
           if (update_arg( (void *)&(args_info->clearance_arg), 
                &(args_info->clearance_orig), &(args_info->clearance_given),
-              &(local_args_info.clearance_given), optarg, 0, "0", ARG_DOUBLE,
+              &(local_args_info.clearance_given), optarg, 0, "0.0002", ARG_DOUBLE,
               check_ambiguity, override, 0, 0,
               "clearance", 'c',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'F':	/* Flood plane layers with copper..  */
+        
+        
+          if (update_arg((void *)&(args_info->flood_flag), 0, &(args_info->flood_given),
+              &(local_args_info.flood_given), optarg, 0, 0, ARG_FLAG,
+              check_ambiguity, override, 1, 0, "flood", 'F',
               additional_error))
             goto failure;
         
