@@ -172,7 +172,7 @@ namespace Hyp2Mat {
       DeviceList device;
       PinList pin;
 
-      void ReadHyperLynx(std::string filename, std::vector<std::string> layers = std::vector<std::string>(), std::vector<std::string> nets = std::vector<std::string>(), bool raw = false);
+      void ReadHyperLynx(std::string filename, std::vector<std::string> layers = std::vector<std::string>(), std::vector<std::string> nets = std::vector<std::string>());
       void SetEpsilonR(double epsilon_r); /* set dielectric epsilon r. overrides value in Hyperlynx file. */
       void SetGrid(double new_grid); /* set resolution of x and y coordinates */
       void SetArcPrecision(double new_arc_precision); /* set maximum difference between perfect circle arc and polygonal approximation */
@@ -184,13 +184,13 @@ namespace Hyp2Mat {
       void WriteCSXCAD(std::string filename);
       unsigned int debug; /* setting debug to 0 switches debugging off */
       bool flood_plane_layers; /* flood power and ground layers with copper */
+      bool raw; /* set raw processing */
     private:
       void _ChangeEpsilonR();
       Bounds _bounds;
       double _arc_precision;
       double _clearance;
       double _epsilon_r;
-      bool _raw;
   };
 
 }

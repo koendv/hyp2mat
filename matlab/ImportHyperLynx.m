@@ -16,6 +16,7 @@
 % arc-precision  float.  Set maximum difference between perfect arc and polygonal approximation.
 % clearance      float.  Set trace-to-plane clearance. (default = 0.0002)
 % flood          none.   Flood power and ground layers with copper.
+% version        none.   Print hyp2mat version number.
 %
 % ImportHyperLynx needs read and write access to the current directory.
 %
@@ -129,6 +130,9 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
     end
     if (strcmpi(varargin{vn}, 'flood'))
       cmdargs = [ cmdargs ' --flood ' ];
+    end
+    if (strcmpi(varargin{vn}, 'version'))
+      cmdargs = [ cmdargs ' --version ' ];
     end
     vn = vn + 1;
   end

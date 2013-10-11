@@ -34,6 +34,7 @@ PCB::PCB()
 {
   debug = 0;
   flood_plane_layers = false;
+  raw = false;
   via_plating_thickness = 0;
   _arc_precision = 0;
   _clearance = -1.0;
@@ -44,7 +45,7 @@ PCB::PCB()
  * Read a pcb in hyperlynx format 
  */
 
-void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, std::vector<std::string> nets, bool raw)
+void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, std::vector<std::string> nets)
 {
 
   /* set accuracy with which circle arcs are converted to polygons */

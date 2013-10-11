@@ -64,9 +64,6 @@ int main(int argc, char **argv)
       exit(1);
       }
       
-    /* raw processing */
-    bool raw_flag = args_info.raw_flag; 
-
     /* output file */
     std::string output_file = args_info.output_arg;
 
@@ -76,6 +73,9 @@ int main(int argc, char **argv)
 
     /* set debug level */
     pcb.debug = args_info.debug_given;
+
+    /* set raw processing */
+    pcb.raw = args_info.raw_flag; 
 
     /* optionally set grid */
     if (args_info.grid_given)
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
       pcb.SetEpsilonR(args_info.epsilonr_arg);
  
     /* load hyperlynx file */
-    pcb.ReadHyperLynx(input_file, layers, nets, raw_flag);
+    pcb.ReadHyperLynx(input_file, layers, nets);
   
     /* optionally print layer summary */
     if (args_info.verbose_given)
