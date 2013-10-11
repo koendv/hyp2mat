@@ -36,20 +36,14 @@ using namespace Hyp2Mat;
  *
  * Normal copper polygons are simply added to the copper of the plane.
  * Copper polygons of type "PLANE" have a clearance from other nets. This clearance is the "plane separation".
- * Copper polygons of type "PLANE" are calculated in two steps:
- *  We need a clearance "plane separation" between other nets and our polygon.
- *  - first, all copper polygons which are not of type "PLANE" are computed.
- *  - second, all copper polygon of type "PLANE" are computed. 
- *  - finally, the clearance is computed as follows:
- *      We expand all polygons of other nets by a distance "plane separation" and subtract them from the "PLANE" polygon.
+ * Plane separation can be specified for the board, for a layer, for a net or for a polygon.
  *
- * Two kinds of copper layers exist: "SIGNAL" and "PLANE". A "PLANE" layer is drawn in negative. 
- * On a "SIGNAL" layer the default is dielectric, and copper is drawn. On a "PLANE" layer, the default is copper, and dielectric is drawn.
- * The name of the PLANE layer is the name of the net of the default copper. 
- * E.g. a layer called VCC has a default of being 100% copper, connected to VCC.
- * "PLANE" layers may have a "plane separation" clearance between the default copper and other nets.
+ * Copper polygons of type "PLANE" are calculated as follows:
+ *  - all polygons of all other nets on the same layer are computed, and explanded by the plane separation. This produces the mask.
+ *  - The mask is subtracted from the "PLANE" type polygon.
+ *  - If two polygons, belonging to two different nets, have a different value for plane separation the largest value is used.
  *
- * This code is still a bit rough around the edges.
+ * Note there is no plane separation between polygons of the same net.
  */
 
 /*
