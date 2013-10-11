@@ -41,7 +41,8 @@ using namespace Hyp2Mat;
  * Copper polygons of type "PLANE" are calculated as follows:
  *  - all polygons of all other nets on the same layer are computed, and explanded by the plane separation. This produces the mask.
  *  - The mask is subtracted from the "PLANE" type polygon.
- *  - If two polygons, belonging to two different nets, have a different value for plane separation the largest value is used.
+ *
+ * If mask polygon and plane polygon have a different value for plane separation the largest value is used.
  *
  * Note there is no plane separation between polygons of the same net.
  */
