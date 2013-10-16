@@ -86,11 +86,6 @@ namespace Hyp2Mat {
    * Layers 
    */
 
-  /* a polygon on a signal layer is presence of copper. 
-     a polygon on a plane layer is absence of copper.
-     signal layers are drawn positive,
-     plane layers are drawn negative. */
-
   enum layer_enum { LAYER_SIGNAL, LAYER_DIELECTRIC, LAYER_PLANE };
   
   class Layer {
