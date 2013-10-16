@@ -4,3 +4,8 @@ Makefile
 config.log
 config.status
 libtool
+config/*
+Makefile.in
+m4/
+configure
+aclocal.m4
