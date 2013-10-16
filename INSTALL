@@ -13,6 +13,7 @@ If you wish to build not only the static library, but also the shared libhyp2mat
 The following packages are necessary for development: g++, libtool, make, bison, flex, gengetopt, help2man, groff, ps2pdf.
 
 On Linux ubuntu, with libhpdf installed in /usr/lib:
+  sh ./bootstrap.sh
   ./configure
   make 
   make install
