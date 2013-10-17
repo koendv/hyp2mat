@@ -2,6 +2,8 @@
 *.o
 .deps/
 .libs/
+cmdline.c
+cmdline.h
 config.h
 config.h.in~
 hyp2mat

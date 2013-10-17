@@ -18,6 +18,11 @@ tarball-dist:
 	echo configure > .tar-files
 	echo doc/hyp2mat.pdf >> .tar-files
 	echo doc/hyp2mat.1 >> .tar-files
+	echo lib/parse.cc >> .tar-files
+	echo lib/parse.h >> .tar-files
+	echo lib/scan.cc >> .tar-files
+	echo src/cmdline.c >> .tar-files
+	echo src/cmdline.h >> .tar-files
 	echo aclocal.m4 >> .tar-files
 	echo libtool >> .tar-files
 	find . -name '*.in' >> .tar-files
