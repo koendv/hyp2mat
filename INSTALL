@@ -19,6 +19,7 @@ On Linux ubuntu, with libhpdf installed in /usr/lib:
   make install
 
 On MacOSX, with libhpdf installed in /opt/local using MacPorts:
+  sh ./bootstrap.sh
   CPPFLAGS=-I/opt/local/include LDFLAGS=-L/opt/local/lib ./configure
   make 
   make install
@@ -28,15 +29,15 @@ On Windows:
   Install MinGW (http://www.mingw.org)
   Compile zlib, libpng and libharu (libhpdf):
 
-  zlib-1.2.8
+  zlib-1.2.8:
   INCLUDE_PATH=/usr/include LIBRARY_PATH=/usr/lib BINARY_PATH=/usr/bin make -f win32/Makefile.gcc  install
   
-  libpng-1.5.17
+  libpng-1.5.17:
   CPPFLAGS=-I/usr/include LDFLAGS=-L/usr/lib/ ./configure --prefix=/usr
   make
   make install
   
-  libharu-2.2.1
+  libharu-2.2.1:
   Download libharu-2.2.1-png15.patch from http://sisyphus.ru/en/srpm/Sisyphus/libharu/patches/0
   Patch libharu, configure and install: 
   patch -p0 < libharu-2.2.1-png15.patch
@@ -46,7 +47,8 @@ On Windows:
 
   Compile hyp2mat as a static binary: 
   
-  hyp2mat
+  hyp2mat:
+  sh ./bootstrap.sh
   CPPFLAGS=-I/usr/include LDFLAGS="-static -static-libgcc -static-libstdc++ -L/usr/lib" ./configure
   make
   make install
