@@ -12,7 +12,7 @@ tarball:
 	git archive --format=tar --prefix=hyp2mat-@PACKAGE_VERSION@/ HEAD | bzip2 > hyp2mat-@PACKAGE_VERSION@.tar.bz2
 
 # create a tarball with all generated files inside
-tarball-dist:
+tarball-dist: all
 	$(MAKE) -C doc
 	git archive --format=tar --prefix=hyp2mat-@PACKAGE_VERSION@/ HEAD > hyp2mat-@PACKAGE_VERSION@-dist.tar
 	echo configure > .tar-files

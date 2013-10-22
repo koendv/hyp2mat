@@ -15,7 +15,7 @@
 % grid           float.  Set output grid size.  (default = 10e-6 = 1 um)
 % arc-precision  float.  Set maximum difference between perfect arc and polygonal approximation.
 % clearance      float.  Set trace-to-plane clearance. (default = 0.0002)
-% flood          none.   Flood power and ground layers with copper.
+% flood          string. Flood layer with copper. Repeat to flood several layers. The value "plane_layers" floods all plane layers.
 % version        none.   Print hyp2mat version number.
 %
 % ImportHyperLynx needs read and write access to the current directory.
@@ -129,7 +129,8 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
       cmdargs = [ cmdargs ' --clearance ' num2str(varargin{vn}) ];
     end
     if (strcmpi(varargin{vn}, 'flood'))
-      cmdargs = [ cmdargs ' --flood ' ];
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --flood ''' varargin{vn} '''' ];
     end
     if (strcmpi(varargin{vn}, 'version'))
       cmdargs = [ cmdargs ' --version ' ];

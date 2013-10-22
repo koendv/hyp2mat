@@ -241,7 +241,7 @@ namespace HypFile {
   
       int min_circle_segments;       /* minimum number of polygon segments to draw a full circle; needs to be a multiple of 4 */
       double arc_precision;          /* maximum difference between perfect circle arc and polygonal approximation */
-      bool flood_plane_layers;       /* if true, flood plane layers with copper */
+      StringList flood_layers;       /* layers to be flooded with copper */
   
       /* Hyperlynx UNIT and OPTIONS */
       double unit;                   /* conversion factor: pcb length units to meters */
@@ -320,8 +320,8 @@ namespace HypFile {
       void add_pad(double x, double y, Pad pad); 
       /* Add a via at coordinates x, y  */
       void add_via(double x, double y, std::string layer0_name, std::string layer1_name, double radius); 
-      /* Flood plane layers with copper */
-      void flood_plane_layers_with_copper();
+      /* Flood specified layers with copper */
+      void flood_layers_with_copper();
   
     };
 

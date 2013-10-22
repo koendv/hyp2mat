@@ -178,7 +178,7 @@ namespace Hyp2Mat {
       void WritePDF(std::string filename, double hue = -1, double saturation = -1, double brightness = -1);
       void WriteCSXCAD(std::string filename);
       unsigned int debug; /* setting debug to 0 switches debugging off */
-      bool flood_plane_layers; /* flood power and ground layers with copper */
+      std::vector<std::string> flood_layers; /* names of layers to be flooded with copper */
       bool raw; /* set raw processing */
     private:
       void _ChangeEpsilonR();

@@ -35,7 +35,6 @@ HypFile::Hyp::Hyp()
   unit = 1;
   metal_thickness_unit = 1;
   use_die_for_metal = false;
-  flood_plane_layers = false;
 
   min_circle_segments = 8; // 8 seems minimal, 16 seems more than sufficient.
   arc_precision = 0;

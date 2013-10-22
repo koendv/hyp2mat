@@ -33,7 +33,6 @@ using namespace Hyp2Mat;
 PCB::PCB()
 {
   debug = 0;
-  flood_plane_layers = false;
   raw = false;
   via_plating_thickness = 0;
   _arc_precision = 0;
@@ -59,7 +58,7 @@ void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, 
   hyperlynx.raw = raw;
   hyperlynx.arc_precision = _arc_precision;
   hyperlynx.clearance = _clearance;
-  hyperlynx.flood_plane_layers = flood_plane_layers;
+  hyperlynx.flood_layers = flood_layers;
   hyperlynx.bounds = _bounds;
 
   hyperlynx.Read(filename, *this);

@@ -38,8 +38,7 @@ HyperLynx::HyperLynx ()
 {
   raw = false;
   arc_precision = 0;
-  clearance = 0;
-  flood_plane_layers = false;
+  clearance = 0.0002;
 }
 
 
@@ -101,7 +100,7 @@ bool HyperLynx::LoadHypFile(Hyp2Mat::PCB& pcb, std::string filename, double arc_
     }
   hyp_file.arc_precision = arc_precision;
 
-  hyp_file.flood_plane_layers = flood_plane_layers;
+  hyp_file.flood_layers = flood_layers;
 
   bool success = hyp_file.load(filename);
 

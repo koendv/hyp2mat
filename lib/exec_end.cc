@@ -33,8 +33,8 @@ bool HypFile::Hyp::exec_end(parse_param& h)
 {
   if (trace_hyp) cerr << "end" << endl;
 
-  /* Add copper on plane layers */
-  if (flood_plane_layers) flood_plane_layers_with_copper();
+  /* Optionally flood layers with copper */
+  flood_layers_with_copper();
 
   return false;
 }

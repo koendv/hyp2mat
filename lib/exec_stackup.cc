@@ -20,6 +20,7 @@
 
 #include <iterator>
 #include <iostream>
+#include <algorithm>
 #include "hypfile.h"
 
 using namespace std;
@@ -380,16 +381,25 @@ bool HypFile::Hyp::calc_layer_epsilon()
 }
 
 /*
- * Fill plane layers with copper 
+ * Flood specified layers with copper 
  */
 
-void HypFile::Hyp::flood_plane_layers_with_copper()
+void HypFile::Hyp::flood_layers_with_copper()
 {
+
+  /* check if we have to flood all plane layers */
+  bool flood_plane_layers = std::find(flood_layers.begin(), flood_layers.end(), "plane_layers") != flood_layers.end(); /* look for special value "plane_layers" */
 
   for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l) {
    
-    /* Plane layers only */
-    if (l->layer_type != LAYER_PLANE) continue;
+    /* metallic layers only */
+    if (l->layer_type == LAYER_DIELECTRIC) continue;
+
+    /* check if we have to flood this layer */
+    bool flood_this_layer = std::find(flood_layers.begin(), flood_layers.end(), l->layer_name) != flood_layers.end();
+
+    /* flood with copper if we have to flood this layer, or if this is a plane layer and we have to flood all plane layers */
+    if (!(flood_this_layer || (flood_plane_layers && (l->layer_type == LAYER_PLANE)))) continue;
 
     /* create default copper on plane layer */
     Polygon default_copper;

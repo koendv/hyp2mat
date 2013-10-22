@@ -48,7 +48,6 @@ On Windows:
   Compile hyp2mat as a static binary: 
   
   hyp2mat:
-  sh ./bootstrap.sh
   CPPFLAGS=-I/usr/include LDFLAGS="-static -static-libgcc -static-libstdc++ -L/usr/lib" ./configure
   make
   make install

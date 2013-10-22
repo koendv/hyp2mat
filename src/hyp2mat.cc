@@ -85,12 +85,15 @@ int main(int argc, char **argv)
     if (args_info.arc_precision_given)
       pcb.SetArcPrecision(args_info.arc_precision_arg);
  
-    /* optionally set trace-to-plane clearance */
-    if (args_info.clearance_given)
-      pcb.SetClearance(args_info.clearance_arg);
+    /* set trace-to-plane clearance */
+    pcb.SetClearance(args_info.clearance_arg);
 
-    /* set plane layer flooding */
-    pcb.flood_plane_layers =  args_info.flood_flag;
+    /* set layer flooding */
+    std::vector<std::string> flood;
+    if (args_info.flood_given && args_info.flood_arg)
+      for (unsigned int i = 0; i < args_info.flood_given; ++i)
+        flood.push_back(args_info.flood_arg[i]);
+    pcb.flood_layers = flood;
  
     /* optionally crop */
     Bounds bounds;
