@@ -27,6 +27,11 @@
 
 #include "csxcad.h"
 
+/*
+ * If USE_LINPOLY is not defined, pcb shape is a rectangular box. 
+ * If USE_LINPOLY is defined, pcb shape is arbitrary, including pcb's with holes.
+ */
+
 //#define USE_LINPOLY 1
 #undef USE_LINPOLY
 
