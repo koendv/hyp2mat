@@ -33,8 +33,8 @@ AC_PROG_CXX
 AC_PROG_CC
 AM_PROG_LEX
 AC_PROG_YACC
-AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
+AC_DISABLE_SHARED
 
 # libhpdf is used for pdf output
 # libhpdf needs -lhpdf -lpng -lz -lm
