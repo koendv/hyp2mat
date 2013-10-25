@@ -27,6 +27,9 @@
 
 #include "csxcad.h"
 
+//#define USE_LINPOLY 1
+#undef USE_LINPOLY
+
 using namespace Hyp2Mat;
 
 CSXCAD::CSXCAD()
@@ -184,7 +187,6 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
         double z0 = adjust_z(pcb, l->z0);
         double z1 = adjust_z(pcb, l->z1);
         /* AddLinPoly is broken on openEMS 0.0.30, use AddBox instead */
-#define USE_LINPOLY 1
 #ifdef USE_LINPOLY
         /* Use AddLinPoly */
         export_edge(i->poly);
@@ -209,6 +211,7 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
    * For each cutout we create a single polygon which goes through all layers.
    */
 
+#ifdef USE_LINPOLY
   if (contains_hole(pcb.board)) {
     std::cout << "% create board cutout material" << std::endl;
     std::cout << "CSX = AddMaterial( CSX, 'Drill');" << std::endl;
@@ -218,13 +221,12 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
       /* output CSXCAD polygon */
       if (!i->is_hole) continue;
       std::cout << "% board cutout" << std::endl;
-#ifdef USE_LINPOLY
       export_edge(i->poly);
       int priority = prio_dielectric + i->nesting_level;
       std::cout << "CSX = AddLinPoly(CSX, 'Drill', " << priority << ", 2, " << z_min << ", pgon, " << z_max - z_min << ");" << std::endl;
-#endif
       }
     };
+#endif
 
   return;
 }
