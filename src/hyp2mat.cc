@@ -131,7 +131,7 @@ int main(int argc, char **argv)
           pcb.WritePDF(output_file, args_info.hue_arg, args_info.saturation_arg, args_info.brightness_arg);
         break;
       case output_format_arg_csxcad:
-        pcb.WriteCSXCAD(output_file);
+        pcb.WriteCSXCAD(output_file, args_info.pcb_outline_flag);
         break;
       default:
         std::cerr << "unknown output format " << args_info.output_format_arg << std::endl;

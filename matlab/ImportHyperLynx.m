@@ -16,6 +16,7 @@
 % arc-precision  float.  Set maximum difference between perfect arc and polygonal approximation.
 % clearance      float.  Set trace-to-plane clearance. (default = 0.0002)
 % flood          string. Flood layer with copper. Repeat to flood several layers. The value "plane_layers" floods all plane layers.
+% pcb-outline    none.   Detailed board outline.
 % version        none.   Print hyp2mat version number.
 %
 % ImportHyperLynx needs read and write access to the current directory.
@@ -131,6 +132,9 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
     if (strcmpi(varargin{vn}, 'flood'))
       vn = vn + 1;
       cmdargs = [ cmdargs ' --flood ''' varargin{vn} '''' ];
+    end
+    if (strcmpi(varargin{vn}, 'pcb-outline'))
+      cmdargs = [ cmdargs ' --pcb-outline ' ];
     end
     if (strcmpi(varargin{vn}, 'version'))
       cmdargs = [ cmdargs ' --version ' ];

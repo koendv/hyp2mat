@@ -23,6 +23,8 @@ option "grid" g "Set output grid size." double default="10e-6" optional
 option "arc-precision" p "Set maximum difference between perfect arc and polygonal approximation." default="0" double optional 
 option "clearance" c "Set default trace-to-plane clearance." default="0.0002" double optional 
 option "flood" F "Flood layer with copper. Repeat to flood several layers. The value \"plane_layers\" floods all plane layers." string optional multiple
+section "CSXCAD output options"
+option "pcb-outline" - "Detailed board outline." flag off
 section "PDF output options"
 option "hue" - "Set PDF color hue. Range 0.0 to 1.0" double default="0" optional
 option "saturation" - "Set PDF color saturation. Range 0.0 to 1.0" double default="0.6" optional

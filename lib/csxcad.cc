@@ -27,14 +27,6 @@
 
 #include "csxcad.h"
 
-/*
- * If USE_LINPOLY is not defined, pcb shape is a rectangular box. 
- * If USE_LINPOLY is defined, pcb shape is arbitrary, including pcb's with holes.
- */
-
-//#define USE_LINPOLY 1
-#undef USE_LINPOLY
-
 using namespace Hyp2Mat;
 
 CSXCAD::CSXCAD()
@@ -132,9 +124,11 @@ bool CSXCAD::contains_hole(Hyp2Mat::FloatPolygons& polygons)
 
   /*
    * Export dielectric
+   * If pcb_outline is true, export exact board shape, including holes. 
+   * If pcb_outline is false, export bounding box.
    */
  
-void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
+void CSXCAD::export_board(Hyp2Mat::PCB& pcb, bool pcb_outline)
 {
   /* CSXCAD coordinate grid definition */
   Bounds bounds = pcb.GetBounds();
@@ -191,17 +185,17 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
         int priority = prio_dielectric + i->nesting_level;
         double z0 = adjust_z(pcb, l->z0);
         double z1 = adjust_z(pcb, l->z1);
-        /* AddLinPoly is broken on openEMS 0.0.30, use AddBox instead */
-#ifdef USE_LINPOLY
-        /* Use AddLinPoly */
-        export_edge(i->poly);
-        std::cout << "CSX = AddLinPoly(CSX, 'Dielectric" << index << "', " << priority << ", 2, " << z0 << ", pgon, " << z1 - z0 << ");" << std::endl;
-#else
-        /* Use AddBox */
-        std::cout << "CSX = AddBox(CSX, 'Dielectric" << index << "', " << priority << ", [ ";
-        std::cout << bounds.x_min << ", " << bounds.y_min << ", " << z0 << "], [ ";
-        std::cout << bounds.x_max << ", " << bounds.y_max << ", " << z1 << "]  );" << std::endl;
-#endif
+        if (pcb_outline) {
+           /* Use AddLinPoly */
+           export_edge(i->poly);
+           std::cout << "CSX = AddLinPoly(CSX, 'Dielectric" << index << "', " << priority << ", 2, " << z0 << ", pgon, " << z1 - z0 << ");" << std::endl;
+          }
+        else {
+          /* Use AddBox */
+          std::cout << "CSX = AddBox(CSX, 'Dielectric" << index << "', " << priority << ", [ ";
+          std::cout << bounds.x_min << ", " << bounds.y_min << ", " << z0 << "], [ ";
+          std::cout << bounds.x_max << ", " << bounds.y_max << ", " << z1 << "]  );" << std::endl;
+          }
         }
       }
     };
@@ -216,8 +210,7 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
    * For each cutout we create a single polygon which goes through all layers.
    */
 
-#ifdef USE_LINPOLY
-  if (contains_hole(pcb.board)) {
+  if (pcb_outline && contains_hole(pcb.board)) {
     std::cout << "% create board cutout material" << std::endl;
     std::cout << "CSX = AddMaterial( CSX, 'Drill');" << std::endl;
     std::cout << "CSX = SetMaterialProperty( CSX, 'Drill', 'Epsilon', 1, 'Mue', 1);" << std::endl;
@@ -231,7 +224,6 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb)
       std::cout << "CSX = AddLinPoly(CSX, 'Drill', " << priority << ", 2, " << z_min << ", pgon, " << z_max - z_min << ");" << std::endl;
       }
     };
-#endif
 
   return;
 }
@@ -368,7 +360,7 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
  * Write pcb to file in CSXCAD format 
  */
 
-void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb)
+void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outline)
 {
   if (pcb.debug > 0) {
     std::cerr << "csxcad layer vertical position:" << std::endl;
@@ -388,8 +380,9 @@ void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb)
     return;
     }
 
-  /* Export dielectric */
-  export_board(pcb);
+  /* Export dielectric. If pcb_outline is true, export exact board shape, including holes. 
+     If pcb_outline is false, export bounding box. */
+  export_board(pcb, pcb_outline);
 
   /* Export copper */
   std::cout << "% copper" << std::endl;

@@ -167,6 +167,12 @@ namespace Hyp2Mat {
       DeviceList device;
       PinList pin;
 
+      /*
+       * ReadHyperLynx loads the Hyperlynx file "filename". 
+       * "layers" is the names of the layers to import. Default is importing all layers.
+       * "nets" is the names of the nets to import. Default is importing all nets.
+       */
+
       void ReadHyperLynx(std::string filename, std::vector<std::string> layers = std::vector<std::string>(), std::vector<std::string> nets = std::vector<std::string>());
       void SetEpsilonR(double epsilon_r); /* set dielectric epsilon r. overrides value in Hyperlynx file. */
       void SetGrid(double new_grid); /* set resolution of x and y coordinates */
@@ -174,9 +180,22 @@ namespace Hyp2Mat {
       void SetClearance(double new_clearance); /* set trace-to-plane clearance */
       Bounds GetBounds(); /* gets board extension in x,y and z */
       void SetBounds(Bounds new_bounds); /* crops board in x,y and z */
-      void PrintSummary();
+      void PrintSummary(); /* print layer summary */
+
+      /*
+       * WritePDF exports to the pdf file "filename".
+       * "hue", "saturation" and "brightness" are color options with a value between 0.0 and 1.0.
+       */
+
       void WritePDF(std::string filename, double hue = -1, double saturation = -1, double brightness = -1);
-      void WriteCSXCAD(std::string filename);
+
+      /* 
+       * WriteCSXCAD exports csxcad matlab code to file "filename".
+       * If "pcb_outline" is true, the detailed pcb shape is exported, including pcb cutouts. 
+       * If "pcb_outline" is false, a simple rectangular bounding box is output."
+       */
+
+      void WriteCSXCAD(std::string filename, bool pcb_outline = false);
       unsigned int debug; /* setting debug to 0 switches debugging off */
       std::vector<std::string> flood_layers; /* names of layers to be flooded with copper */
       bool raw; /* set raw processing */
