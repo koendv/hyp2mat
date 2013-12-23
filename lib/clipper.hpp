@@ -1,8 +1,8 @@
 /*******************************************************************************
 *                                                                              *
 * Author    :  Angus Johnson                                                   *
-* Version   :  6.0.0                                                           *
-* Date      :  30 October 2013                                                 *
+* Version   :  5.1.6                                                           *
+* Date      :  23 May 2013                                                     *
 * Website   :  http://www.angusj.com                                           *
 * Copyright :  Angus Johnson 2010-2013                                         *
 *                                                                              *
@@ -34,30 +34,13 @@
 #ifndef clipper_hpp
 #define clipper_hpp
 
-#define CLIPPER_VERSION "6.0.0"
-
-//use_int32: When enabled 32bit ints are used instead of 64bit ints. This
-//improve performance but coordinate values are limited to the range +/- 46340
-//#define use_int32
-
-//use_xyz: adds a Z member to IntPoint. Adds a minor cost to perfomance.
-//#define use_xyz
-
-//use_lines: Enables line clipping. Adds a very minor cost to performance.
-//#define use_lines
-  
-//When enabled, code developed with earlier versions of Clipper 
-//(ie prior to ver 6) should compile without changes. 
-//In a future update, this compatability code will be removed.
-#define use_deprecated  
+#define CLIPPER_VERSION "5.1.6"
 
 #include <vector>
-#include <set>
 #include <stdexcept>
 #include <cstring>
 #include <cstdlib>
 #include <ostream>
-#include <functional>
 
 namespace ClipperLib {
 
@@ -69,63 +52,23 @@ enum PolyType { ptSubject, ptClip };
 //see http://glprogramming.com/red/chapter11.html
 enum PolyFillType { pftEvenOdd, pftNonZero, pftPositive, pftNegative };
 
-#ifdef use_int32
-typedef int cInt;
-typedef unsigned int cUInt;
-#else
-typedef signed long long cInt;
-typedef unsigned long long cUInt;
-#endif
+typedef signed long long long64;
+typedef unsigned long long ulong64;
 
 struct IntPoint {
-  cInt X;
-  cInt Y;
-#ifdef use_xyz
-  cInt Z;
-  IntPoint(cInt x = 0, cInt y = 0, cInt z = 0): X(x), Y(y), Z(z) {};
-#else
-  IntPoint(cInt x = 0, cInt y = 0): X(x), Y(y) {};
-#endif
-
-  friend inline bool operator== (const IntPoint& a, const IntPoint& b)
-  {
-    return a.X == b.X && a.Y == b.Y;
-  }
-  friend inline bool operator!= (const IntPoint& a, const IntPoint& b)
-  {
-    return a.X != b.X  || a.Y != b.Y; 
-  }
+public:
+  long64 X;
+  long64 Y;
+  IntPoint(long64 x = 0, long64 y = 0): X(x), Y(y) {};
+  friend std::ostream& operator <<(std::ostream &s, IntPoint &p);
 };
-//------------------------------------------------------------------------------
 
-typedef std::vector< IntPoint > Path;
-typedef std::vector< Path > Paths;
+typedef std::vector< IntPoint > Polygon;
+typedef std::vector< Polygon > Polygons;
 
-inline Path& operator <<(Path& poly, const IntPoint& p) {poly.push_back(p); return poly;}
-inline Paths& operator <<(Paths& polys, const Path& p) {polys.push_back(p); return polys;}
 
-std::ostream& operator <<(std::ostream &s, const IntPoint &p);
-std::ostream& operator <<(std::ostream &s, const Path &p);
-std::ostream& operator <<(std::ostream &s, const Paths &p);
-
-#ifdef use_deprecated
-typedef signed long long long64; //backward compatibility only
-typedef Path Polygon;
-typedef Paths Polygons;
-#endif
-
-struct DoublePoint
-{
-  double X;
-  double Y;
-  DoublePoint(double x = 0, double y = 0) : X(x), Y(y) {}
-  DoublePoint(IntPoint ip) : X((double)ip.X), Y((double)ip.Y) {}
-};
-//------------------------------------------------------------------------------
-
-#ifdef use_xyz
-typedef void (*TZFillCallback)(IntPoint& z1, IntPoint& z2, IntPoint& pt);
-#endif
+std::ostream& operator <<(std::ostream &s, Polygon &p);
+std::ostream& operator <<(std::ostream &s, Polygons &p);
 
 class PolyNode;
 typedef std::vector< PolyNode* > PolyNodes;
@@ -134,15 +77,13 @@ class PolyNode
 { 
 public:
     PolyNode();
-    Path Contour;
+    Polygon Contour;
     PolyNodes Childs;
     PolyNode* Parent;
     PolyNode* GetNext() const;
     bool IsHole() const;
-    bool IsOpen() const;
     int ChildCount() const;
 private:
-    bool m_IsOpen;
     PolyNode* GetNextSiblingUp() const;
     unsigned Index; //node index in Parent.Childs
     void AddChild(PolyNode& child);
@@ -160,63 +101,119 @@ private:
     PolyNodes AllNodes;
     friend class Clipper; //to access AllNodes
 };
+        
+enum JoinType { jtSquare, jtRound, jtMiter };
+enum EndType { etClosed, etButt, etSquare, etRound};
 
-enum InitOptions {ioReverseSolution = 1, ioStrictlySimple = 2, ioPreserveCollinear = 4};
-enum JoinType {jtSquare, jtRound, jtMiter};
-enum EndType {etClosed, etButt, etSquare, etRound};
+bool Orientation(const Polygon &poly);
+double Area(const Polygon &poly);
 
-bool Orientation(const Path &poly);
-double Area(const Path &poly);
+void OffsetPolygons(const Polygons &in_polys, Polygons &out_polys,
+  double delta, JoinType jointype = jtSquare, double limit = 0, bool autoFix = true);
 
-#ifdef use_deprecated
-  void OffsetPolygons(const Polygons &in_polys, Polygons &out_polys,
-    double delta, JoinType jointype = jtSquare, double limit = 0, bool autoFix = true);
-  void PolyTreeToPolygons(const PolyTree& polytree, Paths& paths);
-  void ReversePolygon(Path& p);
-  void ReversePolygons(Paths& p);
-#endif
+void OffsetPolyLines(const Polygons &in_lines, Polygons &out_lines,
+  double delta, JoinType jointype = jtSquare, EndType endtype = etSquare, double limit = 0, bool autoFix = true);
 
-void OffsetPaths(const Paths &in_polys, Paths &out_polys,
-  double delta, JoinType jointype, EndType endtype, double limit = 0);
+void SimplifyPolygon(const Polygon &in_poly, Polygons &out_polys, PolyFillType fillType = pftEvenOdd);
+void SimplifyPolygons(const Polygons &in_polys, Polygons &out_polys, PolyFillType fillType = pftEvenOdd);
+void SimplifyPolygons(Polygons &polys, PolyFillType fillType = pftEvenOdd);
 
-void SimplifyPolygon(const Path &in_poly, Paths &out_polys, PolyFillType fillType = pftEvenOdd);
-void SimplifyPolygons(const Paths &in_polys, Paths &out_polys, PolyFillType fillType = pftEvenOdd);
-void SimplifyPolygons(Paths &polys, PolyFillType fillType = pftEvenOdd);
+void CleanPolygon(const Polygon& in_poly, Polygon& out_poly, double distance = 1.415);
+void CleanPolygons(const Polygons& in_polys, Polygons& out_polys, double distance = 1.415);
 
-void CleanPolygon(const Path& in_poly, Path& out_poly, double distance = 1.415);
-void CleanPolygon(Path& poly, double distance = 1.415);
-void CleanPolygons(const Paths& in_polys, Paths& out_polys, double distance = 1.415);
-void CleanPolygons(Paths& polys, double distance = 1.415);
+void PolyTreeToPolygons(const PolyTree& polytree, Polygons& polygons);
 
-void MinkowkiSum(const Path& poly, const Path& path, Paths& solution, bool isClosed);
-void MinkowkiDiff(const Path& poly, const Path& path, Paths& solution, bool isClosed);
+void ReversePolygon(Polygon& p);
+void ReversePolygons(Polygons& p);
 
-void PolyTreeToPaths(const PolyTree& polytree, Paths& paths);
-void ClosedPathsFromPolyTree(const PolyTree& polytree, Paths& paths);
-void OpenPathsFromPolyTree(PolyTree& polytree, Paths& paths);
-
-void ReversePath(Path& p);
-void ReversePaths(Paths& p);
-
-struct IntRect { cInt left; cInt top; cInt right; cInt bottom; };
-
-//enums that are used internally ...
+//used internally ...
 enum EdgeSide { esLeft = 1, esRight = 2};
+enum IntersectProtects { ipNone = 0, ipLeft = 1, ipRight = 2, ipBoth = 3 };
+//inline IntersectProtects operator|(IntersectProtects a, IntersectProtects b)
+//{return static_cast<IntersectProtects>(static_cast<int>(a) | static_cast<int>(b));}
 
-//forward declarations (for stuff used internally) ...
-struct TEdge;
-struct IntersectNode;
-struct LocalMinima;
-struct Scanbeam;
-struct OutPt;
-struct OutRec;
-struct Join;
+struct TEdge {
+  long64 xbot;
+  long64 ybot;
+  long64 xcurr;
+  long64 ycurr;
+  long64 xtop;
+  long64 ytop;
+  double dx;
+  long64 deltaX;
+  long64 deltaY;
+  PolyType polyType;
+  EdgeSide side;
+  int windDelta; //1 or -1 depending on winding direction
+  int windCnt;
+  int windCnt2; //winding count of the opposite polytype
+  int outIdx;
+  TEdge *next;
+  TEdge *prev;
+  TEdge *nextInLML;
+  TEdge *nextInAEL;
+  TEdge *prevInAEL;
+  TEdge *nextInSEL;
+  TEdge *prevInSEL;
+};
+
+struct IntersectNode {
+  TEdge          *edge1;
+  TEdge          *edge2;
+  IntPoint        pt;
+  IntersectNode  *next;
+};
+
+struct LocalMinima {
+  long64        Y;
+  TEdge        *leftBound;
+  TEdge        *rightBound;
+  LocalMinima  *next;
+};
+
+struct Scanbeam {
+  long64    Y;
+  Scanbeam *next;
+};
+
+struct OutPt; //forward declaration
+
+struct OutRec {
+  int     idx;
+  bool    isHole;
+  OutRec *FirstLeft;  //see comments in clipper.pas
+  PolyNode *polyNode;
+  OutPt  *pts;
+  OutPt  *bottomPt;
+};
+
+struct OutPt {
+  int     idx;
+  IntPoint pt;
+  OutPt   *next;
+  OutPt   *prev;
+};
+
+struct JoinRec {
+  IntPoint  pt1a;
+  IntPoint  pt1b;
+  int       poly1Idx;
+  IntPoint  pt2a;
+  IntPoint  pt2b;
+  int       poly2Idx;
+};
+
+struct HorzJoinRec {
+  TEdge    *edge;
+  int       savedIdx;
+};
+
+struct IntRect { long64 left; long64 top; long64 right; long64 bottom; };
 
 typedef std::vector < OutRec* > PolyOutList;
 typedef std::vector < TEdge* > EdgeList;
-typedef std::vector < Join* > JoinList;
-
-//------------------------------------------------------------------------------
+typedef std::vector < JoinRec* > JoinList;
+typedef std::vector < HorzJoinRec* > HorzJoinList;
 
 //ClipperBase is the ancestor to the Clipper class. It should not be
 //instantiated directly. This class simply abstracts the conversion of sets of
@@ -226,43 +223,29 @@ class ClipperBase
 public:
   ClipperBase();
   virtual ~ClipperBase();
-  bool AddPath(const Path &pg, PolyType PolyTyp, bool Closed);
-  bool AddPaths(const Paths &ppg, PolyType PolyTyp, bool Closed);
-
-#ifdef use_deprecated
-  bool AddPolygon(const Path &pg, PolyType PolyTyp);
-  bool AddPolygons(const Paths &ppg, PolyType PolyTyp);
-#endif
-
+  bool AddPolygon(const Polygon &pg, PolyType polyType);
+  bool AddPolygons( const Polygons &ppg, PolyType polyType);
   virtual void Clear();
   IntRect GetBounds();
-  bool PreserveCollinear() {return m_PreserveCollinear;};
-  void PreserveCollinear(bool value) {m_PreserveCollinear = value;};
 protected:
   void DisposeLocalMinimaList();
-  TEdge* AddBoundsToLML(TEdge *e, bool IsClosed);
+  TEdge* AddBoundsToLML(TEdge *e);
   void PopLocalMinima();
   virtual void Reset();
   void InsertLocalMinima(LocalMinima *newLm);
-  void DoMinimaLML(TEdge* E1, TEdge* E2, bool IsClosed);
-  TEdge* DescendToMin(TEdge *&E);
-  void AscendToMax(TEdge *&E, bool Appending, bool IsClosed);
   LocalMinima      *m_CurrentLM;
   LocalMinima      *m_MinimaList;
   bool              m_UseFullRange;
   EdgeList          m_edges;
-  bool             m_PreserveCollinear;
-  bool             m_HasOpenPaths;
 };
-//------------------------------------------------------------------------------
 
 class Clipper : public virtual ClipperBase
 {
 public:
-  Clipper(int initOptions = 0);
+  Clipper();
   ~Clipper();
   bool Execute(ClipType clipType,
-    Paths &solution,
+    Polygons &solution,
     PolyFillType subjFillType = pftEvenOdd,
     PolyFillType clipFillType = pftEvenOdd);
   bool Execute(ClipType clipType,
@@ -272,21 +255,17 @@ public:
   void Clear();
   bool ReverseSolution() {return m_ReverseOutput;};
   void ReverseSolution(bool value) {m_ReverseOutput = value;};
-  bool StrictlySimple() {return m_StrictSimple;};
-  void StrictlySimple(bool value) {m_StrictSimple = value;};
-  //set the callback function for z value filling on intersections (otherwise Z is 0)
-#ifdef use_xyz
-  void ZFillFunction(TZFillCallback zFillFunc);
-#endif
+  bool ForceSimple() {return m_ForceSimple;};
+  void ForceSimple(bool value) {m_ForceSimple = value;};
 protected:
   void Reset();
   virtual bool ExecuteInternal();
 private:
   PolyOutList       m_PolyOuts;
   JoinList          m_Joins;
-  JoinList          m_GhostJoins;
+  HorzJoinList      m_HorizJoins;
   ClipType          m_ClipType;
-  std::set< cInt, std::greater<cInt> > m_Scanbeam;
+  Scanbeam         *m_Scanbeam;
   TEdge           *m_ActiveEdges;
   TEdge           *m_SortedEdges;
   IntersectNode   *m_IntersectNodes;
@@ -295,17 +274,15 @@ private:
   PolyFillType     m_SubjFillType;
   bool             m_ReverseOutput;
   bool             m_UsingPolyTree; 
-  bool             m_StrictSimple;
-#ifdef use_xyz
-  TZFillCallback   m_ZFill; //custom callback 
-#endif
+  bool             m_ForceSimple;
+  void DisposeScanbeamList();
   void SetWindingCount(TEdge& edge);
   bool IsEvenOddFillType(const TEdge& edge) const;
   bool IsEvenOddAltFillType(const TEdge& edge) const;
-  void InsertScanbeam(const cInt Y);
-  cInt PopScanbeam();
-  void InsertLocalMinimaIntoAEL(const cInt botY);
-  void InsertEdgeIntoAEL(TEdge *edge, TEdge* startEdge);
+  void InsertScanbeam(const long64 Y);
+  long64 PopScanbeam();
+  void InsertLocalMinimaIntoAEL(const long64 botY);
+  void InsertEdgeIntoAEL(TEdge *edge);
   void AddEdgeToSEL(TEdge *edge);
   void CopyAELToSEL();
   void DeleteFromSEL(TEdge *e);
@@ -313,28 +290,27 @@ private:
   void UpdateEdgeIntoAEL(TEdge *&e);
   void SwapPositionsInSEL(TEdge *edge1, TEdge *edge2);
   bool IsContributing(const TEdge& edge) const;
-  bool IsTopHorz(const cInt XPos);
+  bool IsTopHorz(const long64 XPos);
   void SwapPositionsInAEL(TEdge *edge1, TEdge *edge2);
-  void DoMaxima(TEdge *e);
-  void PrepareHorzJoins(TEdge* horzEdge, bool isTopOfScanbeam);
-  void ProcessHorizontals(bool IsTopOfScanbeam);
-  void ProcessHorizontal(TEdge *horzEdge, bool isTopOfScanbeam);
+  void DoMaxima(TEdge *e, long64 topY);
+  void ProcessHorizontals();
+  void ProcessHorizontal(TEdge *horzEdge);
   void AddLocalMaxPoly(TEdge *e1, TEdge *e2, const IntPoint &pt);
-  OutPt* AddLocalMinPoly(TEdge *e1, TEdge *e2, const IntPoint &pt);
+  void AddLocalMinPoly(TEdge *e1, TEdge *e2, const IntPoint &pt);
   OutRec* GetOutRec(int idx);
   void AppendPolygon(TEdge *e1, TEdge *e2);
   void IntersectEdges(TEdge *e1, TEdge *e2,
-    const IntPoint &pt, bool protect = false);
+    const IntPoint &pt, const IntersectProtects protects);
   OutRec* CreateOutRec();
-  OutPt* AddOutPt(TEdge *e, const IntPoint &pt);
-  void DisposeAllOutRecs();
+  void AddOutPt(TEdge *e, const IntPoint &pt);
+  void DisposeAllPolyPts();
   void DisposeOutRec(PolyOutList::size_type index);
-  bool ProcessIntersections(const cInt botY, const cInt topY);
+  bool ProcessIntersections(const long64 botY, const long64 topY);
   void InsertIntersectNode(TEdge *e1, TEdge *e2, const IntPoint &pt);
-  void BuildIntersectList(const cInt botY, const cInt topY);
+  void BuildIntersectList(const long64 botY, const long64 topY);
   void ProcessIntersectList();
-  void ProcessEdgesAtTopOfScanbeam(const cInt topY);
-  void BuildResult(Paths& polys);
+  void ProcessEdgesAtTopOfScanbeam(const long64 topY);
+  void BuildResult(Polygons& polys);
   void BuildResult2(PolyTree& polytree);
   void SetHoleState(TEdge *e, OutRec *outrec);
   void DisposeIntersectNodes();
@@ -342,19 +318,19 @@ private:
   void FixupOutPolygon(OutRec &outrec);
   bool IsHole(TEdge *e);
   void FixHoleLinkage(OutRec &outrec);
-  void AddJoin(OutPt *op1, OutPt *op2, const IntPoint offPt);
+  void AddJoin(TEdge *e1, TEdge *e2, int e1OutIdx = -1, int e2OutIdx = -1);
   void ClearJoins();
-  void ClearGhostJoins();
-  void AddGhostJoin(OutPt *op, const IntPoint offPt);
-  bool JoinPoints(const Join *j, OutPt *&p1, OutPt *&p2);
+  void AddHorzJoin(TEdge *e, int idx);
+  void ClearHorzJoins();
+  bool JoinPoints(const JoinRec *j, OutPt *&p1, OutPt *&p2);
+  void FixupJoinRecs(JoinRec *j, OutPt *pt, unsigned startIdx);
   void JoinCommonEdges();
   void DoSimplePolygons();
   void FixupFirstLefts1(OutRec* OldOutRec, OutRec* NewOutRec);
   void FixupFirstLefts2(OutRec* OldOutRec, OutRec* NewOutRec);
-#ifdef use_xyz
-  void SetZ(IntPoint& pt, TEdge& e);
-#endif
 };
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 class clipperException : public std::exception

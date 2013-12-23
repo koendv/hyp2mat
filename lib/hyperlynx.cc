@@ -94,6 +94,10 @@ bool HyperLynx::LoadHypFile(Hyp2Mat::PCB& pcb, std::string filename, double arc_
   hyp_file.trace_parser = (pcb.debug == 3);
   hyp_file.trace_hyp = (pcb.debug == 2);
 
+  if (pcb.debug != 0) {
+    std::cerr << "using ClipperLib " << CLIPPER_VERSION << std::endl;
+    }
+
   if (arc_precision < 0) {
     std::cerr << "arc precision negative" << std::endl;
     arc_precision = 0;
