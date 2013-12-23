@@ -30,6 +30,7 @@
 #include <iostream>
 #include <algorithm>
 
+#include "config.h"
 #include "hyperlynx.h"
 #include "polygon.h"
 #include "crop.h"
@@ -95,7 +96,7 @@ bool HyperLynx::LoadHypFile(Hyp2Mat::PCB& pcb, std::string filename, double arc_
   hyp_file.trace_hyp = (pcb.debug == 2);
 
   if (pcb.debug != 0) {
-    std::cerr << "using ClipperLib " << CLIPPER_VERSION << std::endl;
+    std::cerr << "hyp2mat " << VERSION << " using ClipperLib " << CLIPPER_VERSION << std::endl;
     }
 
   if (arc_precision < 0) {
