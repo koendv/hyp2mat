@@ -26,7 +26,7 @@
 class CSXCAD {
 public:
   CSXCAD();
-  void Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outline); /* save in CSXcad format */
+  void Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outline, bool lossy_copper); /* save in CSXcad format */
 
 private:
   int prio_dielectric;  // FR4 dielectric
@@ -37,7 +37,7 @@ private:
   double adjust_z(Hyp2Mat::PCB& pcb, double z);
 
   void export_edge(Hyp2Mat::FloatPolygon& edge); /* output a polygon edge */
-  void export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer); /* output a copper layer */
+  void export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer, bool lossy_copper); /* output a copper layer */
   void export_board(Hyp2Mat::PCB& pcb, bool pcb_outline); /* output the dielectric */
   void export_vias(Hyp2Mat::PCB& pcb);
   void export_devices(Hyp2Mat::PCB& pcb);

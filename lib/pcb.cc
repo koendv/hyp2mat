@@ -73,10 +73,10 @@ void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, 
  * Write a pcb in csxcad format
  */
 
-void PCB::WriteCSXCAD (std::string filename, bool pcb_outline)
+void PCB::WriteCSXCAD (std::string filename, bool pcb_outline, bool lossy_copper)
 {
   CSXCAD csxcad;
-  csxcad.Write(filename, *this, pcb_outline);
+  csxcad.Write(filename, *this, pcb_outline, lossy_copper);
 }
 
 /*

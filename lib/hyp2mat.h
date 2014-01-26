@@ -195,7 +195,7 @@ namespace Hyp2Mat {
        * If "pcb_outline" is false, a simple rectangular bounding box is output."
        */
 
-      void WriteCSXCAD(std::string filename, bool pcb_outline = false);
+      void WriteCSXCAD(std::string filename, bool pcb_outline = false, bool lossy_copper = false);
       unsigned int debug; /* setting debug to 0 switches debugging off */
       std::vector<std::string> flood_layers; /* names of layers to be flooded with copper */
       bool raw; /* set raw processing */

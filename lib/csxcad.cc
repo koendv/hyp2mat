@@ -229,25 +229,34 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb, bool pcb_outline)
 }
 
   /*
-   * Export copper
+   * Export copper.
+   * If lossy_copper is true, take copper conductivity into account. 
+   * If lossy_copper is false, assume copper is perfect conductor.
    */
  
-void CSXCAD::export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer)
+void CSXCAD::export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer, bool lossy_copper)
 {
   std::string layer_material = layer.layer_name + "_copper";
   std::string layer_cutout = layer.layer_name + "_cutout";
   
   // create layer material if at least one positive polygon present
   if (contains_polygon(layer.metal)) {
-      double copper_conductivity = 1 / layer.bulk_resistivity;
       std::cout << "% create layer " << layer.layer_name << " material" << std::endl;
-      std::cout << "CSX = AddConductingSheet(CSX, '" << layer_material << "', " << copper_conductivity << ", " << layer.thickness() << ");" << std::endl;
+
+      if ((layer.bulk_resistivity > 0) && lossy_copper) {
+          double copper_conductivity = 1 / layer.bulk_resistivity;
+          std::cout << "CSX = AddConductingSheet(CSX, '" << layer_material << "', " << copper_conductivity << ", " << layer.thickness() << "); % lossy conductor" << std::endl;
+          }
+      else
+          std::cout << "CSX = AddMetal(CSX, '" << layer_material << "'); % perfect conductor" << std::endl;
       };
 
   // create layer cutout material if at least one hole present
   if (contains_hole(layer.metal)) {
       std::cout << "% create layer " << layer.layer_name << " cutout" << std::endl;
-      std::cout << "CSX = AddConductingSheet(CSX, '" << layer_cutout << "', " << 0 << ", " << layer.thickness() << ");" << std::endl;
+      std::cout << "CSX = AddMaterial( CSX, '" << layer_cutout << "');" << std::endl;
+      // outer and inner copper layers have different epsilonr
+      std::cout << "CSX = SetMaterialProperty( CSX, '" << layer_cutout << "', 'Epsilon', " << layer.epsilon_r << ", 'Mue', 1);" << std::endl;
       };
 
   /*
@@ -360,7 +369,7 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
  * Write pcb to file in CSXCAD format 
  */
 
-void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outline)
+void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outline, bool lossy_copper)
 {
   if (pcb.debug > 0) {
     std::cerr << "csxcad layer vertical position:" << std::endl;
@@ -387,7 +396,7 @@ void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outli
   /* Export copper */
   std::cout << "% copper" << std::endl;
   for (LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l)
-    export_layer(pcb, *l);
+    export_layer(pcb, *l, lossy_copper);
 
   /* Export vias */
   export_vias(pcb);
