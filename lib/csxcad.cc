@@ -128,7 +128,7 @@ bool CSXCAD::contains_hole(Hyp2Mat::FloatPolygons& polygons)
    * If pcb_outline is false, export bounding box.
    */
  
-void CSXCAD::export_board(Hyp2Mat::PCB& pcb, bool pcb_outline)
+void CSXCAD::export_board(Hyp2Mat::PCB& pcb, bool pcb_outline, double kappa)
 {
   /* CSXCAD coordinate grid definition */
   Bounds bounds = pcb.GetBounds();
@@ -176,7 +176,9 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb, bool pcb_outline)
           int index = std::distance(dielectrics.begin(), it);
           std::cout << "% create board material" << std::endl;
           std::cout << "CSX = AddMaterial( CSX, 'Dielectric" << index << "');" << std::endl;
-          std::cout << "CSX = SetMaterialProperty( CSX, 'Dielectric" << index << "', 'Epsilon', " << *it << ", 'Mue', 1);" << std::endl;
+          std::cout << "CSX = SetMaterialProperty( CSX, 'Dielectric" << index << "', 'Epsilon', " << *it << ", 'Mue', 1";
+          if (kappa != 0.0) std::cout << ", 'Kappa', " << kappa;
+          std::cout << ");" << std::endl;
           }
 
         /* output CSXCAD polygon */
@@ -369,7 +371,7 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
  * Write pcb to file in CSXCAD format 
  */
 
-void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outline, bool lossy_copper)
+void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outline, double kappa, bool lossy_copper)
 {
   if (pcb.debug > 0) {
     std::cerr << "csxcad layer vertical position:" << std::endl;
@@ -391,7 +393,7 @@ void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outli
 
   /* Export dielectric. If pcb_outline is true, export exact board shape, including holes. 
      If pcb_outline is false, export bounding box. */
-  export_board(pcb, pcb_outline);
+  export_board(pcb, pcb_outline, kappa);
 
   /* Export copper */
   std::cout << "% copper" << std::endl;

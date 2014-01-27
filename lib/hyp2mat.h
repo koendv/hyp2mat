@@ -193,9 +193,12 @@ namespace Hyp2Mat {
        * WriteCSXCAD exports csxcad matlab code to file "filename".
        * If "pcb_outline" is true, the detailed pcb shape is exported, including pcb cutouts. 
        * If "pcb_outline" is false, a simple rectangular bounding box is output."
+       * "kappa" is the conductivity of the board.
+       * If "lossy_copper" is true, copper is modeled as lossy.
+       * If "lossy_copper" is false, copper is modeled as a perfect conductor.
        */
 
-      void WriteCSXCAD(std::string filename, bool pcb_outline = false, bool lossy_copper = false);
+      void WriteCSXCAD(std::string filename, bool pcb_outline = false, double kappa = 0.0, bool lossy_copper = false);
       unsigned int debug; /* setting debug to 0 switches debugging off */
       std::vector<std::string> flood_layers; /* names of layers to be flooded with copper */
       bool raw; /* set raw processing */
