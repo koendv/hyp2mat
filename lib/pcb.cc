@@ -25,8 +25,8 @@
 #include "hyp2mat.h"
 
 #include "hyperlynx.h"
-#include "csxcad.h"
 #include "pdf.h"
+#include "csxcad.h"
 
 using namespace Hyp2Mat;
 
@@ -38,6 +38,11 @@ PCB::PCB()
   _arc_precision = 0;
   _clearance = -1.0;
   _epsilon_r = -1.0;
+  _epsilon_r_override = false;
+  _bulk_resistivity = -1.0;
+  _bulk_resistivity_override = false;
+  _loss_tangent = -1.0;
+  _loss_tangent_override = false;
 }
 
 /*
@@ -63,20 +68,10 @@ void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, 
 
   hyperlynx.Read(filename, *this);
 
-  /* Epsilon_r override */
-  if (_epsilon_r >= 0.0) _ChangeEpsilonR();
+  /* Epsilon_r, bulk resistivity and loss tangent overrides */
+  _UserOverrides();
 
   return;
-}
-
-/*
- * Write a pcb in csxcad format
- */
-
-void PCB::WriteCSXCAD (std::string filename, bool pcb_outline, double kappa, bool lossy_copper)
-{
-  CSXCAD csxcad;
-  csxcad.Write(filename, *this, pcb_outline, kappa, lossy_copper);
 }
 
 /*
@@ -90,6 +85,16 @@ void PCB::WritePDF (std::string filename, double hue, double saturation, double 
   pdf.Write(filename, *this);
 }
 
+/*
+ * Write a pcb in csxcad format
+ */
+
+void PCB::WriteCSXCAD (std::string filename, bool pcb_outline, bool lossy_copper)
+{
+  CSXCAD csxcad;
+  csxcad.Write(filename, *this, pcb_outline, lossy_copper);
+}
+
 /* 
  * Set dielectric epsilon r. Overrides value in Hyperlynx file. 
  */
@@ -97,7 +102,25 @@ void PCB::WritePDF (std::string filename, double hue, double saturation, double 
 void PCB::SetEpsilonR(double new_epsilon_r) 
 {
   /* save the new value of epsilon r. run before loading hyperlynx file. */
-  if (new_epsilon_r >= 0.0) _epsilon_r = new_epsilon_r;
+  _epsilon_r = new_epsilon_r;
+  _epsilon_r_override = true;
+  
+  return;
+}
+
+void PCB::SetLossTangent(double new_loss_tangent) 
+{
+  /* save the new value of loss_tangent. run before loading hyperlynx file. */
+  _loss_tangent = new_loss_tangent;
+  _loss_tangent_override = true;
+  return;
+}
+
+void PCB::SetBulkResistance(double new_bulk_resistivity) 
+{
+  /* save the new value of bulk_resistivity. run before loading hyperlynx file. */
+  _bulk_resistivity = new_bulk_resistivity;
+  _bulk_resistivity_override = true;
   return;
 }
 
@@ -105,14 +128,20 @@ void PCB::SetEpsilonR(double new_epsilon_r)
  * Modify the value of epsilon r. Run after loading hyperlynx file.
  */
 
-void PCB::_ChangeEpsilonR() 
+void PCB::_UserOverrides() 
 {
 
   /* set all layers to epsilon_r, except outer copper layers, which we assume are in air (er = 1) */
 
   /* iterate over all layers, setting epsilon */
   for (LayerList::iterator i = stackup.begin(); i != stackup.end(); ++i) {
-    i->epsilon_r = _epsilon_r;
+
+    /* override epsilon and loss tangent of dielectric layers */
+    if (_epsilon_r_override && (i->layer_type == LAYER_DIELECTRIC)) i->epsilon_r = _epsilon_r;
+    if (_loss_tangent_override && (i->layer_type == LAYER_DIELECTRIC)) i->loss_tangent = _loss_tangent;
+
+    /* override resistivity of metal layers */
+    if (_bulk_resistivity_override && (i->layer_type != LAYER_DIELECTRIC)) i->bulk_resistivity = _bulk_resistivity;
 
     /* check for outer copper layer */ 
     if (i->layer_type == LAYER_DIELECTRIC)

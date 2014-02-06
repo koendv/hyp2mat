@@ -111,7 +111,15 @@ int main(int argc, char **argv)
     /* optionally set epsilon */
     if (args_info.epsilonr_given)
       pcb.SetEpsilonR(args_info.epsilonr_arg);
+
+    /* optionally set bulk resistivity */
+    if (args_info.bulk_resistivity_given)
+      pcb.SetBulkResistance(args_info.bulk_resistivity_arg);
  
+    /* optionally set loss tangent */
+    if (args_info.loss_tangent_given)
+      pcb.SetLossTangent(args_info.loss_tangent_arg);
+
     /* load hyperlynx file */
     pcb.ReadHyperLynx(input_file, layers, nets);
   
@@ -124,14 +132,16 @@ int main(int argc, char **argv)
      */
   
     switch(args_info.output_format_arg) {
+      /* Export Portable Document Format (pdf) */
       case output_format_arg_pdf:
         if (!args_info.output_given) 
           std::cerr << "pdf output file missing " << std::endl;
         else  
           pcb.WritePDF(output_file, args_info.hue_arg, args_info.saturation_arg, args_info.brightness_arg);
         break;
+      /* Export Continuous Structure XML (openEMS) */
       case output_format_arg_csxcad:
-        pcb.WriteCSXCAD(output_file, args_info.pcb_outline_flag, args_info.kappa_arg, args_info.lossy_copper_flag);
+        pcb.WriteCSXCAD(output_file, args_info.pcb_outline_flag, args_info.lossy_copper_flag);
         break;
       default:
         std::cerr << "unknown output format " << args_info.output_format_arg << std::endl;

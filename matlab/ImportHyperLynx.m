@@ -5,7 +5,7 @@
 % epsilonr       float.  Set dielectric epsilon r. Overrides value in Hyperlynx file.
 % net            string. Import net. Repeat to import several nets. Default is importing all nets.
 % layer          string. Import layer. Repeat to import several layers. Default is importing all layers.
-% epsilonr       float.  Set epsilon r of board.
+% epsilonr       float.  Set dielectric epsilon r.
 % xmin           float.  Crop pcb. Set lower bound of x coordinate.
 % xmax           float.  Crop pcb. Set higher bound of x coordinate.
 % ymin           float.  Crop pcb. Set lower bound of y coordinate.
@@ -18,7 +18,6 @@
 % flood          string. Flood layer with copper. Repeat to flood several layers. The value "plane_layers" floods all plane layers.
 % pcb-outline    none.   Detailed board outline.
 % lossy-copper   none.   Model copper as lossy. Default is modeling copper as a perfect conductor.
-% kappa          float.  Set conductivity of board.
 % version        none.   Print hyp2mat version number.
 %
 % ImportHyperLynx needs read and write access to the current directory.
@@ -91,10 +90,6 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
       vn = vn + 1;
       cmdargs = [ cmdargs ' --layer ''' varargin{vn} '''' ];
     end
-    if (strcmpi(varargin{vn}, 'epsilonr'))
-      vn = vn + 1;
-      cmdargs = [ cmdargs ' --epsilonr ' num2str(varargin{vn}) ];
-    end
     if (strcmpi(varargin{vn}, 'xmin'))
       vn = vn + 1;
       cmdargs = [ cmdargs ' --xmin ' num2str(varargin{vn}) ];
@@ -135,12 +130,20 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
       vn = vn + 1;
       cmdargs = [ cmdargs ' --flood ''' varargin{vn} '''' ];
     end
+    if (strcmpi(varargin{vn}, 'epsilonr'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --epsilonr ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'bulk-resistivity'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --bulk-resistivity ' num2str(varargin{vn}) ];
+    end
+    if (strcmpi(varargin{vn}, 'loss-tangent'))
+      vn = vn + 1;
+      cmdargs = [ cmdargs ' --loss-tangent ' num2str(varargin{vn}) ];
+    end
     if (strcmpi(varargin{vn}, 'pcb-outline'))
       cmdargs = [ cmdargs ' --pcb-outline ' ];
-    end
-    if (strcmpi(varargin{vn}, 'kappa'))
-      vn = vn + 1;
-      cmdargs = [ cmdargs ' --kappa ' num2str(varargin{vn}) ];
     end
     if (strcmpi(varargin{vn}, 'lossy-copper'))
       cmdargs = [ cmdargs ' --lossy-copper ' ];

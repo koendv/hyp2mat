@@ -174,12 +174,15 @@ namespace Hyp2Mat {
        */
 
       void ReadHyperLynx(std::string filename, std::vector<std::string> layers = std::vector<std::string>(), std::vector<std::string> nets = std::vector<std::string>());
-      void SetEpsilonR(double epsilon_r); /* set dielectric epsilon r. overrides value in Hyperlynx file. */
+      void SetEpsilonR(double epsilon_r); /* set dielectric epsilon r. Overrides value in Hyperlynx file. */
+      void SetBulkResistance(double bulk_resistivity); /* set dielectric bulk resistance. Overrides value in Hyperlynx file. */
+      void SetLossTangent(double loss_tangent); /* set dielectric loss tangent. Overrides value in Hyperlynx file. */
       void SetGrid(double new_grid); /* set resolution of x and y coordinates */
       void SetArcPrecision(double new_arc_precision); /* set maximum difference between perfect circle arc and polygonal approximation */
       void SetClearance(double new_clearance); /* set trace-to-plane clearance */
       Bounds GetBounds(); /* gets board extension in x,y and z */
       void SetBounds(Bounds new_bounds); /* crops board in x,y and z */
+
       void PrintSummary(); /* print layer summary */
 
       /*
@@ -193,21 +196,24 @@ namespace Hyp2Mat {
        * WriteCSXCAD exports csxcad matlab code to file "filename".
        * If "pcb_outline" is true, the detailed pcb shape is exported, including pcb cutouts. 
        * If "pcb_outline" is false, a simple rectangular bounding box is output."
-       * "kappa" is the conductivity of the board.
-       * If "lossy_copper" is true, copper is modeled as lossy.
-       * If "lossy_copper" is false, copper is modeled as a perfect conductor.
        */
 
-      void WriteCSXCAD(std::string filename, bool pcb_outline = false, double kappa = 0.0, bool lossy_copper = false);
+      void WriteCSXCAD(std::string filename, bool pcb_outline = false, bool lossy_copper = false);
+
       unsigned int debug; /* setting debug to 0 switches debugging off */
       std::vector<std::string> flood_layers; /* names of layers to be flooded with copper */
       bool raw; /* set raw processing */
     private:
-      void _ChangeEpsilonR();
+      void _UserOverrides();
       Bounds _bounds;
       double _arc_precision;
       double _clearance;
       double _epsilon_r;
+      bool   _epsilon_r_override;
+      double _bulk_resistivity;
+      bool   _bulk_resistivity_override;
+      double _loss_tangent;
+      bool   _loss_tangent_override;
   };
 
 }
