@@ -50,6 +50,8 @@ Circles and arcs are approximated by polygons. By default a circle is approximat
 .BR --arc-precision
 to the desired precision. This will increase the number of line segments used to draw circular, oval and oblong pads, amongst others.
 
+To simulate a lossy dielectric, copy AddHyperLynxDielectric.m to your project directory and customize.
+
 The 
 .BR --flood
 option floods layers with copper.
