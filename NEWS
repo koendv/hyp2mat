@@ -8,3 +8,6 @@
  - attempt at PLANE type polygons and PLANE layers.
    These are polygons and layers which are flooded with copper, 
    where the copper automatically keeps a preset clearance between nets.
+
+1 March 2014:
+ - allow for lossy copper and lossy dielectric
