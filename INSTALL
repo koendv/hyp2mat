@@ -2,7 +2,7 @@ This is a utility which converts HyperLynx files to CSXCAD for electromagnetic s
 
 Tested on Linux ubuntu, MacOSX and Windows/MingW.
 
-Dependencies: requires libhpdf, libpng, zlib.
+Dependencies: requires libhpdf, libpng, zlib, libgerbv.
 
 Default is installing the hyp2mat executable only.
 If you wish to install not only the executable, but also the hyp2mat library, includes and package information, add the "--enable-library" flag, e.g. "configure --enable-library"

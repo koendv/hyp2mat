@@ -6,6 +6,9 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the `gerbv' library (-lgerbv). */
+#undef HAVE_LIBGERBV
+
 /* Define to 1 if you have the `hpdf' library (-lhpdf). */
 #undef HAVE_LIBHPDF
 

@@ -40,6 +40,10 @@ int main(int argc, char **argv)
   
     if (cmdline_parser (argc, argv, &args_info) != 0)
       exit(1);
+
+    /*
+     * Hyperlynx input options
+     */
   
     /* set layers to import */
     std::vector<std::string> layers;
@@ -52,23 +56,39 @@ int main(int argc, char **argv)
     if (args_info.net_given && args_info.net_arg)
       for (unsigned int i = 0; i < args_info.net_given; ++i)
         nets.push_back(args_info.net_arg[i]);
-      
-    /* set input filename */
-    std::string input_file = "-";
 
-    if (args_info.inputs_num == 1)
-      input_file = args_info.inputs[0];
+    /*
+     * Gerber input options
+     */
 
-    if (args_info.inputs_num > 1) {
-      std::cerr << "more than one input file given" << std::endl;
-      exit(1);
-      }
-      
-    /* output file */
+    /* Excellon drill file */
+    std::string drill_file;
+    if (args_info.drill_given)
+      drill_file = args_info.drill_arg;
+
+    /* Excellon tools file */
+    std::string tools_file;
+    if (args_info.tools_given)
+      tools_file = args_info.tools_arg;
+
+    /* Gerber board outline file */
+    std::string outline_file;
+    if (args_info.outline_given)
+      outline_file = args_info.outline_arg;
+
+    /* Centroid pick and place file */
+    std::string pickandplace_file;
+    if (args_info.pickandplace_given)
+      pickandplace_file = args_info.pickandplace_arg;
+
+    /*
+     * output file 
+     */
+
     std::string output_file = args_info.output_arg;
 
     /*
-     * Process hyperlynx file
+     * Processing options
      */
 
     /* set debug level */
@@ -120,8 +140,47 @@ int main(int argc, char **argv)
     if (args_info.loss_tangent_given)
       pcb.SetLossTangent(args_info.loss_tangent_arg);
 
+    /* 
+     * Load files
+     */
+
+    std::vector<std::string> input_files;
+    for ( unsigned i = 0 ; i < args_info.inputs_num ; ++i )
+      input_files.push_back(args_info.inputs[i]); /* set input files */
+
+    switch(args_info.input_format_arg) {
+      case input_format_arg_hyperlynx: 
+        /* Import Hyperlynx */
+
+        if (args_info.inputs_num == 0)
+          input_files.push_back("-"); /* default is input from stdin */
+        else if (args_info.inputs_num > 1) {
+          std::cerr << "more than one input file given" << std::endl;
+          exit(1);
+          }
+          
+        pcb.ReadHyperLynx(input_files[0], layers, nets);
+
+        break;
+
+      case input_format_arg_gerber: 
+        /* Import Gerber */
+
+        if (args_info.inputs_num == 0) {
+          std::cerr << "no input file given" << std::endl;
+          exit(1);
+          }
+
+        pcb.ReadGerber(input_files, outline_file, tools_file, drill_file, pickandplace_file); 
+          
+        break;
+
+      default:
+
+        break;
+      }
+
     /* load hyperlynx file */
-    pcb.ReadHyperLynx(input_file, layers, nets);
   
     /* optionally print layer summary */
     if (args_info.verbose_given)

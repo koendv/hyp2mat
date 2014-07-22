@@ -44,5 +44,9 @@ AC_CHECK_LIB([z], [deflate], [], [AC_ERROR([libz library not found])])
 AC_CHECK_LIB([png], [png_read_info])
 AC_CHECK_LIB([hpdf], [HPDF_New], [], [AC_ERROR([libhpdf library not found])])
 
+# libgerbv is used for Gerber and Excellon input
+# If PKG_CHECK_MODULES emitted linker and compiler params, set HAVE_LIBGERBV
+PKG_CHECK_MODULES([LIBGERBV], [libgerbv], [AC_DEFINE([HAVE_LIBGERBV], [1], [Define to 1 if you have the `gerbv' library (-lgerbv).])] ) 
+
 AC_OUTPUT
 # not truncated

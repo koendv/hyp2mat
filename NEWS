@@ -1,3 +1,4 @@
+
 27 Mar 2013: 0.0.5 "c++" release for OpenEMS v0.0.30
  - Joins adjacent and overlapping copper
  - pdf output added
@@ -11,3 +12,7 @@
 
 1 March 2014:
  - allow for lossy copper and lossy dielectric
+
+21 July 2014:
+ - bison 3.x compatibility
+ - Gerber/Excellon support

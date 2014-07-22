@@ -4,9 +4,9 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: hyp2mat
-Description: Convert Hyperlynx PCB files to matlab scripts
+Description: convert Hyperlynx and Gerber files for electromagnetic simulation
 Requires: 
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lhyp2mat
-Libs.private: @LIBS@
+Libs.private: @LIBGERBV_LIBS@ @LIBS@
 Cflags: -I${includedir}

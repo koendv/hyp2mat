@@ -18,6 +18,9 @@ endif
 
 pkgconfigdir=$(datarootdir)/pkgconfig
 
+AM_CXXFLAGS=@LIBGERBV_CFLAGS@
+AM_LDFLAGS=@LIBGERBV_LIBS@
+
 libhyp2mat_la_SOURCES=\
   clipper.cpp \
   clipper.hpp \
@@ -36,6 +39,8 @@ libhyp2mat_la_SOURCES=\
   exec_polygon.cc \
   exec_stackup.cc \
   exec_supplies.cc \
+  gerber.cc \
+  gerber.h \
   hyp2mat.h \
   hyperlynx.cc \
   hyperlynx.h \
