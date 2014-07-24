@@ -27,61 +27,140 @@
 
 #include "config.h"
 #include "gerber.h"
-#include "gerbv.h"
+
+/*
+ * Creation and destruction 
+ */
+
+Gerber::Gerber()
+{
+  /* create a top level libgerbv structure */
+  gerbv_project = gerbv_create_project();
+  debug = false;
+}
+
+Gerber::~Gerber()
+{
+  /* destroy the top-level libgerbv structure and free all memory */
+  gerbv_destroy_project (gerbv_project);
+  gerbv_project = NULL;
+}
 
 /*
  * Read a pcb in gerber format
  */
 
-void Gerber::Read (std::vector<std::string> gerber_filenames, std::string tools_filename, std::string drill_filename, std::string outline_filename, std::string pickandplace_filename, Hyp2Mat::PCB& pcb)
+void Gerber::Read (std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::string drill_filename, std::string pickandplace_filename, Hyp2Mat::PCB& pcb)
 {
 
-  /* XXX Work in progress */
+  debug = pcb.debug != 0;
 
-  /* create a top level gerber structure */
-  gerbv_project_t *gerbv_project = gerbv_create_project();
-
-  /* load Excellon tools file, if available */
-  if (!tools_filename.empty()) {
-    std::cout << "tools:" << tools_filename << std::endl;
-    if (!gerbv_process_tools_file(optarg))
-      std::cout << "error processing tools" << std::endl;
+  /* set g_log logging level */
+  int loglevel;
+  switch (pcb.debug) {
+    case 0: loglevel = G_LOG_LEVEL_ERROR;
+      break;
+    case 1: loglevel = G_LOG_LEVEL_CRITICAL;
+      break;
+    case 2: loglevel = G_LOG_LEVEL_WARNING;
+      break;
+    case 3: loglevel = G_LOG_LEVEL_MESSAGE;
+      break;
+    case 4: loglevel = G_LOG_LEVEL_INFO;
+      break;
+    case 5: loglevel = G_LOG_LEVEL_DEBUG;
+      break;
+    default: loglevel = G_LOG_LEVEL_MASK;
     }
+  g_log_set_handler(NULL, (GLogLevelFlags)loglevel, g_log_default_handler, NULL);
 
-  /* parse gerber and excellon files */
-  for(std::vector<std::string>::iterator it = gerber_filenames.begin(); it != gerber_filenames.end(); ++it) {
-    std::cout << "gerber:" << *it << std::endl;
-    /* load gerber file */
-    gchar* fname = g_strdup(it->c_str());
-    gerbv_open_layer_from_filename (gerbv_project, fname);
+  /* parse excellon files */
+  LoadTools(tools_filename);
+  LoadDrill(drill_filename);
 
-    /* get index of file in project */
-    gint idx_loaded = gerbv_project->last_loaded;
+  /* parse gerber files */
+  for(std::vector<std::string>::iterator it = gerber_filenames.begin(); it != gerber_filenames.end(); ++it)
+    LoadGerber(*it);
 
-    /* check file parsed ok */
-    if (gerbv_project->file[idx_loaded] == NULL)
-      std::cout << "error processing gerber" << std::endl;
+  /* parse board outline */
+  LoadGerber(outline_filename);
 
-    /* print file type */
+  /* parse pick-and-place file */
+  LoadPickAndPlace(pickandplace_filename);
+  
+  return;
+}
+
+/*
+ * File IO
+ */
+ 
+
+void Gerber::LoadTools(std::string tools_filename)
+{
+  if (tools_filename.empty()) return;
+
+  if (debug) std::cerr << "tools:" << tools_filename << std::endl;
+
+  gchar* fname = g_strdup(tools_filename.c_str());
+  if (!gerbv_process_tools_file(fname))
+    std::cerr << "error processing tools " << tools_filename << std::endl;
+}
+
+void Gerber::LoadDrill(std::string drill_filename)
+{
+  if (debug) std::cerr << "drill:" << drill_filename << std::endl;
+
+  LoadFile(drill_filename, GERBV_LAYERTYPE_DRILL);
+}
+
+void Gerber::LoadGerber(std::string gerber_filename)
+{
+  if (debug) std::cerr << "gerber:" <<  gerber_filename << std::endl;
+
+  LoadFile(gerber_filename, GERBV_LAYERTYPE_RS274X);
+}
+
+void Gerber::LoadPickAndPlace(std::string pickandplace_filename)
+{
+  if (debug) std::cerr << "pickandplace:" <<  pickandplace_filename << std::endl;
+
+  LoadFile(pickandplace_filename, GERBV_LAYERTYPE_PICKANDPLACE);
+}
+
+void Gerber::LoadFile(std::string filename, gerbv_layertype_t layertype)
+{
+  if (filename.empty()) return;
+
+  /* load Gerber, Excellon or Centroid file */
+  gchar* fname = g_strdup(filename.c_str());
+  gerbv_open_layer_from_filename (gerbv_project, fname);
+
+  /* get index of file in project */
+  gint idx_loaded = gerbv_project->last_loaded;
+
+  /* check file parsed ok */
+  if (gerbv_project->file[idx_loaded] == NULL)
+    std::cerr << "error processing " << filename << std::endl;
+
+  /* check file type */
+  if (gerbv_project->file[idx_loaded]->image->layertype != layertype) {
+    std::cerr << "error processing " << filename << ": file type is ";
     switch( gerbv_project->file[idx_loaded]->image->layertype) {
       case GERBV_LAYERTYPE_RS274X:
-        std::cout << "rs274x" << std::endl;
+        std::cerr << "rs274x";
         break;
       case GERBV_LAYERTYPE_DRILL:
-        std::cout << "drill" << std::endl;
+        std::cerr << "drill";
         break;
       case GERBV_LAYERTYPE_PICKANDPLACE:
-        std::cout << "pickandplace" << std::endl;
+        std::cerr << "pickandplace";
         break;
       default:
-        std::cout << "??" << std::endl;
-      }
+        std::cerr << "unknown";
+      };
+      std::cerr << std::endl;
     }
-  
-  /* destroy the top-level gerber structure, free memory */
-  gerbv_destroy_project (gerbv_project);
-
-  return;
 }
 
 /* not truncated */

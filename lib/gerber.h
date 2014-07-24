@@ -19,19 +19,31 @@
  */
 
 /*
- * loads Gerber and Excellon files in a Hyp2Mat class
+ * loads Gerber,Excellon and Centroid files in a Hyp2Mat class
  */
 
 #ifndef GERBER_H
 #define GERBER_H
 
 #include "hyp2mat.h"
+#include "gerbv.h"
 
 class Gerber {
 public:
-  void Read (std::vector<std::string> gerber_filenames, std::string tools_filename, std::string drill_filename, std::string outline_filename, std::string pickandplace_filename, Hyp2Mat::PCB& pcb);
+  Gerber();
+  ~Gerber();
+  void Read (std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::string drill_filename, std::string pickandplace_filename, Hyp2Mat::PCB& pcb); 
 
 private:
+  gerbv_project_t *gerbv_project;
+  bool debug;
+
+  void LoadTools(std::string tools_filename);
+  void LoadDrill(std::string drill_filename);
+  void LoadGerber(std::string gerber_filename);
+  void LoadPickAndPlace(std::string pickandplace_filename);
+  void LoadFile(std::string filename, gerbv_layertype_t layertype);
+
   };
 
 #endif

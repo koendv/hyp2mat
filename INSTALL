@@ -18,7 +18,7 @@ On Linux ubuntu, with libhpdf installed in /usr/lib:
   make 
   make install
 
-On MacOSX, with libhpdf installed in /opt/local using MacPorts:
+On MacOSX, with libhpdf and gerbv installed in /opt/local:
   sh ./bootstrap.sh
   CPPFLAGS=-I/opt/local/include LDFLAGS=-L/opt/local/lib ./configure
   make 
