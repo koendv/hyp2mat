@@ -61,10 +61,11 @@ int main(int argc, char **argv)
      * Gerber input options
      */
 
-    /* Excellon drill file */
-    std::string drill_file;
-    if (args_info.drill_given)
-      drill_file = args_info.drill_arg;
+    /* Excellon drill files */
+    std::vector<std::string> drill_files;
+    if (args_info.drill_given && args_info.drill_arg)
+      for (unsigned int i = 0; i < args_info.drill_given; ++i)
+        drill_files.push_back(args_info.drill_arg[i]);
 
     /* Excellon tools file */
     std::string tools_file;
@@ -77,9 +78,10 @@ int main(int argc, char **argv)
       outline_file = args_info.outline_arg;
 
     /* Centroid pick and place file */
-    std::string pickandplace_file;
-    if (args_info.pickandplace_given)
-      pickandplace_file = args_info.pickandplace_arg;
+    std::vector<std::string> pickandplace_files;
+    if (args_info.pickandplace_given && args_info.pickandplace_arg)
+      for (unsigned int i = 0; i < args_info.pickandplace_given; ++i)
+        pickandplace_files.push_back(args_info.pickandplace_arg[i]);
 
     /*
      * output file 
@@ -171,7 +173,7 @@ int main(int argc, char **argv)
           exit(1);
           }
 
-        pcb.ReadGerber(input_files, outline_file, tools_file, drill_file, pickandplace_file); 
+        pcb.ReadGerber(input_files, outline_file, tools_file, drill_files, pickandplace_files); 
           
         break;
 

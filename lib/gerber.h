@@ -27,12 +27,13 @@
 
 #include "hyp2mat.h"
 #include "gerbv.h"
+#include "polygon.h"
 
 class Gerber {
 public:
   Gerber();
   ~Gerber();
-  void Read (std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::string drill_filename, std::string pickandplace_filename, Hyp2Mat::PCB& pcb); 
+  void Read (std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::vector<std::string> drill_filenames, std::vector<std::string> pickandplace_filenames, Hyp2Mat::PCB& pcb); 
 
 private:
   gerbv_project_t *gerbv_project;
@@ -43,6 +44,7 @@ private:
   void LoadGerber(std::string gerber_filename);
   void LoadPickAndPlace(std::string pickandplace_filename);
   void LoadFile(std::string filename, gerbv_layertype_t layertype);
+  Hyp2Mat::Polygon LayerToPolygon();
 
   };
 

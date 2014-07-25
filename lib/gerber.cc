@@ -50,7 +50,7 @@ Gerber::~Gerber()
  * Read a pcb in gerber format
  */
 
-void Gerber::Read (std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::string drill_filename, std::string pickandplace_filename, Hyp2Mat::PCB& pcb)
+void Gerber::Read (std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::vector<std::string> drill_filenames, std::vector<std::string> pickandplace_filenames, Hyp2Mat::PCB& pcb)
 {
 
   debug = pcb.debug != 0;
@@ -74,9 +74,10 @@ void Gerber::Read (std::vector<std::string> gerber_filenames, std::string outlin
     }
   g_log_set_handler(NULL, (GLogLevelFlags)loglevel, g_log_default_handler, NULL);
 
-  /* parse excellon files */
+  /* parse excellon drill files */
   LoadTools(tools_filename);
-  LoadDrill(drill_filename);
+  for(std::vector<std::string>::iterator it = drill_filenames.begin(); it != drill_filenames.end(); ++it)
+    LoadDrill(*it);
 
   /* parse gerber files */
   for(std::vector<std::string>::iterator it = gerber_filenames.begin(); it != gerber_filenames.end(); ++it)
@@ -86,7 +87,8 @@ void Gerber::Read (std::vector<std::string> gerber_filenames, std::string outlin
   LoadGerber(outline_filename);
 
   /* parse pick-and-place file */
-  LoadPickAndPlace(pickandplace_filename);
+  for(std::vector<std::string>::iterator it = pickandplace_filenames.begin(); it != pickandplace_filenames.end(); ++it)
+    LoadPickAndPlace(*it);
   
   return;
 }
@@ -161,6 +163,32 @@ void Gerber::LoadFile(std::string filename, gerbv_layertype_t layertype)
       };
       std::cerr << std::endl;
     }
+}
+
+/*
+ * Gerber to Polygon conversion
+ */
+
+Hyp2Mat::Polygon Gerber::LayerToPolygon()
+{
+  Hyp2Mat::Polygon poly;
+
+  /* get index of file in project */
+  gint idx_loaded = gerbv_project->last_loaded;
+
+  /* check file parsed ok */
+  if (gerbv_project->file[idx_loaded] == NULL)
+    std::cerr << "error: file did not load" << std::endl;
+
+  /* check file type */
+  if (gerbv_project->file[idx_loaded]->image->layertype != GERBV_LAYERTYPE_RS274X)
+    std::cerr << "error: layer not a gerber layer" << std::endl;
+
+  /* export to cairo */
+ 
+  
+  return poly;
+
 }
 
 /* not truncated */

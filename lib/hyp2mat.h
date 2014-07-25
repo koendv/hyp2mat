@@ -180,13 +180,13 @@ namespace Hyp2Mat {
        * 'gerber_filenames' is a vector of filenames of Gerber files.
        * 'outline_filename' is the filename of a Gerber file containing the board outline.
        * 'tool_filename' is the filename of an Excellon tools file.
-       * 'drill_filename' is the filename of an Excellon drill file.
-       * 'pickandplace_filename' is the filename of a Centroid file with SMD pick and place information.
+       * 'drill_filename' is a vector of filenames of Excellon drill files.
+       * 'pickandplace_filename' is a vector of filename of Centroid pick and place files.
        *
        * Gerber files are in order, lowest layer first.
        */
 
-      void ReadGerber(std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::string drill_filename, std::string pickandplace_filename);
+      void ReadGerber(std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::vector<std::string> drill_filenames, std::vector<std::string> pickandplace_filenames);
 
       void SetEpsilonR(double epsilon_r); /* set dielectric epsilon r. Overrides value in Hyperlynx file. */
       void SetBulkResistance(double bulk_resistivity); /* set dielectric bulk resistance. Overrides value in Hyperlynx file. */
