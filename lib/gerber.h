@@ -38,12 +38,14 @@ public:
 private:
   gerbv_project_t *gerbv_project;
   bool debug;
+  double scale;
 
   void LoadTools(std::string tools_filename);
-  void LoadDrill(std::string drill_filename);
-  void LoadGerber(std::string gerber_filename);
-  void LoadPickAndPlace(std::string pickandplace_filename);
+  void LoadDrill(std::string drill_filename, Hyp2Mat::PCB& pcb);
+  void LoadGerber(std::string gerber_filename, Hyp2Mat::PCB& pcb);
+  void LoadPickAndPlace(std::string pickandplace_filename, Hyp2Mat::PCB& pcb);
   void LoadFile(std::string filename, gerbv_layertype_t layertype);
+
   Hyp2Mat::Polygon LayerToPolygon();
 
   };
