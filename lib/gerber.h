@@ -39,14 +39,17 @@ private:
   gerbv_project_t *gerbv_project;
   bool debug;
   double scale;
+  double copper_thickness, dielectric_thickness;
+  double pcb_thickness; /* running count of pcb thickness */
 
   void LoadTools(std::string tools_filename);
   void LoadDrill(std::string drill_filename, Hyp2Mat::PCB& pcb);
+  void LoadOutline(std::string gerber_filename, Hyp2Mat::PCB& pcb);
   void LoadGerber(std::string gerber_filename, Hyp2Mat::PCB& pcb);
   void LoadPickAndPlace(std::string pickandplace_filename, Hyp2Mat::PCB& pcb);
   void LoadFile(std::string filename, gerbv_layertype_t layertype);
 
-  Hyp2Mat::Polygon LayerToPolygon();
+  Hyp2Mat::FloatPolygons LayerToPolygon();
 
   };
 
