@@ -46,6 +46,8 @@ private:
   void LoadDrill(std::string drill_filename, Hyp2Mat::PCB& pcb);
   void LoadOutline(std::string gerber_filename, Hyp2Mat::PCB& pcb);
   void LoadGerber(std::string gerber_filename, Hyp2Mat::PCB& pcb);
+  void AddCopperLayer(Hyp2Mat::PCB& pcb);
+  void AddDielectricLayer(Hyp2Mat::PCB& pcb);
   void LoadPickAndPlace(std::string pickandplace_filename, Hyp2Mat::PCB& pcb);
   void LoadFile(std::string filename, gerbv_layertype_t layertype);
 

@@ -23,10 +23,12 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 
 #include "config.h"
 #include "gerber.h"
+#include "hypfile.h"
 
 /*
  * Creation and destruction 
@@ -163,17 +165,6 @@ void Gerber::LoadGerber(std::string gerber_filename, Hyp2Mat::PCB& pcb)
   if (debug) std::cerr << "gerber:" <<  gerber_filename << std::endl;
 
   LoadFile(gerber_filename, GERBV_LAYERTYPE_RS274X);
- 
-  /* create copper layer */
-  Hyp2Mat::Layer copper;
-  copper.layer_type = Hyp2Mat::LAYER_SIGNAL;
-  copper.metal = LayerToPolygon();
-  // XXX add params
-
-  /* create dielectric layer */
-  Hyp2Mat::Layer dielectric;
-  dielectric.layer_type = Hyp2Mat::LAYER_DIELECTRIC;
-  // XXX add params
 
   /*
    * if the first copper layer, add copper and dielectric.
@@ -183,37 +174,84 @@ void Gerber::LoadGerber(std::string gerber_filename, Hyp2Mat::PCB& pcb)
 
   if (pcb.stackup.empty()) {
     /* first copper layer */
-    copper.z0 = 0.0;
-    pcb_thickness += copper_thickness;
-    copper.z1 = pcb_thickness;
- 
-    pcb.stackup.push_back(copper);
-    
-    dielectric.z0 = pcb_thickness;
-    pcb_thickness += dielectric_thickness;
-    dielectric.z1 = pcb_thickness;
-    
-    pcb.stackup.push_back(dielectric);
+    AddCopperLayer(pcb);
+    AddDielectricLayer(pcb);
     }
   else {
     /* second or later copper layer */
-    if (pcb.stackup.back().layer_type == Hyp2Mat::LAYER_SIGNAL) {
-      /* add dielectric layer */
-      dielectric.z0 = pcb_thickness;
-      pcb_thickness += dielectric_thickness;
-      dielectric.z1 = pcb_thickness;
-    
-      pcb.stackup.push_back(dielectric);
-      }
-    /* add copper layer */
-    copper.z0 = pcb_thickness;
-    pcb_thickness += copper_thickness;
-    copper.z1 = pcb_thickness;
- 
-    pcb.stackup.push_back(copper);
+    if (pcb.stackup.back().layer_type == Hyp2Mat::LAYER_SIGNAL) /* last layer was copper */
+      AddDielectricLayer(pcb);
+    AddCopperLayer(pcb);
     }
- 
 
+}
+
+void Gerber::AddCopperLayer(Hyp2Mat::PCB& pcb)
+{
+  /* create copper layer */
+  HypFile::Hyp constants;
+  Hyp2Mat::Layer copper;
+  copper.layer_type = Hyp2Mat::LAYER_SIGNAL;
+  copper.layer_name.clear();
+  copper.material_name = "copper";
+  copper.metal = LayerToPolygon();
+  copper.epsilon_r = 0.0;
+  copper.loss_tangent = 0.0;
+  copper.bulk_resistivity = constants.copper_bulk_resistivity;
+  copper.resistivity_temp_coeff = constants.copper_temperature_coefficient;
+
+  /* count copper layers */
+  int copper_layers = 0;
+  for (Hyp2Mat::LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l)
+    if (l->layer_type == Hyp2Mat::LAYER_SIGNAL) copper_layers++;
+ 
+  /* set layer name */
+  copper_layers++;
+  std::ostringstream name;
+  name << "Metal " << copper_layers;
+  copper.layer_name = name.str();
+
+  /* set vertical position */
+  copper.z0 = pcb_thickness;
+  pcb_thickness += copper_thickness;
+  copper.z1 = pcb_thickness;
+
+  /* add copper layer */
+  pcb.stackup.push_back(copper);
+
+}
+
+void Gerber::AddDielectricLayer(Hyp2Mat::PCB& pcb)
+{
+  /* create dielectric layer */
+  HypFile::Hyp constants;
+  Hyp2Mat::Layer dielectric;
+  dielectric.layer_type = Hyp2Mat::LAYER_DIELECTRIC;
+  dielectric.layer_name.clear();
+  dielectric.material_name = "FR4";
+  dielectric.epsilon_r = constants.fr4_epsilon_r;
+  dielectric.loss_tangent = constants.fr4_loss_tangent;
+  dielectric.bulk_resistivity = 0.0;
+  dielectric.resistivity_temp_coeff = 0.0;
+
+  /* count dielectric layers */
+  int dielectric_layers = 0;
+  for (Hyp2Mat::LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l)
+    if (l->layer_type == Hyp2Mat::LAYER_DIELECTRIC) dielectric_layers++;
+ 
+  /* set layer name */
+  dielectric_layers++;
+  std::ostringstream name;
+  name << "Dielectric " << dielectric_layers; 
+  dielectric.layer_name = name.str();
+
+  /* set vertical position */
+  dielectric.z0 = pcb_thickness;
+  pcb_thickness += dielectric_thickness;
+  dielectric.z1 = pcb_thickness;
+    
+  /* add copper layer */
+  pcb.stackup.push_back(dielectric);
 }
 
 void Gerber::LoadOutline(std::string outline_filename, Hyp2Mat::PCB& pcb)
