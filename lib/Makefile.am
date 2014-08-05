@@ -22,6 +22,8 @@ AM_CXXFLAGS=@LIBGERBV_CFLAGS@
 AM_LDFLAGS=@LIBGERBV_LIBS@
 
 libhyp2mat_la_SOURCES=\
+  cairo_clipper.cpp \
+  cairo_clipper.hpp \
   clipper.cpp \
   clipper.hpp \
   copper.cc \
