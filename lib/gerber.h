@@ -51,7 +51,7 @@ private:
   void LoadPickAndPlace(std::string pickandplace_filename, Hyp2Mat::PCB& pcb);
   void LoadFile(std::string filename, gerbv_layertype_t layertype);
 
-  Hyp2Mat::FloatPolygons LayerToPolygon();
+  Hyp2Mat::FloatPolygons GerberToPolygons();
 
   };
 

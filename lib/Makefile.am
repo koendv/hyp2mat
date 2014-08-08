@@ -41,8 +41,6 @@ libhyp2mat_la_SOURCES=\
   exec_supplies.cc \
   gerber.cc \
   gerber.h \
-  gerbv_draw.cc \
-  gerbv_draw.h \
   hyp2mat.h \
   hyperlynx.cc \
   hyperlynx.h \

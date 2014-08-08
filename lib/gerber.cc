@@ -29,6 +29,7 @@
 #include "config.h"
 #include "gerber.h"
 #include "hypfile.h"
+#include "cairo-pdf.h"
 
 /*
  * Creation and destruction 
@@ -194,7 +195,7 @@ void Gerber::AddCopperLayer(Hyp2Mat::PCB& pcb)
   copper.layer_type = Hyp2Mat::LAYER_SIGNAL;
   copper.layer_name.clear();
   copper.material_name = "copper";
-  copper.metal = LayerToPolygon();
+  copper.metal = GerberToPolygons();
   copper.epsilon_r = 0.0;
   copper.loss_tangent = 0.0;
   copper.bulk_resistivity = constants.copper_bulk_resistivity;
@@ -261,7 +262,7 @@ void Gerber::LoadOutline(std::string outline_filename, Hyp2Mat::PCB& pcb)
   if (!outline_filename.empty()) {
     /* Convert Gerber board outline to Hyp2Mat polygon */ 
     LoadGerber(outline_filename, pcb);
-    pcb.board = LayerToPolygon();
+    pcb.board = GerberToPolygons();
     }
   else {
     /* create default rectangular outline */
@@ -374,25 +375,62 @@ void Gerber::LoadFile(std::string filename, gerbv_layertype_t layertype)
  * Gerber to Polygon conversion
  */
 
-Hyp2Mat::FloatPolygons Gerber::LayerToPolygon()
+Hyp2Mat::FloatPolygons Gerber::GerberToPolygons()
 {
-  Hyp2Mat::FloatPolygons poly;
+  /* Sanity checks */
 
   /* get index of file in project */
   gint idx_loaded = gerbv_project->last_loaded;
 
   /* check file parsed ok */
-  if (gerbv_project->file[idx_loaded] == NULL)
-    std::cerr << "error: file did not load" << std::endl;
+  if (gerbv_project->file[idx_loaded] == NULL){
+    std::cerr << "error: file not loaded" << std::endl;
+    throw std::exception();
+    }
 
   /* check file type */
-  if (gerbv_project->file[idx_loaded]->image->layertype != GERBV_LAYERTYPE_RS274X)
-    std::cerr << "error: layer not a gerber layer" << std::endl;
+  gerbv_image_t* image = gerbv_project->file[idx_loaded]->image;
 
-  /* export to cairo */
- 
-  
-  return poly;
+  if (image && (image->layertype != GERBV_LAYERTYPE_RS274X)) {
+    std::cerr << "error: not a gerber layer"  << std::endl;
+    throw std::exception();
+    }
+
+  /* window size, scale, translation */
+  if (!image->info) {
+    std::cerr << "error: no gerber image info"  << std::endl;
+    throw std::exception();
+    }
+
+  /* copy image info to render info */
+  gerbv_image_info_t* img_info = image->info;
+  gerbv_render_info_t render_info;
+
+  double dpi = 72;
+
+  render_info.scaleFactorX  = dpi;
+  render_info.scaleFactorY  = dpi;
+  render_info.lowerLeftX    = img_info->min_x;
+  render_info.lowerLeftY    = img_info->min_y;
+  render_info.displayWidth  = (img_info->max_x - img_info->min_x) * dpi;
+  render_info.displayHeight = (img_info->max_y - img_info->min_y) * dpi;
+  render_info.renderType = GERBV_RENDER_TYPE_CAIRO_NORMAL;
+
+  /* create cairo surface and context */
+  cairo_surface_t* surface =  cairo_pdf_surface_create ("zz.pdf", (img_info->max_x - img_info->min_x) * dpi, (img_info->max_y - img_info->min_y) * dpi); // XXX
+  cairo_t* cr = cairo_create(surface);
+
+  /* export gerber to cairo */
+  gerbv_render_cairo_set_scale_and_translation(cr, &render_info); // XXX Check later
+  gerbv_render_layer_to_cairo_target_without_transforming(cr, gerbv_project->file[idx_loaded], &render_info, FALSE);
+
+  /* cleanup */
+  cairo_destroy (cr);
+  cairo_surface_destroy (surface);
+
+  /* return polygons */
+  Hyp2Mat::Polygon poly;
+  return poly.Result();
 
 }
 
