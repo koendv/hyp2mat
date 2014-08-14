@@ -34,6 +34,7 @@ public:
   Gerber();
   ~Gerber();
   void Read (std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::vector<std::string> drill_filenames, std::vector<std::string> pickandplace_filenames, Hyp2Mat::PCB& pcb); 
+  void CairoFill();
 
 private:
   gerbv_project_t *gerbv_project;
@@ -52,7 +53,6 @@ private:
   void LoadFile(std::string filename, gerbv_layertype_t layertype);
 
   Hyp2Mat::FloatPolygons GerberToPolygons();
-
   };
 
 #endif

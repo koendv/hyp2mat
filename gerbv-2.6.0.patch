@@ -1,0 +1,278 @@
+diff -Naur gerbv-2.6.0.ORIG/src/draw.c gerbv-2.6.0/src/draw.c
+--- gerbv-2.6.0.ORIG/src/draw.c	2011-12-25 04:41:23.000000000 +0100
++++ gerbv-2.6.0/src/draw.c	2014-08-14 11:08:50.156714631 +0200
+@@ -46,6 +46,103 @@
+ 
+ #define dprintf if(DEBUG) printf
+ 
++GArray* gerbv_paths = NULL;
++
++/* append current path to gerbv_paths */
++
++static void
++add_path (cairo_t *cairoTarget, gboolean fill) /* copy path to gerbv_paths */
++{
++    gerbv_path_t newpath;
++
++    if (gerbv_paths == NULL) return;
++
++    newpath.fill = fill;
++    newpath.line_width = cairo_get_line_width (cairoTarget);
++    newpath.line_cap = cairo_get_line_cap (cairoTarget);
++    newpath.line_join = cairo_get_line_join (cairoTarget);
++    newpath.path = cairo_copy_path_flat (cairoTarget);
++
++    g_array_append_val(gerbv_paths, newpath);
++
++    return;
++
++}
++
++/* convert layer image to cairo paths (polygons and polylines) */
++
++GArray*
++gerbv_export_paths_from_layer (gerbv_fileinfo_t *fileInfo, double dpi)
++{
++	/* check file type */
++	if (!fileInfo) {
++		fprintf(stderr, "error: not a layer\n");
++		return NULL;
++	}
++
++	/* duplicate and clean current image */
++	gerbv_image_t *image = gerbv_image_duplicate_image (fileInfo->image, NULL);
++	if (image && (image->layertype != GERBV_LAYERTYPE_RS274X)) {
++		fprintf(stderr, "error: not a gerber layer\n");
++		return NULL;
++	}
++
++	/* window size, scale, translation */
++	if (!image->info) {
++		fprintf(stderr, "error: no image info\n");
++		return NULL;
++	}
++
++	/* scaling factor */
++	if (dpi <= 0) {
++		fprintf(stderr, "error: scale factor not positive\n");
++		return NULL;
++	}
++
++	/* copy image info to render info */
++	gerbv_image_info_t* img_info = image->info;
++	gerbv_render_info_t render_info;
++
++	render_info.scaleFactorX  = dpi;
++	render_info.scaleFactorY  = dpi;
++	render_info.lowerLeftX    = 0;
++	render_info.lowerLeftY    = 0;
++	render_info.displayWidth  = img_info->max_x * dpi;
++	render_info.displayHeight = img_info->max_y * dpi;
++	render_info.renderType = GERBV_RENDER_TYPE_CAIRO_NORMAL;
++
++	/* create cairo surface and context */
++
++#define USE_PDF
++#ifdef USE_PDF
++	cairo_surface_t* surface =  cairo_pdf_surface_create ("zz.pdf", render_info.displayWidth, render_info.displayHeight); // XXX
++#endif
++#undef RECORDING
++#ifdef RECORDING
++	cairo_content_t content;
++	cairo_surface_t* surface = cairo_recording_surface_create (content, NULL);
++#endif
++	cairo_t* cr = cairo_create(surface);
++	cairo_set_fill_rule(cr, CAIRO_FILL_RULE_WINDING);
++
++	/* export gerber to cairo */
++	gerbv_paths = g_array_new(FALSE,FALSE,sizeof(gerbv_path_t)); /* switch add_path on */
++
++	gerbv_render_cairo_set_scale_and_translation(cr, &render_info); // XXX Check later
++	gerbv_render_layer_to_cairo_target_without_transforming(cr, fileInfo, &render_info, FALSE);
++
++	/* cleanup */
++	gerbv_destroy_image (image);
++	cairo_destroy (cr);
++	cairo_surface_destroy (surface);
++
++	/* return array of paths */
++	GArray* paths = gerbv_paths;
++	gerbv_paths = NULL; /* switch add_path off */
++
++	return paths;
++}
++
+ void
+ draw_cairo_line_to (cairo_t *cairoTarget, gdouble x, gdouble y, gboolean adjustByHalf, gboolean pixelOutput){
+ 	gdouble x1 = x, y1 = y;
+@@ -160,8 +257,10 @@
+ static void
+ draw_fill (cairo_t *cairoTarget, gchar drawMode, gerbv_selection_info_t *selectionInfo,
+ 		gerbv_image_t *image, struct gerbv_net *net){
+-	if ((drawMode == DRAW_IMAGE) || (drawMode == DRAW_SELECTIONS))
++	if ((drawMode == DRAW_IMAGE) || (drawMode == DRAW_SELECTIONS)) {
++		add_path(cairoTarget, 1);
+ 		cairo_fill (cairoTarget);
++		}
+ 	else
+ 		draw_check_if_object_is_in_selected_area (cairoTarget, FALSE,
+ 			selectionInfo, image, net);
+@@ -170,8 +269,10 @@
+ static void
+ draw_stroke (cairo_t *cairoTarget, gchar drawMode, gerbv_selection_info_t *selectionInfo,
+ 		gerbv_image_t *image, struct gerbv_net *net){
+-	if ((drawMode == DRAW_IMAGE) || (drawMode == DRAW_SELECTIONS))
++	if ((drawMode == DRAW_IMAGE) || (drawMode == DRAW_SELECTIONS)) {
++		add_path(cairoTarget, 0);
+ 		cairo_stroke (cairoTarget);
++		}
+ 	else
+ 		draw_check_if_object_is_in_selected_area (cairoTarget, TRUE,
+ 			selectionInfo, image, net);
+diff -Naur gerbv-2.6.0.ORIG/src/gerbv.h gerbv-2.6.0/src/gerbv.h
+--- gerbv-2.6.0.ORIG/src/gerbv.h	2011-11-19 01:04:14.000000000 +0100
++++ gerbv-2.6.0/src/gerbv.h	2014-08-14 11:01:28.008707694 +0200
+@@ -949,6 +949,58 @@
+ gerbv_HID_Attribute *
+ gerbv_attribute_dup (gerbv_HID_Attribute *, int);
+ 
++/* Export pick and place data */
++
++enum e_footprint {
++    PART_SHAPE_UNKNOWN = 0, /* drawn as circle with line*/
++    PART_SHAPE_RECTANGLE = 1, /* rectangle with one side marked*/
++    PART_SHAPE_STD = 2 /* rectangle with one corner marked*/
++};
++
++#define MAXL 200
++
++typedef struct {
++    char     designator[MAXL];
++    char     footprint[MAXL];
++    double   mid_x;
++    double   mid_y;
++    double   ref_x;
++    double   ref_y;
++    double   pad_x;
++    double   pad_y;
++    char     layer[MAXL]; /*T is top B is bottom*/
++    double   rotation;
++    char     comment[MAXL];    
++    int      shape;
++    double   width;
++    double   length;
++    unsigned int nuf_push;  /* Nuf pushes to estimate stack size */
++} PnpPartData;
++
++/* Parse pick and place file, 
++ * returns a GArray of PnpPartData */
++GArray*
++gerbv_parse_pick_and_place (gchar *filename); 
++
++/* Export layer as cairo paths (polygons and polylines) */
++
++/*
++ * array of all paths which make up the current drawing
++ */
++
++typedef struct {
++    gboolean fill;
++    cairo_path_t *path;
++    double line_width;
++    cairo_line_cap_t line_cap;
++    cairo_line_join_t line_join;
++} gerbv_path_t;
++
++/* Exports image as a list of polygons and polylines.
++ * Returns a GArray of gerbv_path_t */
++GArray*
++gerbv_export_paths_from_layer (gerbv_fileinfo_t *fileInfo, double dpi); 
++
+ #if defined(__cplusplus)
+ }
+ #endif
+diff -Naur gerbv-2.6.0.ORIG/src/Makefile.am gerbv-2.6.0/src/Makefile.am
+--- gerbv-2.6.0.ORIG/src/Makefile.am	2011-12-25 07:13:34.000000000 +0100
++++ gerbv-2.6.0/src/Makefile.am	2014-08-14 10:11:17.264660464 +0200
+@@ -28,7 +28,7 @@
+ 
+ # public header file(s)
+ pkgincludedir=	$(includedir)/${PACKAGE}-${VERSION}
+-pkginclude_DATA= gerbv.h
++pkginclude_HEADER= gerbv.h
+ 
+ # pkg-config data file
+ pkgconfigdir = $(libdir)/pkgconfig
+diff -Naur gerbv-2.6.0.ORIG/src/pick-and-place.c gerbv-2.6.0/src/pick-and-place.c
+--- gerbv-2.6.0.ORIG/src/pick-and-place.c	2011-11-19 01:04:14.000000000 +0100
++++ gerbv-2.6.0/src/pick-and-place.c	2014-08-14 11:16:16.232721628 +0200
+@@ -850,3 +850,27 @@
+ 	}
+ } /* pick_and_place_parse_file_to_image */
+ 
++/* parse pick and place file, return a GArray of PnpPartData */
++
++GArray* 
++gerbv_parse_pick_and_place (gchar *filename)
++{
++	/* load pick and place */
++	if (filename == NULL) {
++		GERB_MESSAGE(stderr, "error: no file name\n");
++		return NULL;
++	}
++
++	gerb_file_t *fd;
++	fd = gerb_fopen(filename);
++	if (fd == NULL) {
++		GERB_MESSAGE(stderr, "error: file open error");
++		return NULL;
++	}
++	fd->filename = g_strdup(filename);
++
++  	GArray *parsedPickAndPlaceData = pick_and_place_parse_file (fd);
++
++  	return parsedPickAndPlaceData;
++}
++
+diff -Naur gerbv-2.6.0.ORIG/src/pick-and-place.h gerbv-2.6.0/src/pick-and-place.h
+--- gerbv-2.6.0.ORIG/src/pick-and-place.h	2011-11-19 01:04:14.000000000 +0100
++++ gerbv-2.6.0/src/pick-and-place.h	2014-08-14 10:11:41.700660848 +0200
+@@ -29,38 +29,12 @@
+ 
+ #include <glib.h>
+  
+-#define MAXL 200
+-
+ typedef struct gerb_transf {
+     double r_mat[2][2];
+     double scale;
+     double offset[2];
+ } gerbv_transf_t;
+ 
+-enum e_footprint {
+-    PART_SHAPE_UNKNOWN = 0, /* drawn as circle with line*/
+-    PART_SHAPE_RECTANGLE = 1, /* rectangle with one side marked*/
+-    PART_SHAPE_STD = 2 /* rectangle with one corner marked*/
+-};
+-
+-typedef struct {
+-    char     designator[MAXL];
+-    char     footprint[MAXL];
+-    double   mid_x;
+-    double   mid_y;
+-    double   ref_x;
+-    double   ref_y;
+-    double   pad_x;
+-    double   pad_y;
+-    char     layer[MAXL]; /*T is top B is bottom*/
+-    double   rotation;
+-    char     comment[MAXL];    
+-    int      shape;
+-    double   width;
+-    double   length;
+-    unsigned int nuf_push;  /* Nuf pushes to estimate stack size */
+-} PnpPartData;
+-
+ GArray *pick_and_place_parse_file (gerb_file_t *fd);
+ 
+ gerbv_image_t *pick_and_place_parse_file_to_image (gerb_file_t *fd);

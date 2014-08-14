@@ -29,7 +29,11 @@
 #include "config.h"
 #include "gerber.h"
 #include "hypfile.h"
-#include "cairo-pdf.h"
+
+#include "gerb_file.h"
+#include "pick-and-place.h"
+
+#include "cairo-pdf.h" // XXX
 
 /*
  * Creation and destruction 
@@ -261,46 +265,8 @@ void Gerber::LoadOutline(std::string outline_filename, Hyp2Mat::PCB& pcb)
 
   if (!outline_filename.empty()) {
     /* Convert Gerber board outline to Hyp2Mat polygon */ 
-    LoadGerber(outline_filename, pcb);
+    LoadFile(outline_filename, GERBV_LAYERTYPE_RS274X);
     pcb.board = GerberToPolygons();
-    }
-  else {
-    /* create default rectangular outline */
-
-    /* loop over layers, determine bounds */
-
-    double x_min = 0.0;
-    double y_min = 0.0;
-    double x_max = 0.0;
-    double y_max = 0.0;
-  
-    /* loop over layers */
-    bool first = true;
-    for (int idx = 0; idx <= gerbv_project->last_loaded; idx++) {
-      if (gerbv_project->file[idx] && gerbv_project->file[idx]->image && gerbv_project->file[idx]->image->info) {
-        gerbv_image_info_t *info = gerbv_project->file[idx]->image->info;
-        if (first || (x_min > info->min_x)) x_min = info->min_x;
-        if (first || (x_max < info->max_x)) x_max = info->max_x;
-        if (first || (y_min > info->min_y)) y_min = info->min_y;
-        if (first || (y_max < info->max_y)) y_max = info->max_y;
-        first = false;
-        }
-      }
-
-    if ((x_min != x_max) && (y_min != y_max)) {
-
-      /* add rectangular outline to pcb */
-
-      Hyp2Mat::FloatPoly outline;
-      outline.poly.push_back(Hyp2Mat::FloatPoint(x_min * scale, y_min * scale));
-      outline.poly.push_back(Hyp2Mat::FloatPoint(x_min * scale, y_max * scale));
-      outline.poly.push_back(Hyp2Mat::FloatPoint(x_max * scale, y_max * scale));
-      outline.poly.push_back(Hyp2Mat::FloatPoint(x_max * scale, y_min * scale));
-      outline.is_hole = false;
-      outline.nesting_level = 0;
-  
-      pcb.board.push_back(outline);
-      }
     }
 
 }
@@ -309,27 +275,81 @@ void Gerber::LoadPickAndPlace(std::string pickandplace_filename, Hyp2Mat::PCB& p
 {
   if (debug) std::cerr << "pickandplace:" <<  pickandplace_filename << std::endl;
 
-  LoadFile(pickandplace_filename, GERBV_LAYERTYPE_PICKANDPLACE);
+  /* load pick and place */
+  gchar* fname = g_strdup(pickandplace_filename.c_str());
+  GArray *parsedPickAndPlaceData = gerbv_parse_pick_and_place (fname);
+  if (parsedPickAndPlaceData == NULL) {
+    std::cerr << "error: pick and place load error" << std::endl;
+    throw std::exception ();
+    }
+    
+  /* loop over components */
+  for (int i = 0; i < parsedPickAndPlaceData->len; i++) {
+    PnpPartData partData = g_array_index(parsedPickAndPlaceData, PnpPartData, i);
 
-  /* duplicate and clean current image */
-  gerbv_image_t *image = gerbv_image_duplicate_image (gerbv_project->file[gerbv_project->last_loaded]->image, NULL);
+    /* check component is on top or bottom layer */
+    bool bottom_layer= ((partData.layer[0]=='b') || (partData.layer[0]=='B'));
+    bool top_layer= ((partData.layer[0]=='t') || (partData.layer[0]=='T'));
+    if (!bottom_layer && !top_layer) continue;
 
-  /* loop over nets */
-  gerbv_net_t *currentNet;
-  for (currentNet = image->netlist; currentNet; currentNet = currentNet->next){
-    // XXX 
-    std::cerr << std::endl;
-//    GString glbl = currentNet->label;
-//    std::cerr << glbl->str << std::endl;
-    std::cerr << currentNet->start_x << std::endl;
-    std::cerr << currentNet->start_y << std::endl;
-    std::cerr << currentNet->stop_x << std::endl;
-    std::cerr << currentNet->stop_y << std::endl;
-    // Insert code which actually does something here. XXX
+    /* fill in device values */
+    Hyp2Mat::Device dev;
+    std::ostringstream name;
+    name << "D" << i;
+    dev.name = name.str();
+    dev.ref = partData.designator;
+    dev.value_type = Hyp2Mat::DEVICE_VALUE_NONE;
+    if (!pcb.stackup.empty() && bottom_layer) dev.layer_name = pcb.stackup.front().layer_name;
+    if (!pcb.stackup.empty() && top_layer) dev.layer_name = pcb.stackup.back().layer_name;
+    
+    pcb.device.push_back(dev); 
+
+    /* fill in pin values */
+    Hyp2Mat::Pin dev_pin;
+    dev_pin.ref = partData.designator;
+    dev_pin.x = partData.mid_x;
+    dev_pin.y = partData.mid_y;
+
+    // XXX check not mixed up front & back
+
+    if (!pcb.stackup.empty() && bottom_layer) {
+      dev_pin.z0 = pcb.stackup.front().z0;
+      dev_pin.z1 = pcb.stackup.front().z1;
+      dev_pin.layer_name = pcb.stackup.front().layer_name;
+      }
+
+    if (!pcb.stackup.empty() && top_layer) {
+      dev_pin.z0 = pcb.stackup.back().z0;
+      dev_pin.z1 = pcb.stackup.back().z1;
+      dev_pin.layer_name = pcb.stackup.back().layer_name;
+      }
+
+     double half_width = partData.width / 2;
+     double half_length = partData.length / 2;
+
+     double rot = partData.rotation;
+     if (((rot > 45) && (rot < 135)) || ((rot > 225) && (rot < 315)) ||
+         ((rot < -45) && (rot > -135)) || ((rot < -225) && (rot > -315))) {
+       double half_length = partData.width / 2;
+       double half_width = partData.length / 2;
+       }
+     else {
+       double half_width = partData.width / 2;
+       double half_length = partData.length / 2;
+       }
+     dev_pin.metal.push_back(Hyp2Mat::FloatPoint(dev_pin.x - half_length, dev_pin.y - half_width));
+     dev_pin.metal.push_back(Hyp2Mat::FloatPoint(dev_pin.x - half_length, dev_pin.y + half_width));
+     dev_pin.metal.push_back(Hyp2Mat::FloatPoint(dev_pin.x + half_length, dev_pin.y + half_width));
+     dev_pin.metal.push_back(Hyp2Mat::FloatPoint(dev_pin.x + half_length, dev_pin.y - half_width));
+      
+     pcb.pin.push_back(dev_pin);
+
     }
 
-  /* free image */
-  gerbv_destroy_image (image);
+  /* free pick and place data */
+  g_array_free (parsedPickAndPlaceData, TRUE);
+
+  return;
   
 }
 
@@ -383,54 +403,79 @@ Hyp2Mat::FloatPolygons Gerber::GerberToPolygons()
   gint idx_loaded = gerbv_project->last_loaded;
 
   /* check file parsed ok */
-  if (gerbv_project->file[idx_loaded] == NULL){
+  gerbv_fileinfo_t *fd = gerbv_project->file[idx_loaded];
+  if (fd == NULL){
     std::cerr << "error: file not loaded" << std::endl;
     throw std::exception();
     }
 
-  /* check file type */
-  gerbv_image_t* image = gerbv_project->file[idx_loaded]->image;
-
-  if (image && (image->layertype != GERBV_LAYERTYPE_RS274X)) {
-    std::cerr << "error: not a gerber layer"  << std::endl;
-    throw std::exception();
+  /* convert to cairo paths */
+  GArray *gerbv_path_array = gerbv_export_paths_from_layer(fd, 72);
+  if (gerbv_path_array == NULL) {
+      std::cerr << "error: gerber to polygon conversion error" << std::endl;
+      throw std::exception ();
     }
 
-  /* window size, scale, translation */
-  if (!image->info) {
-    std::cerr << "error: no gerber image info"  << std::endl;
-    throw std::exception();
+  /* convert cairo paths to Hyp2Mat polygons */
+  Hyp2Mat::Polygon layer;
+
+  /* loop over all paths */
+  for (int i=0; i<gerbv_path_array->len; i++) {
+    gerbv_path_t gerbv_path = g_array_index(gerbv_path_array, gerbv_path_t, i);
+    /* loop over path */
+    cairo_path_t *cairo_path = gerbv_path.path;
+    cairo_path_data_t *data;
+    Hyp2Mat::FloatPolygon poly;
+
+    /* loop over single path */
+    double x0 = 0, y0 = 0;
+    bool x0y0_set = FALSE;
+    for (int j=0; j < cairo_path->num_data; j += cairo_path->data[j].header.length) {
+        data = &cairo_path->data[j];
+        double x1 = data[1].point.x;
+        double y1 = data[1].point.y;
+        switch (data->header.type) {
+        case CAIRO_PATH_MOVE_TO:
+            x0 = x1;
+            y0 = y1;
+            x0y0_set = TRUE;
+            if (debug) std::cerr << "cairo: move_to(" << x1 << ", " << y1 << ")" << std::endl;
+            poly.clear();
+            poly.push_back(Hyp2Mat::FloatPoint(x1, y1));
+            break;
+        case CAIRO_PATH_LINE_TO:
+            if (debug) std::cerr << "cairo: line_to(" << x1 << ", " << y1 << ")" << std::endl;
+            poly.push_back(Hyp2Mat::FloatPoint(x1, y1));
+            break;
+        case CAIRO_PATH_CURVE_TO:
+            std::cerr << "error: unexpected cairo path_curve_to" << std::endl;
+            break;
+        case CAIRO_PATH_CLOSE_PATH:
+            if (debug) std::cerr << "cairo: close_path" << std::endl;
+            if (x0y0_set) poly.push_back(Hyp2Mat::FloatPoint(x0, y0));
+            layer.AddEdge(poly); //XXX Check
+            poly.clear();
+            break;
+        }
+      }
+
+    /* XXX stroke and fill */
+    if (debug) {
+        if (gerbv_path.fill)
+          std::cerr<<"cairo: fill";
+        else
+          std::cerr<<"cairo: stroke"; // XXX
+        std::cerr << " line_width " << gerbv_path.line_width << std::endl;
+      }
+
+    /* XXX expand polygon by half line width */
+
     }
 
-  /* copy image info to render info */
-  gerbv_image_info_t* img_info = image->info;
-  gerbv_render_info_t render_info;
-
-  double dpi = 72;
-
-  render_info.scaleFactorX  = dpi;
-  render_info.scaleFactorY  = dpi;
-  render_info.lowerLeftX    = img_info->min_x;
-  render_info.lowerLeftY    = img_info->min_y;
-  render_info.displayWidth  = (img_info->max_x - img_info->min_x) * dpi;
-  render_info.displayHeight = (img_info->max_y - img_info->min_y) * dpi;
-  render_info.renderType = GERBV_RENDER_TYPE_CAIRO_NORMAL;
-
-  /* create cairo surface and context */
-  cairo_surface_t* surface =  cairo_pdf_surface_create ("zz.pdf", (img_info->max_x - img_info->min_x) * dpi, (img_info->max_y - img_info->min_y) * dpi); // XXX
-  cairo_t* cr = cairo_create(surface);
-
-  /* export gerber to cairo */
-  gerbv_render_cairo_set_scale_and_translation(cr, &render_info); // XXX Check later
-  gerbv_render_layer_to_cairo_target_without_transforming(cr, gerbv_project->file[idx_loaded], &render_info, FALSE);
-
-  /* cleanup */
-  cairo_destroy (cr);
-  cairo_surface_destroy (surface);
+  /* XXX release memory */
 
   /* return polygons */
-  Hyp2Mat::Polygon poly;
-  return poly.Result();
+  return layer.Result();
 
 }
 

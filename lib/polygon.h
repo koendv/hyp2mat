@@ -35,6 +35,7 @@ namespace Hyp2Mat {
       static void SetGrid(double new_grid);
       static double AlignToGrid(double x);
       static void SetArcPrecision(double new_arc_precision);
+      void Clear();
       void AddEdge(FloatPolygon edge);
       void AddHole(FloatPolygon hole);
       void Offset(double delta);
