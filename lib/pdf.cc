@@ -141,6 +141,7 @@ void PDF::draw(cairo_t* cr, Hyp2Mat::Via& via)
   double x = via.x * m_to_points - x_min + margin;
   double y = via.y * m_to_points - y_min + margin;
   double r = via.radius * m_to_points;
+  cairo_move_to(cr, x, y + r);
   cairo_arc(cr, x, y, r, 0.0, 2 * M_PI);
 }
 
