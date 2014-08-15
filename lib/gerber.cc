@@ -30,9 +30,6 @@
 #include "gerber.h"
 #include "hypfile.h"
 
-#include "gerb_file.h"
-#include "pick-and-place.h"
-
 #include "cairo-pdf.h" // XXX
 
 /*

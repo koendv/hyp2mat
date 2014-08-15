@@ -26,7 +26,7 @@
 #define GERBER_H
 
 #include "hyp2mat.h"
-#include "gerbv.h"
+#include <gerbv.h>
 #include "polygon.h"
 
 class Gerber {

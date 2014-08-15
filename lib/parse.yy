@@ -186,7 +186,8 @@ plane_sep
   /* board */
 
 board
-  : '{' BOARD board_paramlist '}' ;
+  : '{' BOARD board_paramlist '}'
+  | '{' BOARD '}' ;
  
 board_paramlist
   : board_paramlist board_param

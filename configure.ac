@@ -36,13 +36,7 @@ AC_PROG_YACC
 AC_PROG_LIBTOOL
 AC_DISABLE_SHARED
 
-# libhpdf is used for pdf output
-# libhpdf needs -lhpdf -lpng -lz -lm
-AC_CHECK_HEADER([hpdf.h], [],[AC_MSG_ERROR([hpdf.h include file not found])])
 AC_CHECK_LIB([m], [sqrt])
-AC_CHECK_LIB([z], [deflate], [], [AC_ERROR([libz library not found])])
-AC_CHECK_LIB([png], [png_read_info])
-AC_CHECK_LIB([hpdf], [HPDF_New], [], [AC_ERROR([libhpdf library not found])])
 
 # libgerbv is used for Gerber and Excellon input
 # If PKG_CHECK_MODULES emitted linker and compiler params, set HAVE_LIBGERBV

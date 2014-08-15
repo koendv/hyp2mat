@@ -219,6 +219,7 @@ namespace Hyp2Mat {
       bool raw; /* set raw processing */
     private:
       void _UserOverrides();
+      void _CheckBoardOutline();
       Bounds _bounds;
       double _arc_precision;
       double _clearance;
