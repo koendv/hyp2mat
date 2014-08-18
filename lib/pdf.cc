@@ -19,7 +19,7 @@
  */
 
 /*
- * Uses libharu by Takeshi Kanno to generate pdf documents.
+ * Uses cairo to generate pdf documents.
  */
 
 #include <iostream>
