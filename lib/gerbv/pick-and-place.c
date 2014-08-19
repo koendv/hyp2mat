@@ -857,14 +857,14 @@ gerbv_parse_pick_and_place (gchar *filename)
 {
 	/* load pick and place */
 	if (filename == NULL) {
-		GERB_MESSAGE(stderr, "error: no file name\n");
+		GERB_MESSAGE("error: no file name\n");
 		return NULL;
 	}
 
 	gerb_file_t *fd;
 	fd = gerb_fopen(filename);
 	if (fd == NULL) {
-		GERB_MESSAGE(stderr, "error: file open error");
+		GERB_MESSAGE("error: file open error\n");
 		return NULL;
 	}
 	fd->filename = g_strdup(filename);
