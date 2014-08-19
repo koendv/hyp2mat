@@ -26,7 +26,6 @@
 #include <cstdio>
 #include <algorithm>
 #include "pdf.h"
-#include <hpdf_types.h>
 
 using namespace Hyp2Mat;
 
