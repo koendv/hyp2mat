@@ -13,6 +13,9 @@ If you wish to build not only the static library, but also the shared libhyp2mat
 The following packages are necessary for development: g++, libtool, make, bison, flex, gengetopt, help2man, groff, ps2pdf.
 
 On Linux ubuntu, for installation in /usr/local/bin:
+  
+  sudo apt-get install autoconf g++ libtool make bison flex gengetopt help2man groff   
+  sudo apt-get install libcairo2-dev libgtk2.0-dev
 
   cd hyp2mat
   sh ./bootstrap.sh
