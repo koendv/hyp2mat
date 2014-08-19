@@ -25,7 +25,7 @@
 #include "hyp2mat.h"
 
 #include "hyperlynx.h"
-#include "gerber.h"
+#include "import_gerber.h"
 #include "pdf.h"
 #include "csxcad.h"
 

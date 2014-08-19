@@ -38,9 +38,24 @@ AC_DISABLE_SHARED
 
 AC_CHECK_LIB([m], [sqrt])
 
+#
 # libgerbv is used for Gerber and Excellon input
-# If PKG_CHECK_MODULES emitted linker and compiler params, set HAVE_LIBGERBV
-PKG_CHECK_MODULES([LIBGERBV], [libgerbv], [AC_DEFINE([HAVE_LIBGERBV], [1], [Define to 1 if you have the `gerbv' library (-lgerbv).])] ) 
+# For compiled-in gerbv sources
+#
+
+PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.0, , [AC_MSG_ERROR([
+Cairo > 1.2.0 required but not found.
+Please review the following errors:
+$CAIRO_PKG_ERRORS])]
+)
+
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4.0, , [AC_MSG_ERROR([
+GTK >= 2.4.0 required but not found.
+Please review the following errors:
+$GTK_PKG_ERRORS])]
+)
+
+AC_CHECK_HEADERS(unistd.h getopt.h string.h sys/mman.h sys/types.h sys/stat.h stdlib.h regex.h libgen.h time.h)
 
 AC_OUTPUT
 # not truncated

@@ -27,7 +27,7 @@
 #include <algorithm>
 
 #include "config.h"
-#include "gerber.h"
+#include "import_gerber.h"
 #include "hypfile.h"
 
 #include "cairo-pdf.h" // XXX

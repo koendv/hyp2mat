@@ -2,7 +2,7 @@ This is a utility which converts HyperLynx files to CSXCAD for electromagnetic s
 
 Tested on Linux ubuntu, MacOSX and Windows/MingW.
 
-Dependencies: requires gerbv, cairo.
+Dependencies: requires gtk, cairo.
 
 Default is installing the hyp2mat executable only.
 If you wish to install not only the executable, but also the hyp2mat library, includes and package information, add the "--enable-library" flag, e.g. "configure --enable-library"
@@ -12,20 +12,11 @@ If you wish to build not only the static library, but also the shared libhyp2mat
 
 The following packages are necessary for development: g++, libtool, make, bison, flex, gengetopt, help2man, groff, ps2pdf.
 
-Patch gerbv-2.6.0 with the included gerbv-2.6.0.patch, build and install.
+On Linux ubuntu, for installation in /usr/local/bin:
 
-On Linux ubuntu, with libhpdf installed in /usr/lib:
-
-  tar xvf gerbv-2.6.0.tar.gz
-  patch -p0 < ../src/hyp2mat/gerbv-2.6.0.patch
-  cd gerbv-2.6.0/
-  ./configure --prefix=/opt/openEMS/
-  make
-  make install
-
-  cd ../hyp2mat
+  cd hyp2mat
   sh ./bootstrap.sh
-  PKG_CONFIG_PATH=/opt/openEMS/lib/pkgconfig/ ./configure --prefix=/opt/openEMS/
+  ./configure
   make 
   make install
 

@@ -22,8 +22,8 @@
  * loads Gerber,Excellon and Centroid files in a Hyp2Mat class
  */
 
-#ifndef GERBER_H
-#define GERBER_H
+#ifndef IMPORT_GERBER_H
+#define IMPORT_GERBER_H
 
 #include "hyp2mat.h"
 #include <gerbv.h>
