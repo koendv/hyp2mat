@@ -19,6 +19,6 @@ in the mxe root.
 Package the win32 release using the following commands, run from the mxe root:
 mkdir hyp2mat
 (cd ./usr/i686-pc-mingw32/share/hyp2mat/ ; tar cvf - . ) | ( cd hyp2mat; tar xvpf - )
-(cd ./usr/i686-pc-mingw32/bin ; tar cvf - ./hyp2mat.exe  ) | ( cd hyp2mat; tar xvpf - )
+cp -p ./usr/i686-pc-mingw32/bin/hyp2mat.exe ./hyp2mat/
 zip -9 -r hyp2mat-win32-current.zip ./hyp2mat
 # not truncated
