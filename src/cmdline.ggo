@@ -3,7 +3,7 @@
 #
 
 args "--unamed-opts"
-usage " [-h] [ -o outfile ] [-i hyperlynx|gerber ] [ -f pdf|csxcad ] [OPTIONS]... [-v] [infile]..."
+usage " [-i hyperlynx|gerber ] [ -f pdf|csxcad ] [OPTIONS]... [infile]..."
 
 description "Converts Hyperlynx and Gerber files to openEMS for electromagnetic simulation, or to PDF for printing."
 
