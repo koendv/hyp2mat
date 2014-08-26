@@ -19,9 +19,9 @@ endif
 pkgconfigdir=$(datarootdir)/pkgconfig
 
 # hyp2mat flags
-AM_CXXFLAGS=@GTK_CFLAGS@ @CAIRO_CFLAGS@ -Igerbv
-# libgerbv flags. Switch off libgerbv debugging (-DDEBUG=0)
-AM_CFLAGS=@GTK_CFLAGS@ @CAIRO_CFLAGS@ -Igerbv -DDEBUG=0
+AM_CXXFLAGS=@GTK_CFLAGS@ @CAIRO_CFLAGS@ -Igerbv -Iclipper
+# libgerbv flags. Switch off debugging in libgerbv (-DDEBUG=0)
+AM_CFLAGS=@GTK_CFLAGS@ @CAIRO_CFLAGS@ -Igerbv -Iclipper -DDEBUG=0
 
 AM_LDFLAGS=@GTK_LIBS@ @CAIRO_LIBS@
 
@@ -59,8 +59,10 @@ libhyp2mat_la_SOURCES=\
   gerbv/pick-and-place.c \
   gerbv/pick-and-place.h \
   gerbv/tooltable.c \
-  clipper.cpp \
-  clipper.hpp \
+  clipper/cairo_clipper.cpp \
+  clipper/cairo_clipper.hpp \
+  clipper/clipper.cpp \
+  clipper/clipper.hpp \
   copper.cc \
   crop.h \
   crop.cc \
