@@ -19,9 +19,9 @@ endif
 pkgconfigdir=$(datarootdir)/pkgconfig
 
 # hyp2mat flags
-AM_CXXFLAGS=@GTK_CFLAGS@ @CAIRO_CFLAGS@ -Igerbv -Iclipper
+AM_CXXFLAGS= -Igerbv -Iclipper @GTK_CFLAGS@ @CAIRO_CFLAGS@
 # libgerbv flags. Switch off debugging in libgerbv (-DDEBUG=0)
-AM_CFLAGS=@GTK_CFLAGS@ @CAIRO_CFLAGS@ -Igerbv -Iclipper -DDEBUG=0
+AM_CFLAGS= -Igerbv -Iclipper @GTK_CFLAGS@ @CAIRO_CFLAGS@ -DDEBUG=0
 
 AM_LDFLAGS=@GTK_LIBS@ @CAIRO_LIBS@
 
