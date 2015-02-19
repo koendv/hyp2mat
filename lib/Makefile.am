@@ -58,7 +58,11 @@ EXTRA_DIST=clipper.txt parse.h
 
 BUILT_SOURCES=parse.cc parse.h scan.cc
 
-parse.h: parse.cc
+scan.cc: scan.ll parse.h
+	${LEX} -o $*.cc $<
+
+parse.h parse.cc: parse.yy
+	${YACC} --output=$*.cc --defines=$*.h $<
 
 CLEANFILES=parse.cc parse.h scan.cc
 
