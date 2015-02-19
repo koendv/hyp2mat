@@ -172,7 +172,7 @@ void HyperLynx::CopyVias(Hyp2Mat::PCB& pcb)
       v.radius = j->radius;
 
       /* cropping */
-      if ((v.x > bounds.x_max) || (v.x < bounds.x_min) || (v.y > bounds.y_max) || (v.y < bounds.y_min)) continue;
+      if (!board.IsEmpty() && ((v.x > bounds.x_max) || (v.x < bounds.x_min) || (v.y > bounds.y_max) || (v.y < bounds.y_min))) continue; // Only crop in x and y if board outline is defined
       if ((v.z0 > bounds.z_max) && (v.z1 > bounds.z_max)) continue;
       if ((v.z0 < bounds.z_min) && (v.z1 < bounds.z_min)) continue;
       if (v.z1 > bounds.z_max) v.z1 = bounds.z_max;

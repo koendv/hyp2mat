@@ -46,7 +46,10 @@ PCB::PCB()
 }
 
 /*
- * Read a pcb in hyperlynx format 
+ * Read a pcb in hyperlynx format.
+ * "filename" is the Hyperlynx file to import. 
+ * "layers" is the names of the layers to import. Default is importing all layers.
+ * "nets" is the names of the nets to import. Default is importing all nets.
  */
 
 void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, std::vector<std::string> nets)
@@ -67,6 +70,9 @@ void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, 
   hyperlynx.bounds = _bounds;
 
   hyperlynx.Read(filename, *this);
+
+  /* Check for empty board outline; add default board outline if outline empty  */
+  _CheckBoardOutline(); 
 
   /* Epsilon_r, bulk resistivity and loss tangent overrides */
   _UserOverrides();
@@ -231,6 +237,26 @@ Bounds PCB::GetBounds() {
         first_point = false;
         }
 
+  /* iterate over layers */
+  for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l)
+    for (FloatPolygons::iterator i = l->metal.begin(); i != l->metal.end(); ++i)
+      for (FloatPolygon::iterator j = i->poly.begin(); j != i->poly.end(); ++j) {
+          if ((j->x > bounds.x_max) || first_point) bounds.x_max = j->x;
+          if ((j->y > bounds.y_max) || first_point) bounds.y_max = j->y;
+          if ((j->x < bounds.x_min) || first_point) bounds.x_min = j->x;
+          if ((j->y < bounds.y_min) || first_point) bounds.y_min = j->y;
+          first_point = false;
+          }
+
+  /* iterate over vias */
+  for (ViaList::iterator i = via.begin(); i != via.end(); ++i) {
+    if ((i->x + i->radius > bounds.x_max) || first_point) bounds.x_max = i->x + i->radius;
+    if ((i->y + i->radius > bounds.y_max) || first_point) bounds.y_max = i->y + i->radius;
+    if ((i->x - i->radius < bounds.x_min) || first_point) bounds.x_min = i->x - i->radius;
+    if ((i->y - i->radius < bounds.y_min) || first_point) bounds.y_min = i->y - i->radius;
+    first_point = false;
+    }
+
   return bounds;
   }
 
@@ -243,6 +269,31 @@ void PCB::SetBounds(Bounds new_bounds)
   _bounds = new_bounds; 
 }
 
+void PCB::_CheckBoardOutline()
+{
+  if (!board.empty()) return;
+
+  if (debug) std::cerr << "board outline empty" << std::endl;
+
+  Bounds bounds = GetBounds();
+    
+  if ((bounds.x_min != bounds.x_max) && (bounds.y_min != bounds.y_max)) {
+
+    if (debug) std::cerr << "adding default board outline" << std::endl;
+
+    /* add rectangular outline to pcb */
+
+    Hyp2Mat::FloatPoly outline;
+    outline.poly.push_back(Hyp2Mat::FloatPoint(bounds.x_min, bounds.y_min));
+    outline.poly.push_back(Hyp2Mat::FloatPoint(bounds.x_min, bounds.y_max));
+    outline.poly.push_back(Hyp2Mat::FloatPoint(bounds.x_max, bounds.y_max));
+    outline.poly.push_back(Hyp2Mat::FloatPoint(bounds.x_max, bounds.y_min));
+    outline.is_hole = false;
+    outline.nesting_level = 0;
+  
+    board.push_back(outline);
+  }
+}
 
 void PCB::PrintSummary() {
   Bounds bounds = GetBounds();

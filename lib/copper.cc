@@ -206,8 +206,10 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
    * Crop to board size 
    */
 
-  layer_copper.Intersection(board);
-  layer_copper = CropPolygon(layer_copper, bounds);
+  if (!board.IsEmpty()) {
+    layer_copper.Intersection(board);
+    layer_copper = CropPolygon(layer_copper, bounds);
+    }
 
   return layer_copper;
 }
