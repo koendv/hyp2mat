@@ -11,3 +11,9 @@
 
 1 March 2014:
  - allow for lossy copper and lossy dielectric
+
+21 February 2015:
+ - adapt for bison 3
+ - add board outline if board outline is not defined
+ - allow blind and buried vias
+

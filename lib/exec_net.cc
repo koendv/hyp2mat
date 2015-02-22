@@ -163,17 +163,18 @@ bool HypFile::Hyp::exec_via(parse_param& h)
   h.x *= unit;
   h.y *= unit;
 
-  /* via begin defaults to top layer */
-  if (!h.layer1_name_set) 
-    h.layer1_name = stackup.front().layer_name; 
-
-  /* via end defaults to bottom layer */
-  if (!h.layer2_name_set) 
-    h.layer2_name = stackup.back().layer_name; 
-
   /* lookup padstack */
   for (PadstackList::iterator i = padstack.begin(); i != padstack.end(); ++i)
     if (i->padstack_name == h.padstack_name) {
+
+      /* set via begin layer */
+      if (!h.layer1_name_set) 
+        h.layer1_name = i->pads.front().layer_name; 
+
+      /* set via end layer */
+      if (!h.layer2_name_set) 
+        h.layer2_name = i->pads.back().layer_name; 
+
       /* add to list of via holes */
       add_via(h.x, h.y, h.layer2_name, h.layer1_name, i->drill_size/2);
 

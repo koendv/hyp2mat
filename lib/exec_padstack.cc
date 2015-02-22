@@ -131,7 +131,8 @@ bool HypFile::Hyp::exec_padstack_element(parse_param& h)
 }
 
 /*
- * Note: * MDEF and ADEF layer names have special meaning.
+ * Note: 
+ * MDEF and ADEF layer names have special meaning.
  * MDEF specified the default pad for signal or plane layers. 
  * If a signal or plane layer has no metal pad, and an MDEF default pad is specified, the MDEF pad is applied to the layer.
  * ADEF specifies the default anti-pad (non-conducting hole in the copper) for plane layers.
@@ -141,7 +142,7 @@ bool HypFile::Hyp::exec_padstack_element(parse_param& h)
 bool HypFile::Hyp::exec_padstack_end(parse_param& h)
 {
   if (trace_hyp) {
-    cerr << "padstack_element:";
+    cerr << "padstack_end:";
     cerr << endl;
     };
 
@@ -183,8 +184,51 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
           layer_has_pad = true;
           }
 
+    /* 
+     * Determine begin and end layers of via
+     */
+
+    /* via is from top to bottom if at least one pad is metal MDEF */
+    bool is_through_hole_via = false;
+    for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
+      if ((p->layer_name == "MDEF") && (p->pad_type == PAD_TYPE_METAL)) is_through_hole_via = true;
+
+    /* determine via top and bottom layers */
+    std::string pad_top_layer;
+    std::string pad_bottom_layer;
+   
+    if (is_through_hole_via) {
+      pad_top_layer = stackup.front().layer_name; /* via begins at top layer */
+      pad_bottom_layer = stackup.back().layer_name; /* via ends at bottom layer */
+      }
+    else {
+      /* via begins at highest layer with metal pad, and ends at lowest layer with a metal pad */
+      bool layer_found = false;
+      for (LayerList::iterator l = stackup.begin(); l != stackup.end(); ++l)
+        for (PadList::iterator p = padstack.back().pads.begin(); p != padstack.back().pads.end(); ++p)
+          if ((l->layer_name == p->layer_name) && (p->pad_type == PAD_TYPE_METAL)) {
+            if (!layer_found) {
+              pad_top_layer = l->layer_name;
+              layer_found = true;
+              }
+            pad_bottom_layer = l->layer_name;
+            };
+
+      if (!layer_found) std::cerr << "warning: padstack without metal:" << h.padstack_name << std::endl;
+      
+      }
+
+    /*
+     * Fill in missing via pads
+     */
+
+    // XXX Fixme
+    // XXX Check if loops need to begin at pad_top_layer / end at pad_bottom_layer
+    // XXX Check if pad_top_layer / pad_bottom_layer need visibility
+    // XXX Check if need mechanism to remove pads?
+
     /* If a signal or plane layer has no pad, and no MDEF pad, copy an existing pad */
-    bool is_through_hole_pad = (padstack.back().drill_size > 0);
+    bool is_through_hole_pad = is_through_hole_via && (padstack.back().drill_size > 0);
     if (!layer_has_pad && is_through_hole_pad && ((l->layer_type == LAYER_SIGNAL) || (l->layer_type == LAYER_PLANE)) ) {
       Pad new_pad;
       bool pad_found = false;
