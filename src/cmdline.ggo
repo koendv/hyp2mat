@@ -3,25 +3,15 @@
 #
 
 args "--unamed-opts"
-usage " [-i hyperlynx|gerber ] [ -f pdf|csxcad ] [OPTIONS]... [infile]..."
+usage " [-h] [ -o outfile ] [ -f pdf|csxcad ] [-n net]... [OPTIONS]... [-v] [infile]"
 
-description "Converts Hyperlynx and Gerber files to openEMS for electromagnetic simulation, or to PDF for printing."
+description "Converts Hyperlynx Signal-Integrity Transfer Format files to Octave/matlab scripts."
 
 option "output" o "Output file." string typestr="filename" default="-" optional
-option "input-format" i "Input file format." enum values="hyperlynx", "gerber" default="hyperlynx" optional
 option "output-format" f "Output file format." enum values="csxcad", "pdf" default="pdf" optional
-
-section "Hyperlynx input options"
+section "Processing options"
 option "net" n "Import net. Repeat to import several nets. Default is importing all nets." string optional multiple
 option "layer" l "Import layer. Repeat to import several layers. Default is importing all layers." string optional multiple
-
-section "Gerber input options"
-option "drill" - "Import Excellon drill file." string typestr="filename" optional multiple
-option "tools" - "Import Excellon tools file." string typestr="filename" optional
-option "pickandplace" - "Import Centroid pick and place file." string typestr="filename" optional multiple
-option "outline" - "Import Gerber board outline file." string typestr="filename" optional
-
-section "Processing options"
 option "xmin" x "Crop pcb. Set lower bound of x coordinate." double optional 
 option "xmax" X "Crop pcb. Set upper bound of x coordinate." double optional 
 option "ymin" y "Crop pcb. Set lower bound of y coordinate." double optional 
@@ -32,21 +22,17 @@ option "grid" - "Set output grid size." double default="10e-6" optional
 option "arc-precision" - "Set maximum difference between perfect arc and polygonal approximation." default="0" double optional 
 option "clearance" - "Set default trace-to-plane clearance." default="0.0002" double optional 
 option "flood" - "Flood layer with copper. Repeat to flood several layers. The value \"plane_layers\" floods all plane layers." string optional multiple
-
 section "Physical properties"
 option "epsilonr" - "Set epsilon r of dielectric." double optional
 option "loss-tangent" - "Set loss tangent of dielectric." double optional
 option "bulk-resistivity" - "Set bulk resistivity of copper (in Ohm meter)." double optional
-
 section "CSXCAD output options"
 option "pcb-outline" - "Detailed board outline." flag off
 option "lossy-copper" - "Model copper as lossy. Default is modeling copper as perfect conductor." flag off
-
 section "PDF output options"
 option "hue" - "Set PDF color hue. Range 0.0 to 1.0" double default="0.0" optional
 option "saturation" - "Set PDF color saturation. Range 0.0 to 1.0" double default="0.6" optional
 option "brightness" - "Set PDF color brightness. Range 0.0 to 1.0" double default="0.9" optional
-
 section "Debugging options"
 option "raw" r "Raw output. Do not join adjacent or overlapping copper." flag off
 option "debug" d "Increase debugging level. Repeat for more detailed debugging." optional multiple

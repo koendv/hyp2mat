@@ -18,51 +18,9 @@ endif
 
 pkgconfigdir=$(datarootdir)/pkgconfig
 
-# hyp2mat flags
-AM_CXXFLAGS= -Igerbv -Iclipper @GTK_CFLAGS@ @CAIRO_CFLAGS@
-# libgerbv flags. Switch off debugging in libgerbv (-DDEBUG=0)
-AM_CFLAGS= -Igerbv -Iclipper @GTK_CFLAGS@ @CAIRO_CFLAGS@ -DDEBUG=0
-
-AM_LDFLAGS=@GTK_LIBS@ @CAIRO_LIBS@
-
-AUTOMAKE_OPTIONS = subdir-objects
-
 libhyp2mat_la_SOURCES=\
-  gerbv/amacro.c \
-  gerbv/amacro.h \
-  gerbv/common.h \
-  gerbv/csv.c \
-  gerbv/csv_defines.h \
-  gerbv/csv.h \
-  gerbv/draw.c \
-  gerbv/draw-gdk.c \
-  gerbv/draw-gdk.h \
-  gerbv/draw.h \
-  gerbv/drill.c \
-  gerbv/drill.h \
-  gerbv/drill_stats.c \
-  gerbv/drill_stats.h \
-  gerbv/export-drill.c \
-  gerbv/exportimage.c \
-  gerbv/export-rs274x.c \
-  gerbv/gerber.c \
-  gerbv/gerber.h \
-  gerbv/gerb_file.c \
-  gerbv/gerb_file.h \
-  gerbv/gerb_image.c \
-  gerbv/gerb_image.h \
-  gerbv/gerb_stats.c \
-  gerbv/gerb_stats.h \
-  gerbv/gerbv.c \
-  gerbv/gerbv.h \
-  gerbv/gerbv_icon.h \
-  gerbv/pick-and-place.c \
-  gerbv/pick-and-place.h \
-  gerbv/tooltable.c \
-  clipper/cairo_clipper.cpp \
-  clipper/cairo_clipper.hpp \
-  clipper/clipper.cpp \
-  clipper/clipper.hpp \
+  clipper.cpp \
+  clipper.hpp \
   copper.cc \
   crop.h \
   crop.cc \
@@ -83,8 +41,6 @@ libhyp2mat_la_SOURCES=\
   hyperlynx.h \
   hypfile.cc \
   hypfile.h \
-  import_gerber.cc \
-  import_gerber.h \
   misc.cc \
   palette.cc \
   palette.h \

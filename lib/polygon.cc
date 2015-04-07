@@ -63,15 +63,6 @@ bool Polygon::IsEmpty()
 }
 
 /*
- * Remove all edges
- */
-
-void Polygon::Clear()
-{
-  _subject.clear();
-}
-
-/*
  * Add an outer edge to the polygon
  */
 

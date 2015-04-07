@@ -22,9 +22,7 @@
 #define PDF_H
 
 #include <cmath>
- 
-#include <cairo.h>
-#include <cairo-pdf.h>
+#include <hpdf.h>
 
 #include "palette.h"
 #include "hyp2mat.h"
@@ -43,16 +41,17 @@ private:
   double text_height; /* in points */
   double margin; /* in points */
   double m_to_points; /* convert meter to points */
-  void set_color(cairo_t* cr, int color_idx);
-  void set_color_black(cairo_t* cr);
-  void draw_composite_view(cairo_t* cr, Hyp2Mat::PCB& pcb);
-  void draw_layer_view(cairo_t* cr, Hyp2Mat::PCB& pcb);
-  void draw_caption(cairo_t* cr, std::string txt);
-  void draw(cairo_t* cr, Hyp2Mat::FloatPolygons& polygons); /* output a polygon */
-  void draw(cairo_t* cr, Hyp2Mat::FloatPolygon& polygon); /* output a polygon edge */
-  void draw(cairo_t* cr, Hyp2Mat::Via& via); /* output a via */
-  void page_fill(cairo_t* cr); /* fill */
-  void page_stroke(cairo_t* cr); /* draw lines */
+  void set_page_size(HPDF_Page page);
+  void set_color(HPDF_Page page, int color_idx);
+  void set_color_black(HPDF_Page page);
+  void draw_composite_view(HPDF_Doc pdf, HPDF_Font font, Hyp2Mat::PCB& pcb);
+  void draw_layer_view(HPDF_Doc pdf, HPDF_Font font, Hyp2Mat::PCB& pcb);
+  void draw_caption(HPDF_Page page, HPDF_Font font, std::string txt);
+  void draw(HPDF_Page page, Hyp2Mat::FloatPolygons& polygons); /* output a polygon */
+  void draw(HPDF_Page page, Hyp2Mat::FloatPolygon& polygon); /* output a polygon edge */
+  void draw(HPDF_Page page, Hyp2Mat::Via& via); /* output a via */
+  void page_fill(HPDF_Page page); /* fill */
+  void page_stroke(HPDF_Page page); /* draw lines */
   };
 
 #endif

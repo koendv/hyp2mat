@@ -1,6 +1,5 @@
 *.lo
 *.o
-*.dirstamp
 .deps/
 .libs/
 config.h

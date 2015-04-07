@@ -36,26 +36,13 @@ AC_PROG_YACC
 AC_PROG_LIBTOOL
 AC_DISABLE_SHARED
 
+# libhpdf is used for pdf output
+# libhpdf needs -lhpdf -lpng -lz -lm
+AC_CHECK_HEADER([hpdf.h], [],[AC_MSG_ERROR([hpdf.h include file not found])])
 AC_CHECK_LIB([m], [sqrt])
-
-#
-# libgerbv is used for Gerber and Excellon input
-# For compiled-in gerbv sources
-#
-
-PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.0, , [AC_MSG_ERROR([
-Cairo > 1.2.0 required but not found.
-Please review the following errors:
-$CAIRO_PKG_ERRORS])]
-)
-
-PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4.0, , [AC_MSG_ERROR([
-GTK >= 2.4.0 required but not found.
-Please review the following errors:
-$GTK_PKG_ERRORS])]
-)
-
-AC_CHECK_HEADERS(unistd.h getopt.h string.h sys/mman.h sys/types.h sys/stat.h stdlib.h regex.h libgen.h time.h)
+AC_CHECK_LIB([z], [deflate], [], [AC_ERROR([libz library not found])])
+AC_CHECK_LIB([png], [png_read_info])
+AC_CHECK_LIB([hpdf], [HPDF_New], [], [AC_ERROR([libhpdf library not found])])
 
 AC_OUTPUT
 # not truncated

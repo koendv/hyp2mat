@@ -25,7 +25,6 @@
 #include "hyp2mat.h"
 
 #include "hyperlynx.h"
-#include "import_gerber.h"
 #include "pdf.h"
 #include "csxcad.h"
 
@@ -77,31 +76,6 @@ void PCB::ReadHyperLynx (std::string filename, std::vector<std::string> layers, 
 
   /* Epsilon_r, bulk resistivity and loss tangent overrides */
   _UserOverrides();
-
-  return;
-}
-
-
-/*
- * ReadGerber reads Gerber and Excellon files.
- * 'gerber_filenames' is a vector of filenames of Gerber files.
- * 'outline_filename' is the filename of a Gerber file containing the board outline.
- * 'tool_filename' is the filename of an Excellon tools file.
- * 'drill_filename' is a vector of filenames of Excellon drill files.
- * 'pickandplace_filename' is a vector of filename of Centroid pick and place files.
- *
- * Gerber files are in order, lowest layer first.
- */
-
- void PCB::ReadGerber(std::vector<std::string> gerber_filenames, std::string outline_filename, std::string tools_filename, std::vector<std::string> drill_filenames, std::vector<std::string> pickandplace_filenames)
-{
-  /* read Gerber/Excellon files */
-  Gerber gerber;
-
-  gerber.Read(gerber_filenames, outline_filename, tools_filename, drill_filenames, pickandplace_filenames, *this);
-
-  /* Check for empty board outline; add default board outline if outline empty  */
-  _CheckBoardOutline(); 
 
   return;
 }
