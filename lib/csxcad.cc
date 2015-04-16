@@ -221,7 +221,7 @@ void CSXCAD::export_board(Hyp2Mat::PCB& pcb, bool pcb_outline)
    * If lossy_copper is false, assume copper is perfect conductor.
    */
  
-void CSXCAD::export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer, bool lossy_copper)
+void CSXCAD::export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer, bool lossy_copper, bool metal_3d)
 {
   std::string layer_material = layer.layer_name + "_copper";
   std::string layer_cutout = layer.layer_name + "_cutout";
@@ -230,12 +230,13 @@ void CSXCAD::export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer, bool lossy_c
   if (contains_polygon(layer.metal)) {
       std::cout << "% create layer " << layer.layer_name << " material" << std::endl;
 
-      if ((layer.bulk_resistivity > 0) && lossy_copper) {
-          double copper_conductivity = 1 / layer.bulk_resistivity;
-          std::cout << "CSX = AddConductingSheet(CSX, '" << layer_material << "', " << copper_conductivity << ", " << layer.thickness() << "); % lossy conductor" << std::endl;
-          }
+      double copper_resistivity = 0.0;
+      if (lossy_copper && (layer.bulk_resistivity > 0)) copper_resistivity = layer.bulk_resistivity;
+      
+      if (metal_3d)
+        std::cout << "CSX = AddHyperLynxMetal3D(CSX, '" << layer_material << "', " << copper_resistivity <<  ", " <<  layer.thickness() << ");" << std::endl;
       else
-          std::cout << "CSX = AddMetal(CSX, '" << layer_material << "'); % perfect conductor" << std::endl;
+        std::cout << "CSX = AddHyperLynxMetal2D(CSX, '" << layer_material << "', " << copper_resistivity <<  ", " <<  layer.thickness() << ");" << std::endl;
       };
 
   // create layer cutout material if at least one hole present
@@ -266,7 +267,12 @@ void CSXCAD::export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer, bool lossy_c
     export_edge(i->poly);
     int priority = prio_material + i->nesting_level;
     double z0 = adjust_z(pcb, layer.z0);
-    std::cout << "CSX = AddPolygon(CSX, '" << material << "', " << priority << ", 2, " << z0 << ", pgon);" << std::endl;
+    double z1 = adjust_z(pcb, layer.z0) + layer.z1 - layer.z0;
+    /* Default is exporting copper as a 2D conducting sheet */
+    if (metal_3d)
+      std::cout << "CSX = AddLinPoly(CSX, '" << material << "', " << priority << ", 2, " << z0 << ", pgon, " << z1 - z0 << ");" << std::endl;
+    else
+      std::cout << "CSX = AddPolygon(CSX, '" << material << "', " << priority << ", 2, " << z0 << ", pgon);" << std::endl;
     }
 
   return;
@@ -356,7 +362,7 @@ void CSXCAD::export_ports(Hyp2Mat::PCB& pcb)
  * Write pcb to file in CSXCAD format 
  */
 
-void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outline, bool lossy_copper)
+void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outline, bool lossy_copper, bool metal_3d)
 {
   if (pcb.debug > 0) {
     std::cerr << "csxcad layer vertical position:" << std::endl;
@@ -383,7 +389,7 @@ void CSXCAD::Write(const std::string& filename, Hyp2Mat::PCB pcb, bool pcb_outli
   /* Export copper */
   std::cout << "% copper" << std::endl;
   for (LayerList::iterator l = pcb.stackup.begin(); l != pcb.stackup.end(); ++l)
-    export_layer(pcb, *l, lossy_copper);
+    export_layer(pcb, *l, lossy_copper, metal_3d);
 
   /* Export vias */
   export_vias(pcb);

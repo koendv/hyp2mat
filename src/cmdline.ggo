@@ -29,6 +29,7 @@ option "bulk-resistivity" - "Set bulk resistivity of copper (in Ohm meter)." dou
 section "CSXCAD output options"
 option "pcb-outline" - "Detailed board outline." flag off
 option "lossy-copper" - "Model copper as lossy. Default is modeling copper as perfect conductor." flag off
+option "metal-3d" - "Model copper layers as 3D. Default is modeling metal as 2D sheet." flag off
 section "PDF output options"
 option "hue" - "Set PDF color hue. Range 0.0 to 1.0" double default="0.0" optional
 option "saturation" - "Set PDF color saturation. Range 0.0 to 1.0" double default="0.6" optional

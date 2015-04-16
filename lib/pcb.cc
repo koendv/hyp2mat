@@ -95,10 +95,10 @@ void PCB::WritePDF (std::string filename, double hue, double saturation, double 
  * Write a pcb in csxcad format
  */
 
-void PCB::WriteCSXCAD (std::string filename, bool pcb_outline, bool lossy_copper)
+void PCB::WriteCSXCAD (std::string filename, bool pcb_outline, bool lossy_copper, bool metal_3d)
 {
   CSXCAD csxcad;
-  csxcad.Write(filename, *this, pcb_outline, lossy_copper);
+  csxcad.Write(filename, *this, pcb_outline, lossy_copper, metal_3d);
 }
 
 /* 

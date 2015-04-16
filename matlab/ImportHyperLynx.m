@@ -18,6 +18,7 @@
 % flood          string. Flood layer with copper. Repeat to flood several layers. The value "plane_layers" floods all plane layers.
 % pcb-outline    none.   Detailed board outline.
 % lossy-copper   none.   Model copper as lossy. Default is modeling copper as a perfect conductor.
+% metal-3d       none.   Model copper as a 3D object. Default is modeling copper as a 2D sheet.
 % version        none.   Print hyp2mat version number.
 %
 % ImportHyperLynx needs read and write access to the current directory.
@@ -147,6 +148,9 @@ function CSX = ImportHyperLynx(CSX, filename, varargin)
     end
     if (strcmpi(varargin{vn}, 'lossy-copper'))
       cmdargs = [ cmdargs ' --lossy-copper ' ];
+    end
+    if (strcmpi(varargin{vn}, 'metal-3d'))
+      cmdargs = [ cmdargs ' --metal-3d ' ];
     end
     if (strcmpi(varargin{vn}, 'version'))
       cmdargs = [ cmdargs ' --version ' ];

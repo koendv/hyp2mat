@@ -1,12 +1,12 @@
-function CSX = AddHyperLynxDielectric(CSX, name, epsilon, loss_tangent)
-% function CSX = AddHyperLynxDielectric(CSX, name, epsilon, loss_tangent)
+function CSX = AddHyperLynxMetal2D(CSX, name, resistivity, thickness)
+% function CSX = AddHyperLynxDielectric(CSX, name, resistivity, thickness)
 %
-% Add a dielectric to a CSX model imported from HyperLynx.
+% Add a metal as a 3D object to a CSX model imported from HyperLynx.
 % 
 % arguments:
 %   name:         material name.
-%   epsilon:      relative electric permittivity
-%   loss_tangent: loss tangent
+%   resistivity:  metal resistivity
+%   thickness:    thickness of the metal layer, in m.
 % 
 % See also AddMaterial, AddDebyeMaterial, AddLorentzMaterial
 %
@@ -29,16 +29,15 @@ function CSX = AddHyperLynxDielectric(CSX, name, epsilon, loss_tangent)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 % Copy this script to your project directory to customize. 
-% For a discussion of the parameters, see http://openems.de/index.php/Dispersive_Material_Property 
 
-% Default substrate is a lossless dielectric.
-CSX = AddMaterial( CSX, name);
-CSX = SetMaterialProperty( CSX, name, 'Epsilon', epsilon, 'Mue', 1 );
-%CSX = SetMaterialProperty( CSX, name, 'Kappa', kappa); % optional conductivity
+disp('Using 3D metal: slow convergence.');
 
-% Drude material
-%CSX = AddLorentzMaterial(CSX, name);
-%CSX = SetMaterialProperty(CSX, name, 'Epsilon', epsilon, 'Kappa', kappa);
-%CSX = SetMaterialProperty(CSX, name, 'EpsilonPlasmaFrequency', 5e9, 'EpsilonRelaxTime', 5e-9);
+if (resistivity > 0.0)
+  conductivity = 1.0 / resistivity;
+  CSX = AddMaterial( CSX, name);
+  CSX = SetMaterialProperty( CSX, name, 'Kappa', conductivity); % lossy conductor
+else
+  CSX = AddMetal(CSX, name); % perfect conductor
+end
 
 % not truncated

@@ -141,7 +141,7 @@ int main(int argc, char **argv)
         break;
       /* Export Continuous Structure XML (openEMS) */
       case output_format_arg_csxcad:
-        pcb.WriteCSXCAD(output_file, args_info.pcb_outline_flag, args_info.lossy_copper_flag);
+        pcb.WriteCSXCAD(output_file, args_info.pcb_outline_flag, args_info.lossy_copper_flag, args_info.metal_3d_flag);
         break;
       default:
         std::cerr << "unknown output format " << args_info.output_format_arg << std::endl;
