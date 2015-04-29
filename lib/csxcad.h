@@ -37,7 +37,7 @@ private:
   double adjust_z(Hyp2Mat::PCB& pcb, double z);
 
   void export_edge(Hyp2Mat::FloatPolygon& edge); /* output a polygon edge */
-  void export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer, bool lossy_copper, bool metal_3d); /* output a copper layer */
+  void export_layer(Hyp2Mat::PCB& pcb, Hyp2Mat::Layer& layer, bool lossy_copper, bool metal_3d, bool odd); /* output a copper layer */
   void export_board(Hyp2Mat::PCB& pcb, bool pcb_outline); /* output the dielectric */
   void export_vias(Hyp2Mat::PCB& pcb);
   void export_devices(Hyp2Mat::PCB& pcb);

@@ -1,5 +1,5 @@
 function CSX = AddHyperLynxMetal2D(CSX, name, resistivity, thickness)
-% function CSX = AddHyperLynxDielectric(CSX, name, resistivity, thickness)
+% function CSX = AddHyperLynxMetal2D(CSX, name, resistivity, thickness)
 %
 % Add a metal as a 2D conducting sheet to a CSX model imported from HyperLynx.
 % 

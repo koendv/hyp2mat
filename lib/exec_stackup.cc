@@ -311,12 +311,20 @@ bool HypFile::Hyp::add_dielectric_layer(parse_param& h)
 
 bool HypFile::Hyp::calc_layer_position()
 {
-  // calculate vertical position
-  double z = 0; // current vertical position
+  // calculate vertical position, from bottom to top
+  double z_top = 0; // current vertical position
   for (LayerList::reverse_iterator it = stackup.rbegin(); it != stackup.rend(); ++it) {
-    it->z0 = z; // bottom
-    it->z1 = it->z0 + it->thickness; // top
-    z = it->z1;
+    if (it->layer_type == LAYER_DIELECTRIC) {
+      /* substrate and prepreg */
+      it->z0 = z_top;
+      it->z1 = z_top + it->thickness;
+      z_top = it->z1;
+      }
+    else {
+      /* metal layers */
+      it->z0 = z_top;
+      it->z1 = z_top;
+      }
     }
 
   return true;

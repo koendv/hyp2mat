@@ -315,10 +315,10 @@ void PCB::PrintSummary() {
   for (LayerList::iterator it = stackup.begin(); it != stackup.end(); ++it) {
     std::cerr << " ";
     switch (it->layer_type) {
-      case LAYER_SIGNAL:     std::cerr << "signal     " <<  std::setw(8) << it->thickness() * 1E6 << " um" ; break;
-      case LAYER_DIELECTRIC: std::cerr << "dielectric " <<  std::setw(8) << it->thickness() * 1E3 << " mm" ; break;
-      case LAYER_PLANE:      std::cerr << "plane      " <<  std::setw(8) << it->thickness() * 1E6 << " um" ; break;
-      default:               std::cerr << "***        " <<  std::setw(8) << it->thickness() * 1E3 << " mm" ; break;
+      case LAYER_SIGNAL:     std::cerr << "signal     " <<  std::setw(8) << it->thickness * 1E6 << " um" ; break;
+      case LAYER_DIELECTRIC: std::cerr << "dielectric " <<  std::setw(8) << it->thickness * 1E3 << " mm" ; break;
+      case LAYER_PLANE:      std::cerr << "plane      " <<  std::setw(8) << it->thickness * 1E6 << " um" ; break;
+      default:               std::cerr << "***        " <<  std::setw(8) << it->thickness * 1E3 << " mm" ; break;
       }
     std::cerr << " eps_r " << it->epsilon_r << " '" << it->layer_name << "'" << std::endl;
     }

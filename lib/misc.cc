@@ -30,10 +30,6 @@ std::string Hyp2Mat::version()
   return VERSION;
 }
 
-double Layer::thickness() {
-  return z1 - z0; 
-}
-
 Device::Device()
 {
   name.clear();

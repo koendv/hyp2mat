@@ -88,6 +88,7 @@ void HyperLynx::CopyLayer(Hyp2Mat::PCB& pcb, HypFile::Layer& hyp_layer)
     }
   layer.z0 = hyp_layer.z0;
   layer.z1 = hyp_layer.z1;
+  layer.thickness = hyp_layer.thickness;
   layer.epsilon_r = hyp_layer.epsilon_r;
   layer.loss_tangent = hyp_layer.loss_tangent;
   layer.bulk_resistivity = hyp_layer.bulk_resistivity;

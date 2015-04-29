@@ -94,7 +94,7 @@ namespace Hyp2Mat {
       std::string material_name; /* informational only */
       layer_enum layer_type;    
       FloatPolygons metal;
-      double thickness(); /* layer thickness */
+      double thickness; /* layer thickness */
       double z0; /* vertical position of bottom of layer */
       double z1; /* vertical position of top of layer */
       /* dielectric */

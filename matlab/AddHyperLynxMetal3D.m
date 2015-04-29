@@ -1,5 +1,5 @@
-function CSX = AddHyperLynxMetal2D(CSX, name, resistivity, thickness)
-% function CSX = AddHyperLynxDielectric(CSX, name, resistivity, thickness)
+function CSX = AddHyperLynxMetal3D(CSX, name, resistivity, thickness)
+% function CSX = AddHyperLynxMetal3D(CSX, name, resistivity, thickness)
 %
 % Add a metal as a 3D object to a CSX model imported from HyperLynx.
 % 
