@@ -17,3 +17,6 @@
  - add board outline if board outline is not defined
  - allow blind and buried vias
 
+29 April 2015:
+ - add option for 3d metal
+ - fix stack height
