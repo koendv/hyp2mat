@@ -13,6 +13,10 @@ CPPFLAGS=-I/usr/include LDFLAGS="-static -static-libgcc -static-libstdc++ -L/usr
 make install
 cp $HYPDIR/COPYING $INSTDIR/share/hyp2mat
 cp $INSTDIR/bin/hyp2mat $INSTDIR/share/hyp2mat
+# posix pthreads dll (win-builds.org)
+if [ -f /opt/windows_32/bin/libwinpthread-1.dll ]
+  cp /opt/windows_32/bin/libwinpthread-1.dll $INSTDIR/share/hyp2mat
+fi
 cd $INSTDIR/share/
 zip -9 -r $BUILDDIR/hyp2mat-win32-current.zip ./hyp2mat
 #not truncated
