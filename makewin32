@@ -15,6 +15,7 @@ cp $HYPDIR/COPYING $INSTDIR/share/hyp2mat
 cp $INSTDIR/bin/hyp2mat $INSTDIR/share/hyp2mat
 # posix pthreads dll (win-builds.org)
 if [ -f /opt/windows_32/bin/libwinpthread-1.dll ]
+then
   cp /opt/windows_32/bin/libwinpthread-1.dll $INSTDIR/share/hyp2mat
 fi
 cd $INSTDIR/share/
