@@ -17,4 +17,4 @@ How to [simulate a printed circuit board in openEMS using HyperLynx files](http:
 
 ## Development
 
-Development now focuses on implementing Hyperlynx import for [pcb-rnd](http://repo.hu/projects/pcb-rnd/) printed circuit board editor.
+Development now focuses on add Hyperlynx import to [pcb-rnd](http://repo.hu/projects/pcb-rnd/) , a printed circuit board editor.
