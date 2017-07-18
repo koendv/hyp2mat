@@ -214,8 +214,11 @@ bool HypFile::Hyp::exec_padstack_end(parse_param& h)
             pad_bottom_layer = l->layer_name;
             };
 
-      if (!layer_found) std::cerr << "warning: padstack without metal:" << h.padstack_name << std::endl;
-      
+      if (!layer_found) {
+        std::cerr << "warning: padstack without metal: " << padstack.back().padstack_name << std::endl;
+        pad_top_layer = stackup.front().layer_name; /* via begins at top layer */
+        pad_bottom_layer = stackup.back().layer_name; /* via ends at bottom layer */
+        }
       }
 
     /*

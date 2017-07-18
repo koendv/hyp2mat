@@ -115,14 +115,30 @@
     bool layer1_name_set;
     std::string layer2_name;
     bool layer2_name_set;
-    std::string pad1_shape;
-    double pad1_sx;
-    double pad1_sy;
-    double pad1_angle;
-    std::string pad2_shape;
-    double pad2_sx;
-    double pad2_sy;
-    double pad2_angle;
+    double via_pad_angle;
+    bool via_pad_angle_set;
+    std::string via_pad_shape;
+    bool via_pad_shape_set;
+    double via_pad_sx;
+    bool via_pad_sx_set;
+    double via_pad_sy;
+    bool via_pad_sy_set;
+    double via_pad1_angle;
+    bool via_pad1_angle_set;
+    std::string via_pad1_shape;
+    bool via_pad1_shape_set;
+    double via_pad1_sx;
+    bool via_pad1_sx_set;
+    double via_pad1_sy;
+    bool via_pad1_sy_set;
+    double via_pad2_angle;
+    bool via_pad2_angle_set;
+    std::string via_pad2_shape;
+    bool via_pad2_shape_set;
+    double via_pad2_sx;
+    bool via_pad2_sx_set;
+    double via_pad2_sy;
+    bool via_pad2_sy_set;
 
     /* pin subrecord of net */
     std::string pin_reference;

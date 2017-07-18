@@ -152,6 +152,10 @@ bool HypFile::Hyp::exec_arc(parse_param& h)
 
 bool HypFile::Hyp::exec_via(parse_param& h)
 {
+  /* detect old-style v1.0 via */
+  if (!h.padstack_name_set)
+    return exec_via_v1(h);
+
   if (trace_hyp) {
     cerr << "via: x = " << h.x << " y = " << h.y;
     if (h.layer1_name_set) cerr << " layer1_name = " << h.layer1_name; 
@@ -168,12 +172,20 @@ bool HypFile::Hyp::exec_via(parse_param& h)
     if (i->padstack_name == h.padstack_name) {
 
       /* set via begin layer */
-      if (!h.layer1_name_set) 
-        h.layer1_name = i->pads.front().layer_name; 
+      if (!h.layer1_name_set) {
+        if (!i->pads.empty())
+          h.layer1_name = i->pads.front().layer_name; 
+        else
+          h.layer1_name = stackup.front().layer_name; /* top */
+        }
 
       /* set via end layer */
-      if (!h.layer2_name_set) 
-        h.layer2_name = i->pads.back().layer_name; 
+      if (!h.layer2_name_set) {
+        if (!i->pads.empty())
+          h.layer2_name = i->pads.back().layer_name; 
+        else
+          h.layer2_name = stackup.back().layer_name; /* bottom */
+        }
 
       /* add to list of via holes */
       add_via(h.x, h.y, h.layer2_name, h.layer1_name, i->drill_size/2);
@@ -202,33 +214,40 @@ bool HypFile::Hyp::exec_via_v1(parse_param& h)
     cerr << " drill_size = " << h.drill_size;
     if (h.layer1_name_set) cerr << " layer1_name = " << h.layer1_name; 
     if (h.layer2_name_set) cerr << " layer2_name = " << h.layer2_name; 
-    cerr << " pad1_shape = " << h.pad1_shape << " pad1_sx = " << h.pad1_sx << " pad1_sy = " << h.pad1_sy << " pad1_angle = " << h.pad1_angle;
-    cerr << " pad2_shape = " << h.pad2_shape << " pad2_sx = " << h.pad2_sx << " pad2_sy = " << h.pad2_sy << " pad2_angle = " << h.pad2_angle;
+    cerr << " via_pad1_shape = " << h.via_pad1_shape << " via_pad1_sx = " << h.via_pad1_sx << " via_pad1_sy = " << h.via_pad1_sy << " via_pad1_angle = " << h.via_pad1_angle;
+    cerr << " via_pad2_shape = " << h.via_pad2_shape << " via_pad2_sx = " << h.via_pad2_sx << " via_pad2_sy = " << h.via_pad2_sy << " via_pad2_angle = " << h.via_pad2_angle;
     cerr << endl;
     }
 
   h.drill_size *= unit;
   h.x *= unit;
   h.y *= unit;
-  h.pad1_sx *= unit;
-  h.pad1_sy *= unit;
-  h.pad2_sx *= unit;
-  h.pad2_sy *= unit;
+  h.via_pad1_sx *= unit;
+  h.via_pad1_sy *= unit;
+  h.via_pad2_sx *= unit;
+  h.via_pad2_sy *= unit;
+
+  if (!h.layer1_name_set) h.layer1_name = stackup.front().layer_name; /* top */
+  if (!h.layer2_name_set) h.layer2_name = stackup.back().layer_name; /* bottom */
 
   /* add to list of via holes */
-  add_via(h.x, h.y, stackup.back().layer_name /* bottom */, stackup.front().layer_name /* top */ , h.drill_size/2);
+  add_via(h.x, h.y, h.layer2_name, h.layer1_name, h.drill_size/2);
+
+	if (!h.via_pad1_shape_set || !h.via_pad1_sx_set || !h.via_pad1_sy_set || !h.via_pad1_angle_set ||
+	    !h.via_pad2_shape_set || !h.via_pad2_sx_set || !h.via_pad2_sy_set || !h.via_pad2_angle_set)
+    return false;
 
   /* add top pad */
   Pad pad;
-  pad.layer_name = stackup.front().layer_name; /* Top layer */
-  if (h.pad1_shape == "OVAL") pad.pad_shape = PAD_SHAPE_OVAL;
-  else if (h.pad1_shape == "RECT") pad.pad_shape = PAD_SHAPE_RECTANGULAR;
-  else if (h.pad1_shape == "OBLONG") pad.pad_shape = PAD_SHAPE_OBLONG;
+  pad.layer_name = h.layer1_name;
+  if (h.via_pad1_shape == "OVAL") pad.pad_shape = PAD_SHAPE_OVAL;
+  else if (h.via_pad1_shape == "RECT") pad.pad_shape = PAD_SHAPE_RECTANGULAR;
+  else if (h.via_pad1_shape == "OBLONG") pad.pad_shape = PAD_SHAPE_OBLONG;
   else pad.pad_shape = PAD_SHAPE_OVAL;
   pad.pad_type = PAD_TYPE_METAL;
-  pad.pad_sx = h.pad1_sx;
-  pad.pad_sy = h.pad1_sy;
-  pad.pad_angle = h.pad1_angle;
+  pad.pad_sx = h.via_pad1_sx;
+  pad.pad_sy = h.via_pad1_sy;
+  pad.pad_angle = h.via_pad1_angle;
   pad.thermal_clear_shape = PAD_SHAPE_OVAL;
   pad.thermal_clear_sx = 0;
   pad.thermal_clear_sy= 0;
@@ -236,15 +255,15 @@ bool HypFile::Hyp::exec_via_v1(parse_param& h)
   add_pad(h.x, h.y, pad);
 
   /* add bottom pad */
-  pad.layer_name = stackup.back().layer_name; /* Top layer */
-  if (h.pad2_shape == "OVAL") pad.pad_shape = PAD_SHAPE_OVAL;
-  else if (h.pad2_shape == "RECT") pad.pad_shape = PAD_SHAPE_RECTANGULAR;
-  else if (h.pad2_shape == "OBLONG") pad.pad_shape = PAD_SHAPE_OBLONG;
+  pad.layer_name = h.layer2_name;
+  if (h.via_pad2_shape == "OVAL") pad.pad_shape = PAD_SHAPE_OVAL;
+  else if (h.via_pad2_shape == "RECT") pad.pad_shape = PAD_SHAPE_RECTANGULAR;
+  else if (h.via_pad2_shape == "OBLONG") pad.pad_shape = PAD_SHAPE_OBLONG;
   else pad.pad_shape = PAD_SHAPE_OVAL;
   pad.pad_type = PAD_TYPE_METAL;
-  pad.pad_sx = h.pad2_sx;
-  pad.pad_sy = h.pad2_sy;
-  pad.pad_angle = h.pad2_angle;
+  pad.pad_sx = h.via_pad2_sx;
+  pad.pad_sy = h.via_pad2_sy;
+  pad.pad_angle = h.via_pad2_angle;
   add_pad(h.x, h.y, pad);
 
   return false;
@@ -306,26 +325,26 @@ bool HypFile::Hyp::exec_pad(parse_param& h)
   if (trace_hyp) {
     cerr << "pad: x = " << h.x << " y = " << h.y;
     if (h.layer_name_set) cerr << " layer_name = " << h.layer_name; 
-    cerr << " pad1_shape = " << h.pad1_shape << " pad1_sx = " << h.pad1_sx << " pad1_sy = " << h.pad1_sy << " pad1_angle = " << h.pad1_angle;
+    cerr << " via_pad1_shape = " << h.via_pad1_shape << " via_pad1_sx = " << h.via_pad1_sx << " via_pad1_sy = " << h.via_pad1_sy << " via_pad1_angle = " << h.via_pad1_angle;
     cerr << endl;
     }
 
   h.x *= unit;
   h.y *= unit;
-  h.pad1_sx *= unit;
-  h.pad1_sy *= unit;
+  h.via_pad1_sx *= unit;
+  h.via_pad1_sy *= unit;
 
   /* add pad */
   Pad pad;
   pad.layer_name = h.layer_name;
-  if (h.pad1_shape == "OVAL") pad.pad_shape = PAD_SHAPE_OVAL;
-  else if (h.pad1_shape == "RECT") pad.pad_shape = PAD_SHAPE_RECTANGULAR;
-  else if (h.pad1_shape == "OBLONG") pad.pad_shape = PAD_SHAPE_OBLONG;
+  if (h.via_pad1_shape == "OVAL") pad.pad_shape = PAD_SHAPE_OVAL;
+  else if (h.via_pad1_shape == "RECT") pad.pad_shape = PAD_SHAPE_RECTANGULAR;
+  else if (h.via_pad1_shape == "OBLONG") pad.pad_shape = PAD_SHAPE_OBLONG;
   else pad.pad_shape = PAD_SHAPE_OVAL;
   pad.pad_type = PAD_TYPE_METAL;
-  pad.pad_sx = h.pad1_sx;
-  pad.pad_sy = h.pad1_sy;
-  pad.pad_angle = h.pad1_angle;
+  pad.pad_sx = h.via_pad1_sx;
+  pad.pad_sy = h.via_pad1_sy;
+  pad.pad_angle = h.via_pad1_angle;
   pad.thermal_clear_shape = PAD_SHAPE_OVAL;
   pad.thermal_clear_sx = 0;
   pad.thermal_clear_sy= 0;

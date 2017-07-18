@@ -145,7 +145,7 @@ hyp_section
   | netclass 
   | end 
   | key 
-  | '{' error '}' ;
+  | error '}' ;
 
   /* board_file */
 
@@ -186,27 +186,32 @@ plane_sep
   /* board */
 
 board
-  : '{' BOARD board_paramlist '}'
+  : '{' BOARD board_param_list '}'
   | '{' BOARD '}' ;
  
-board_paramlist
-  : board_paramlist board_param
-  | board_param ; 
+board_param_list
+  : board_param_list board_param_list_item
+  | board_param_list_item ;
+
+board_param_list_item
+  : '(' board_param ')'
+  | '(' board_param { yyerror(hyp, "warning: missing ')'"); }
+  | error ')' ;
+  ;
 
 board_param
   : perimeter_segment
   | perimeter_arc
-  | board_attribute 
-  | '(' error ')' ;
+  | board_attribute ;
 
 perimeter_segment
-  : '(' PERIMETER_SEGMENT coord_line  ')' { if (hyp->exec_perimeter_segment(h)) YYERROR; } ;
+  : PERIMETER_SEGMENT coord_line { if (hyp->exec_perimeter_segment(h)) YYERROR; } ;
 
 perimeter_arc
-  : '(' PERIMETER_ARC coord_arc ')' { if (hyp->exec_perimeter_arc(h)) YYERROR; } ;
+  : PERIMETER_ARC coord_arc { if (hyp->exec_perimeter_arc(h)) YYERROR; } ;
 
 board_attribute
-  : '(' A N '=' STRING { h.name = yylval.strval; } V '=' STRING { h.value = yylval.strval; } ')' { if (hyp->exec_board_attribute(h)) YYERROR; } ;
+  : A N '=' STRING { h.name = yylval.strval; } V '=' STRING { h.value = yylval.strval; } { if (hyp->exec_board_attribute(h)) YYERROR; } ;
 
   /* stackup */
 
@@ -425,11 +430,17 @@ pad_type
   /* net */
 
 net
-  : '{' NET '=' STRING { h.net_name = yylval.strval; if (hyp->exec_net(h)) YYERROR; } net_def '}' ;
+  : '{' NET '=' STRING { h.net_name = yylval.strval; if (hyp->exec_net(h)) YYERROR; } net_separation ;
 
-net_def
-  : plane_separation { if (hyp->exec_net_plane_separation(h)) YYERROR; } net_subrecord_list 
-  | net_subrecord_list ;
+net_separation
+  : plane_separation { if (hyp->exec_net_plane_separation(h)) YYERROR; } net_copper
+  | net_copper
+  ;
+
+net_copper
+  : net_subrecord_list '}'
+  | { yyerror(hyp, "warning: empty net"); } '}'
+  ;
 
 net_subrecord_list
   : net_subrecord_list net_subrecord
@@ -473,29 +484,32 @@ left_plane_separation
   : LPS '=' FLOAT { h.left_plane_separation = yylval.floatval; h.left_plane_separation_set = true; } ;
 
 via
-  : '(' VIA { new_record(); } coord_point via_new_or_old_style
+  : '(' VIA { new_record(); } coord_point via_param_list ')' { if (hyp->exec_via(h)) YYERROR; } ; 
   ;
 
-via_new_or_old_style
-  : via_new_style
-  | via_old_style
+via_param_list
+  : via_param_list via_param
+  | via_param
   ;
 
-via_new_style
-  : via_new_style_l1_param { if (hyp->exec_via(h)) YYERROR; } ; 
-
-via_new_style_l1_param
-  : layer1_name via_new_style_l2_param
-  | via_new_style_l2_param 
-  ;
-
-via_new_style_l2_param
-  : layer2_name via_new_style_padstack_param
-  | via_new_style_padstack_param 
-  ;
-
-via_new_style_padstack_param
-  : padstack_name ')'
+via_param
+  : padstack_name
+  /* parameters below are for deprecated v1.0 via format */
+  | D '=' FLOAT   { h.drill_size = yylval.floatval; h.drill_size_set = true; } 
+  | layer1_name
+  | layer2_name
+  | S '=' STRING  { h.via_pad_shape = yylval.strval; h.via_pad_shape_set = true; }
+  | SX '=' FLOAT  { h.via_pad_sx = yylval.floatval; h.via_pad_sx_set = true; }
+  | SY '=' FLOAT  { h.via_pad_sy = yylval.floatval; h.via_pad_sy_set = true; }
+  | A '=' FLOAT   { h.via_pad_angle = yylval.floatval; h.via_pad_angle_set = true; }
+  | S1 '=' STRING { h.via_pad1_shape = yylval.strval; h.via_pad1_shape_set = true; } 
+  | S1X '=' FLOAT { h.via_pad1_sx = yylval.floatval; h.via_pad1_sx_set = true; }
+  | S1Y '=' FLOAT { h.via_pad1_sy = yylval.floatval; h.via_pad1_sy_set = true; }
+  | A1 '=' FLOAT  { h.via_pad1_angle = yylval.floatval; h.via_pad1_angle_set = true; }
+  | S2 '=' STRING { h.via_pad2_shape = yylval.strval; h.via_pad2_shape_set = true; } 
+  | S2X '=' FLOAT { h.via_pad2_sx = yylval.floatval; h.via_pad2_sx_set = true; }
+  | S2Y '=' FLOAT { h.via_pad2_sy = yylval.floatval; h.via_pad2_sy_set = true; }
+  | A2 '=' FLOAT  { h.via_pad2_angle  = yylval.floatval; h.via_pad2_angle_set = true; }
   ;
 
 padstack_name
@@ -506,21 +520,6 @@ layer1_name
 
 layer2_name
   : L2 '=' STRING { h.layer2_name = yylval.strval; h.layer2_name_set = true; } ;
-
-via_old_style
-  : D '=' FLOAT   { h.drill_size = yylval.floatval; } /* deprecated hyperlynx v1.x VIA format */
-    layer1_name
-    layer2_name
-    S1 '=' STRING { h.pad1_shape = yylval.strval; } 
-    S1X '=' FLOAT { h.pad1_sx = yylval.floatval; }
-    S1Y '=' FLOAT { h.pad1_sy = yylval.floatval; }
-    A1 '=' FLOAT  { h.pad1_angle = yylval.floatval; }
-    S2 '=' STRING { h.pad2_shape = yylval.strval; } 
-    S2X '=' FLOAT { h.pad2_sx = yylval.floatval; }
-    S2Y '=' FLOAT { h.pad2_sy = yylval.floatval; }
-    A2 '=' FLOAT  { h.pad2_angle  = yylval.floatval; }
-    ')' { if (hyp->exec_via_v1(h)) YYERROR; } ;
-  ;
 
 pin
   : '(' PIN { new_record(); } coord_point pin_reference pin_param { if (hyp->exec_pin(h)) YYERROR; } ;
@@ -542,17 +541,23 @@ pin_function
   : F '=' SIM_OUT  { h.pin_function = PIN_SIM_OUT; h.pin_function_set = true; }
   | F '=' SIM_IN   { h.pin_function = PIN_SIM_IN; h.pin_function_set = true; }
   | F '=' SIM_BOTH { h.pin_function = PIN_SIM_BOTH; h.pin_function_set = true; }
+  | F '=' STRING   { h.pin_function = PIN_SIM_BOTH; h.pin_function_set = true; yyerror(hyp, "warning: SIM_BOTH assumed"); }
   ;
 
-pad
-  : '(' PAD { new_record(); } /* deprecated hyperlynx v1.x only */
-    coord_point
-    layer_name
-    S '=' STRING  { h.pad1_shape = yylval.strval; }
-    SX '=' FLOAT  { h.pad1_sx = yylval.floatval; }
-    SY '=' FLOAT  { h.pad1_sy = yylval.floatval; }
-    A '=' FLOAT   { h.pad1_angle = yylval.floatval; }
-    ')' { if (hyp->exec_pad(h)) YYERROR; } ;
+pad /* deprecated hyperlynx v1.x only */
+  : '(' PAD { new_record(); } coord_point pad_param_list ')' { if (hyp->exec_pad(h)) YYERROR; } ;
+
+pad_param_list
+  : pad_param_list pad_param
+  | pad_param
+  ;
+
+pad_param
+  : layer_name
+  | S '=' STRING  { h.via_pad_shape = yylval.strval; h.via_pad_shape_set = true; }
+  | SX '=' FLOAT  { h.via_pad_sx = yylval.floatval; h.via_pad_sx_set = true; }
+  | SY '=' FLOAT  { h.via_pad_sy = yylval.floatval; h.via_pad_sy_set = true; }
+  | A '=' FLOAT   { h.via_pad_angle = yylval.floatval; h.via_pad_angle_set = true; }
   ;
 
 useg
@@ -623,6 +628,7 @@ lines_and_curves
 line_or_curve
   : line
   | curve
+  | ')' { yyerror(hyp, "warning: unexpected ')'"); }
   | '(' error ')'
   ;
 
@@ -781,14 +787,31 @@ void new_record()
   h.layer1_name_set = false;
   h.layer2_name.clear();
   h.layer2_name_set = false;
-  h.pad1_shape.clear();
-  h.pad1_sx = 0;
-  h.pad1_sy = 0;
-  h.pad1_angle = 0;
-  h.pad2_shape.clear();
-  h.pad2_sx = 0;
-  h.pad2_sy = 0;
-  h.pad2_angle = 0;
+  h.via_pad_angle  = 0;
+  h.via_pad_angle_set = false;
+  h.via_pad_shape.clear();
+  h.via_pad_shape_set = false;
+  h.via_pad_sx  = 0;
+  h.via_pad_sx_set = false;
+  h.via_pad_sy  = 0;
+  h.via_pad_sy_set = false;
+  h.via_pad1_angle  = 0;
+  h.via_pad1_angle_set = false;
+  h.via_pad1_shape.clear();
+  h.via_pad1_shape_set = false;
+  h.via_pad1_sx  = 0;
+  h.via_pad1_sx_set = false;
+  h.via_pad1_sy  = 0;
+  h.via_pad1_sy_set = false;
+  h.via_pad2_angle  = 0;
+  h.via_pad2_angle_set = false;
+  h.via_pad2_shape.clear();
+  h.via_pad2_shape_set = false;
+  h.via_pad2_sx  = 0;
+  h.via_pad2_sx_set = false;
+  h.via_pad2_sy  = 0;
+  h.via_pad2_sy_set = false;
+
   h.pin_reference.clear();
   h.pin_reference_set = false;
   h.pin_function = PIN_SIM_BOTH;
