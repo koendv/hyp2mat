@@ -8,7 +8,6 @@ hyp2mat is distributed with [openEMS](http://www.openems.de), a free open-source
 hyp2mat can be installed from pre-compiled binaries, or compiled from source:
 
 * [Windows binaries](http://www.kdvelectronics.eu/hyp2mat/hyp2mat-win32-current.zip)
-* [Linux packages](https://build.opensuse.org/package/show?package=hyp2mat&project=home%3Asibbi77)
 * To install from source see the file INSTALL for compilation instructions
 
 ## Tutorial
