@@ -14,6 +14,6 @@ hyp2mat can be installed from pre-compiled binaries, or compiled from source:
 
 How to [simulate a printed circuit board in openEMS using HyperLynx files](http://openems.de/index.php/Tutorial:_Importing_with_hyp2mat) 
 
-## Development
+## See also
 
-Development now focuses on adding Hyperlynx import to [pcb-rnd](http://repo.hu/projects/pcb-rnd/), a printed circuit board editor.
+hyp2mat is command-line only. For graphical, menu-driven Hyperlynx import see [pcb-rnd](http://repo.hu/projects/pcb-rnd/), a printed circuit board editor.
