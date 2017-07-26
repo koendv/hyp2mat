@@ -16,4 +16,6 @@ How to [simulate a printed circuit board in openEMS using HyperLynx files](http:
 
 ## See also
 
-hyp2mat is command-line only. For graphical, menu-driven Hyperlynx import see [pcb-rnd](http://repo.hu/projects/pcb-rnd/), a printed circuit board editor.
+hyp2mat is command-line only. For graphical, menu-driven Hyperlynx import see 
+* [pcb-rnd](http://repo.hu/projects/pcb-rnd/), a printed circuit board editor which reads and writes Hyperlynx files.
+* [FreeCAD-PCB](https://eaglepcb2freecad.sourceforge.io/), for import into FreeCAD.
