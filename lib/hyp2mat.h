@@ -200,6 +200,12 @@ namespace Hyp2Mat {
 
       void WriteCSXCAD(std::string filename, bool pcb_outline = false, bool lossy_copper = false, bool metal_3d = false);
 
+      /* 
+       * WriteQucsStudio exports QucsStudio PCB format to file "filename".
+       */
+
+      bool WriteQucsStudio(std::string filename);
+
       unsigned int debug; /* setting debug to 0 switches debugging off */
       std::vector<std::string> flood_layers; /* names of layers to be flooded with copper */
       bool raw; /* set raw processing */

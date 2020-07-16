@@ -52,6 +52,8 @@ libhyp2mat_la_SOURCES=\
   pcb.cc \
   pdf.cc \
   pdf.h \
+  qucsstudio.h \
+  qucsstudio.cc \
   scan.ll
 
 EXTRA_DIST=clipper.txt parse.h

@@ -149,13 +149,13 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
      The second time we calculate plane polygon pours. Plane polygons have a clearance from copper of other nets */
 
   /* Determine which nets we need to include */
-  for (int i = 0; i < hyp_file.net.size(); ++i) {
+  for (unsigned int i = 0; i < hyp_file.net.size(); ++i) {
     /* check if we're interested in this net. if no nets are specified, copy all nets */
     net_wanted[i] = nets.empty() || (std::find(nets.begin(), nets.end(), hyp_file.net[i].net_name) != nets.end());
     }
 
   /* calculate all copper. */
-  for (int i = 0; i < hyp_file.net.size(); ++i) {
+  for (unsigned int i = 0; i < hyp_file.net.size(); ++i) {
 
     /* skip unwanted nets */
     if (!net_wanted[i]) continue;
@@ -175,7 +175,7 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
   Hyp2Mat::Polygon layer_copper;
 
   /* add plane and pour polygons */
-  for (int i = 0; i < hyp_file.net.size(); ++i) {
+  for (unsigned int i = 0; i < hyp_file.net.size(); ++i) {
 
     /* skip unwanted nets */
     if (!net_wanted[i]) continue;
@@ -185,7 +185,7 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
     }
 
   /* subtract antipads from pour and plane polygons. */
-  for (int i = 0; i < hyp_file.net.size(); ++i) {
+  for (unsigned int i = 0; i < hyp_file.net.size(); ++i) {
 
     /* skip unwanted nets */
     if (!net_wanted[i]) continue;
@@ -194,7 +194,7 @@ Hyp2Mat::Polygon HyperLynx::CopyCopper(Hyp2Mat::Layer layer, Hyp2Mat::FloatPolyg
     }
 
   /* add copper and pad polygons */
-  for (int i = 0; i < hyp_file.net.size(); ++i) {
+  for (unsigned int i = 0; i < hyp_file.net.size(); ++i) {
 
     /* skip unwanted nets */
     if (!net_wanted[i]) continue;

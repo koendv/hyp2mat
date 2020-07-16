@@ -27,6 +27,7 @@
 #include "hyperlynx.h"
 #include "pdf.h"
 #include "csxcad.h"
+#include "qucsstudio.h"
 
 using namespace Hyp2Mat;
 
@@ -99,6 +100,16 @@ void PCB::WriteCSXCAD (std::string filename, bool pcb_outline, bool lossy_copper
 {
   CSXCAD csxcad;
   csxcad.Write(filename, *this, pcb_outline, lossy_copper, metal_3d);
+}
+
+/*
+ * Write a pcb in QucsStudio format
+ */
+
+bool PCB::WriteQucsStudio (std::string filename)
+{
+  QucsStudio qs;
+  return qs.Write(filename, *this);
 }
 
 /* 
