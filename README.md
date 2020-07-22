@@ -1,6 +1,7 @@
 # hyp2mat
 
-hyp2mat is a utility which converts HyperLynx files to matlab for electromagnetic simulation, or to PDF for printing.
+hyp2mat is a utility which converts HyperLynx and [QucsStudio](http://dd6um.darc.de/QucsStudio/qucsstudio.html) pcb files to matlab for electromagnetic simulation, or to PDF for printing.
+
 hyp2mat is distributed with [openEMS](http://www.openems.de), a free open-source electromagnetic field solver.
 
 ## Installation
